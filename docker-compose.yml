@@ -1,3 +1,4 @@
+# Docker compose file for test docker image/container on localhost
 services:
   app:
     build: .
@@ -5,6 +6,10 @@ services:
       - 3000:3000
     environment: 
       - NODE_ENV=production
+
+      - WEB_HOSTNAME="http://localhost:3000"
+      - API_HOSTNAME="https://durian-api-dev.thaicom.io"
+      - API_KEY="ng4Uz54h41PJvflDhDSz5qELkqp7hj8H"
 
       - NEXTAUTH_URL=http://localhost:3000
       - NEXTAUTH_SECRET=TI4j8FMO44Jlo60VLjAa8L335ndcsKkMT1WgkbkZS6Y=

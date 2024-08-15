@@ -22,7 +22,7 @@ COPY --chown=node:node --from=builder /app/public ./public
 COPY --chown=node:node --from=builder /app/.next ./.next
 COPY --chown=node:node --from=builder /app/node_modules ./node_modules
 COPY --chown=node:node --from=builder /app/package.json ./package.json
-COPY --chown=node:node --from=builder /app/next.config.mjs ./next.config.mjs
+COPY --chown=node:node --from=builder /app/next.config.js ./next.config.js
 COPY --chown=node:node --from=builder /app/next-i18next.config.js ./next-i18next.config.js
 
 USER node
