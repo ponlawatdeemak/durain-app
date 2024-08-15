@@ -1,3 +1,35 @@
+# durian-web
+Durian Plantation Area Analysis System - Responsive Frontend Web
+
+    หน้าเว็บ ระบบวิเคราะห์พื้นที่ปลูกทุเรียน (ภายใต้ Earth Insights Platform)
+    การจำแนกพื้นที่ปลูกทุเรียนด้วยเทคโนโลยีภาพดาวเทียมสำรวจโลก
+
+--------------------
+
+## Frontend Development Environment
+  - Node.js v20.x (LTS)
+  - Next.js v14.x ==> TypeScript, Pages Router
+  - next-i18next v15 ==> Multi-Language Support
+  - NextAuth.js v4.x
+  - MUI v5.x
+  - MUI-X v6.x (some components)
+  - MapLibre GL JS v3.x
+  - etc.
+  - 
+  - 
+
+## Docker Compose
+
+```bash
+# start command
+docker-compose up -d --build
+
+# stop command
+docker-compose down
+```
+
+-------------------
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
