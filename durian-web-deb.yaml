@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: durian-web
+  namespace: durian-dev
+  labels:
+    app: durian-web
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: durian-web
+  template:
+    metadata:
+      labels:
+        app: durian-web
+    spec:
+      containers:
+      - name: durian-web
+        image: rome.thaicom.io/earthinsight/durian-web:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NEXTAUTH_URL
+          value: "http://durian-dev.thaicom.io"
+        - name: NEXTAUTH_SECRET
+          value: "TI4j8FMO44Jlo60VLjAa8L335ndcsKkMT1WgkbkZS6Y="
+        - name: COGNITO_CLIENT_ID
+          value: "7qvd7mjul8vqkjr5njijqg5ub5"
+        - name: COGNITO_CLIENT_SECRET
+          value: "14c78vhfjfpahmceu4chhqs9epshmhe8an20s1el20kpcdmnkvg3"
+        - name: COGNITO_WELLKNOWN
+          value: "https://sso-dev.thaicom.io/.well-known/openid-configuration"
+        - name: COGNITO_ISSUER
+          value: "https://cognito-idp.ap-southeast-1.amazonaws.com/ap-southeast-1_NAEINCie8"
+      imagePullSecrets:
+      - name: rome
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: durian-web
+  namespace: durian-dev
+spec:
+  #type: NodePort
+  selector:
+    app: durian-web
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
