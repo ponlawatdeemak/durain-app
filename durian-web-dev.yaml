@@ -24,7 +24,7 @@ spec:
         - containerPort: 3000
         env:
         - name: NEXTAUTH_URL
-          value: "http://durian-dev.thaicom.io"
+          value: "https://durian-dev.thaicom.io"
         - name: NEXTAUTH_SECRET
           value: "TI4j8FMO44Jlo60VLjAa8L335ndcsKkMT1WgkbkZS6Y="
         - name: COGNITO_CLIENT_ID
