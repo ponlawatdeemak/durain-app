@@ -48,6 +48,7 @@ export default function HomePage(_props: InferGetStaticPropsType<typeof getServe
         <div className={styles.description}>
           <p>
             Get started by editing&nbsp;
+            Test Init
             <code className={styles.code}>pages/index.tsx</code>
           </p>
           <div>
