@@ -10,7 +10,7 @@ import nextI18NextConfig from '../next-i18next.config.js'
 
 import { Box, Button, Divider, Grid } from '@mui/material'
 
-import UserAvatar from '@/components/UserAvatar'
+import UserAvatar from '@/components/UserAvatar/UserAvatar'
 import styles from '@/styles/Home.module.css'
 
 import { DEFAULT_LOCALE, NEXTAUTH_PROVIDER_ID } from '../webapp.config'
@@ -41,7 +41,7 @@ export default function HomePage(_props: InferGetStaticPropsType<typeof getServe
 				<Grid container item xs={12} justifyContent={'center'}>
 					{user ? (
 						<Box>
-							<UserAvatar user={user as Profile} size='large' />{' '}
+							<UserAvatar user={user as Profile} />
 							<Button variant='contained' onClick={() => signOut()}>
 								{t('LOGOUT')}
 							</Button>
