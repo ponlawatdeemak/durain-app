@@ -1,7 +1,5 @@
 .main {
-    display: flex;
-    /* flex-direction: row; */
-    background: goldenrod;
-    /* flex: 1 */
-    height: 86px;
+	display: flex;
+	background: goldenrod;
+	height: 86px;
 }

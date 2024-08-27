@@ -1,50 +1,61 @@
-import { useEffect } from 'react';
-import { GetServerSideProps, InferGetStaticPropsType, NextPage } from 'next';
-import Image from "next/image";
+import { useEffect } from 'react'
+import { GetServerSideProps, InferGetStaticPropsType, NextPage } from 'next'
+import Image from 'next/image'
 // import { useRouter } from 'next/router';
-import { Profile } from 'next-auth';
-import { signIn, signOut, useSession } from 'next-auth/react';
-import { UserConfig, useTranslation } from 'next-i18next';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import nextI18NextConfig from '../next-i18next.config.js';
+import { Profile } from 'next-auth'
+import { signIn, signOut, useSession } from 'next-auth/react'
+import { UserConfig, useTranslation } from 'next-i18next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import nextI18NextConfig from '../next-i18next.config.js'
 
-import { Box, Button, Divider, Grid } from '@mui/material';
+import { Box, Button, Divider, Grid } from '@mui/material'
 
-import UserAvatar from '@/components/UserAvatar';
-import styles from "@/styles/Home.module.css";
+import UserAvatar from '@/components/UserAvatar'
+import styles from '@/styles/Home.module.css'
 
-import { DEFAULT_LOCALE, NEXTAUTH_PROVIDER_ID } from "../webapp.config";
-import PageContainer from '@/components/Layout/PageContainer/PageContainer';
+import { DEFAULT_LOCALE, NEXTAUTH_PROVIDER_ID } from '../webapp.config'
+import PageContainer from '@/components/Layout/PageContainer/PageContainer'
 
 export const getServerSideProps: GetServerSideProps = async (context) => ({
-  props: {
-    ...(await serverSideTranslations( context.locale ?? DEFAULT_LOCALE, ['common'], nextI18NextConfig as UserConfig)),
-  },
-});
+	props: {
+		...(await serverSideTranslations(
+			context.locale ?? DEFAULT_LOCALE,
+			['common'],
+			nextI18NextConfig as UserConfig,
+		)),
+	},
+})
 
 // const HomePage: NextPage = (_props: InferGetStaticPropsType<typeof getServerSideProps>) => {
 export default function HomePage(_props: InferGetStaticPropsType<typeof getServerSideProps>) {
-  // const router = useRouter();
-  const { t } = useTranslation("common");
+	// const router = useRouter();
+	const { t } = useTranslation('common')
 
-  const { data: authSession, status } = useSession();
-  const user = authSession?.user;
-  // const role = authSession?.user?.role;
+	const { data: authSession, status } = useSession()
+	const user = authSession?.user
+	// const role = authSession?.user?.role;
 
-  return (
-    <PageContainer>
+	return (
+		<PageContainer>
+			<Grid sx={{ mt: 2 }}>
+				<Grid container item xs={12} justifyContent={'center'}>
+					{user ? (
+						<Box>
+							<UserAvatar user={user as Profile} size='large' />{' '}
+							<Button variant='contained' onClick={() => signOut()}>
+								{t('LOGOUT')}
+							</Button>
+						</Box>
+					) : (
+						<Button variant='contained' onClick={() => signIn(NEXTAUTH_PROVIDER_ID)}>
+							{t('LOGIN')}
+						</Button>
+					)}
+				</Grid>
+				<Grid item xs={12}>
+					<Divider sx={{ p: 1 }} />
 
-      <Grid  sx={{mt: 2}}>
-      <Grid container item xs={12} justifyContent={"center"}>
-        { user ? 
-          <Box><UserAvatar user={user as Profile} size="large" /> <Button variant='contained' onClick={() => signOut()}>{t("LOGOUT")}</Button></Box> 
-          : <Button variant='contained' onClick={() => signIn(NEXTAUTH_PROVIDER_ID)}>{t("LOGIN")}</Button>
-        }
-      </Grid>
-      <Grid item xs={12}>
-      <Divider sx={{p: 1}} />
-      
-      {/* <main className={`${styles.main}`}>
+					{/* <main className={`${styles.main}`}>
         <div className={styles.description}>
           <p>
             Get started by editing&nbsp;
@@ -140,9 +151,8 @@ export default function HomePage(_props: InferGetStaticPropsType<typeof getServe
           </a>
         </div>
       </main> */}
-
-      </Grid>
-      </Grid>
-    </PageContainer>
-  );
+				</Grid>
+			</Grid>
+		</PageContainer>
+	)
 }
