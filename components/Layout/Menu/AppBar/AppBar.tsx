@@ -1,14 +1,13 @@
-import React from 'react'
-import styles from './AppBar.module.css'
-import { signIn, signOut, useSession } from 'next-auth/react'
-import UserAvatar from '@/components/UserAvatar/UserAvatar'
-import { Profile } from 'next-auth'
-import { useTranslation } from 'next-i18next'
-import { Button, Typography } from '@mui/material'
-import { NEXTAUTH_PROVIDER_ID } from '@/webapp.config'
 import AppLogo from '@/components/svg/AppLogo'
-import LockOpenIcon from '@mui/icons-material/LockOpen'
+import { NEXTAUTH_PROVIDER_ID } from '@/webapp.config'
 import ExitToAppIcon from '@mui/icons-material/ExitToApp'
+import LockOpenIcon from '@mui/icons-material/LockOpen'
+import { Button, Typography } from '@mui/material'
+import { Profile } from 'next-auth'
+import { signIn, signOut, useSession } from 'next-auth/react'
+import { useTranslation } from 'next-i18next'
+import UserAvatar from '../UserAvatar/UserAvatar'
+import styles from './AppBar.module.css'
 
 const AppBar = () => {
 	const { data: session } = useSession()
