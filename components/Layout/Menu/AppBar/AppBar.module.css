@@ -2,4 +2,5 @@
 	display: flex;
 	background: goldenrod;
 	height: 86px;
+	justify-content: space-between;
 }

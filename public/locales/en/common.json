@@ -1,24 +1,22 @@
 {
-  "ALL": "All",
-  "BACK": "Back",
-  "LOADING": "Loading...",
-  "NO_DATA": "No Data",
-  "NORMAL": "Normal",
+	"ALL": "All",
+	"BACK": "Back",
+	"LOADING": "Loading...",
+	"NO_DATA": "No Data",
+	"NORMAL": "Normal",
 
-  "LOGIN": "Login",
-  "LOGOUT": "Logout",
-  "ACCOUNT": "Account",
-  "PROFILE": "Profile",
-  "VIEW_PROFILE": "View Profile",
-  "EMAIL": "E-mail",
-  "FULLNAME": "Full Name",
-  "USERNAME": "Username",
-  "ROLE": "Role",
-  "TITLE_USER_PROFILE": "User Profile",
+	"LOGIN": "Login",
+	"LOGOUT": "Logout",
+	"ACCOUNT": "Account",
+	"PROFILE": "Profile",
+	"VIEW_PROFILE": "View Profile",
+	"EMAIL": "E-mail",
+	"FULLNAME": "Full Name",
+	"USERNAME": "Username",
+	"ROLE": "Role",
+	"TITLE_USER_PROFILE": "User Profile",
 
-  "VERSION": "Version",
+	"VERSION": "Version",
 
-
-
-  "": ""
+	"": ""
 }
