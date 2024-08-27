@@ -1,0 +1,8 @@
+.main {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    background: powderblue;
+    max-width: 90px;
+    width: 100%;
+}

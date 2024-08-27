@@ -11,7 +11,7 @@ interface Props {
 	children: JSX.Element | JSX.Element[];
 }
 
-export default function PageContainer(props: Props) {
+export default function AuthProvider(props: Props) {
 	const { requireLogin, children } = props;
 
 	const { data: authSession, status } = useSession();
@@ -52,20 +52,8 @@ export default function PageContainer(props: Props) {
 
 	if (requireLogin && !authSession && (status != "loading")) {
 		signIn(NEXTAUTH_PROVIDER_ID);
-		return <></>;
+		return <></>
 	}
 
-	return (
-		<Container
-			maxWidth={false}
-			style={{
-				display: "flex",
-				flexDirection: "column",
-				padding: 0,
-				// paddingBottom: 10,
-			}}
-		>
-			{children}
-		</Container>
-	);
+	return children
 };

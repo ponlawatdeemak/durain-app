@@ -10,11 +10,11 @@ import nextI18NextConfig from '../next-i18next.config.js';
 
 import { Box, Button, Divider, Grid } from '@mui/material';
 
-import PageContainer from '@/components/PageContainer';
 import UserAvatar from '@/components/UserAvatar';
 import styles from "@/styles/Home.module.css";
 
 import { DEFAULT_LOCALE, NEXTAUTH_PROVIDER_ID } from "../webapp.config";
+import PageContainer from '@/components/Layout/PageContainer/PageContainer';
 
 export const getServerSideProps: GetServerSideProps = async (context) => ({
   props: {
@@ -32,7 +32,7 @@ export default function HomePage(_props: InferGetStaticPropsType<typeof getServe
   // const role = authSession?.user?.role;
 
   return (
-    <PageContainer requireLogin={false}>
+    <PageContainer>
 
       <Grid  sx={{mt: 2}}>
       <Grid container item xs={12} justifyContent={"center"}>
@@ -44,7 +44,7 @@ export default function HomePage(_props: InferGetStaticPropsType<typeof getServe
       <Grid item xs={12}>
       <Divider sx={{p: 1}} />
       
-      <main className={`${styles.main}`}>
+      {/* <main className={`${styles.main}`}>
         <div className={styles.description}>
           <p>
             Get started by editing&nbsp;
@@ -139,7 +139,7 @@ export default function HomePage(_props: InferGetStaticPropsType<typeof getServe
             </p>
           </a>
         </div>
-      </main>
+      </main> */}
 
       </Grid>
       </Grid>

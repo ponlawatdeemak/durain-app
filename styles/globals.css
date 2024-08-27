@@ -6,23 +6,16 @@
 /* @import '../styles/fonts-anuphan-thai.css'; */
 /* @import '../styles/fonts-kanit-latin.css'; */
 /* NOTE - other projects use Kanit for thai text and Inter for english text */
-@import '../styles/fonts-kanit-thai.css';
-@import '../styles/fonts-inter.css';
+@import '../styles/fonts/fonts-kanit-thai.css';
+@import '../styles/fonts/fonts-inter.css';
 
 :root {
   --font-mono: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono",
     "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro",
     "Fira Mono", "Droid Sans Mono", "Courier New", monospace;
 
-  --foreground-rgb: 0, 0, 0;
-  --background-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-rgb: 0, 0, 0;
-  }
+  --foreground-color: white;
+  --background-color: #F2F5F8;
 }
 
 html,
@@ -30,44 +23,11 @@ body {
   padding: 0;
   margin: 0;
   font-family: Kanit, Inter, sans-serif;
+  height: 100%;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-* {
-  box-sizing: border-box;
-
-  /* for Firefox on Windows */
-  scrollbar-width: thin;
-}
-
-/* thin scrollbar */
-*::-webkit-scrollbar {
-  width: 6px;
-  border-radius: 3px;
-}
-*::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-*::-webkit-scrollbar-thumb {
-  background: #aaa;
-  border-radius: 3px;
-}
-*::-webkit-scrollbar-thumb:hover {
-  background: #666;
-}
-
-
-body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-rgb));
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+#__next {
+    height: 100%;
+    display: flex;
+    background: var(--background-color);
 }

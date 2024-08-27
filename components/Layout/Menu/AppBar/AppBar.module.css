@@ -1,0 +1,7 @@
+.main {
+    display: flex;
+    /* flex-direction: row; */
+    background: goldenrod;
+    /* flex: 1 */
+    height: 86px;
+}
