@@ -4,15 +4,10 @@ import { red } from '@mui/material/colors'
 //#region Custom Typography Variants
 declare module '@mui/material/styles' {
 	interface TypographyVariants {
-		header80: React.CSSProperties
-		header65: React.CSSProperties
-		header60: React.CSSProperties
-		header46: React.CSSProperties
-		header40: React.CSSProperties
-		header37: React.CSSProperties
-		header34: React.CSSProperties
-		header29: React.CSSProperties
-		header26: React.CSSProperties
+		header36: React.CSSProperties
+		header30: React.CSSProperties
+		header24: React.CSSProperties
+		header22: React.CSSProperties
 		header20: React.CSSProperties
 		header18: React.CSSProperties
 		header16: React.CSSProperties
@@ -25,15 +20,10 @@ declare module '@mui/material/styles' {
 
 	// allow configuration using `createTheme`
 	interface TypographyVariantsOptions {
-		header80?: React.CSSProperties
-		header65?: React.CSSProperties
-		header60?: React.CSSProperties
-		header46?: React.CSSProperties
-		header40?: React.CSSProperties
-		header37?: React.CSSProperties
-		header34?: React.CSSProperties
-		header29?: React.CSSProperties
-		header26?: React.CSSProperties
+		header36?: React.CSSProperties
+		header30?: React.CSSProperties
+		header24?: React.CSSProperties
+		header22?: React.CSSProperties
 		header20?: React.CSSProperties
 		header18?: React.CSSProperties
 		header16?: React.CSSProperties
@@ -48,15 +38,10 @@ declare module '@mui/material/styles' {
 // Update the Typography"s variant prop options
 declare module '@mui/material/Typography' {
 	interface TypographyPropsVariantOverrides {
-		header80: true
-		header65: true
-		header60: true
-		header46: true
-		header40: true
-		header37: true
-		header34: true
-		header29: true
-		header26: true
+		header36: true
+		header30: true
+		header24: true
+		header22: true
 		header20: true
 		header18: true
 		header16: true
@@ -98,15 +83,9 @@ declare module '@mui/material/Typography' {
 let theme = createTheme({
 	palette: {
 		primary: {
-			main: '#0A5D52',
-			light: '#00AC95',
-			dark: '#003E35',
-			contrastText: '#FFFFFF',
-		},
-		secondary: {
-			main: '#343434',
-			light: '#BFBFBF',
-			dark: '#000000',
+			main: '#307a59',
+			light: '#9fc2b3',
+			dark: '#0c5d52',
 			contrastText: '#FFFFFF',
 		},
 		error: {
@@ -114,7 +93,7 @@ let theme = createTheme({
 			contrastText: '#FFFFFF',
 		},
 		background: {
-			default: '#F3F5F8',
+			default: '#FFFFFF',
 		},
 	},
 
@@ -124,126 +103,76 @@ let theme = createTheme({
 		//     paper: { border: 'none' } // hide thin white border
 		//   }
 		// }
+		MuiButton: {
+			styleOverrides: {
+				sizeMedium: {
+					height: 40,
+				},
+			},
+		},
 	},
 
 	typography: {
-		fontFamily: [
-			'Kanit',
-			'Inter',
-			'-apple-system',
-			'Segoe UI',
-			'Roboto',
-			'Oxygen',
-			'Ubuntu',
-			'Droid Sans',
-			'Helvetica Neue',
-			'sans-serif',
-		].join(','),
+		fontFamily: ['Anuphan', 'sans-serif'].join(','),
 		fontSize: 14,
 
 		//#region Custom Typography Variants
-		header80: {
-			fontFamily: ['Kanit', 'sans-serif'].join(','),
+		header36: {
+			fontFamily: ['Anuphan', 'sans-serif'].join(','),
 			fontStyle: 'normal',
-			fontWeight: 900,
-			fontSize: 80,
+			fontWeight: 600,
+			fontSize: 36,
 		},
-		header65: {
-			fontFamily: ['Kanit', 'sans-serif'].join(','),
+		header30: {
+			fontFamily: ['Anuphan', 'sans-serif'].join(','),
 			fontStyle: 'normal',
-			fontWeight: 900,
-			fontSize: 65,
+			fontWeight: 600,
+			fontSize: 30,
 		},
-		header60: {
-			fontFamily: ['Kanit', 'sans-serif'].join(','),
+		header24: {
+			fontFamily: ['Anuphan', 'sans-serif'].join(','),
 			fontStyle: 'normal',
-			fontWeight: 900,
-			fontSize: 60,
+			fontWeight: 600,
+			fontSize: 24,
 		},
-		header46: {
-			fontFamily: ['Kanit', 'sans-serif'].join(','),
+		header22: {
+			fontFamily: ['Anuphan', 'sans-serif'].join(','),
 			fontStyle: 'normal',
-			fontWeight: 900,
-			fontSize: 46,
-		},
-		header40: {
-			fontFamily: ['Kanit', 'sans-serif'].join(','),
-			fontStyle: 'normal',
-			fontWeight: 700,
-			fontSize: 40,
-			lineHeight: '44px',
-		},
-		header37: {
-			fontFamily: ['Kanit', 'sans-serif'].join(','),
-			fontStyle: 'normal',
-			fontWeight: 700,
-			fontSize: 37,
-			lineHeight: '44px',
-		},
-		header34: {
-			fontFamily: ['Kanit', 'sans-serif'].join(','),
-			fontStyle: 'normal',
-			fontWeight: 700,
-			fontSize: 34,
-			lineHeight: '44px',
-		},
-		header29: {
-			fontFamily: ['Kanit', 'sans-serif'].join(','),
-			fontStyle: 'normal',
-			fontWeight: 700,
-			fontSize: 29,
-			lineHeight: '138%',
-		},
-		header26: {
-			fontFamily: ['Kanit', 'sans-serif'].join(','),
-			fontStyle: 'normal',
-			fontWeight: 900,
-			fontSize: 26,
+			fontWeight: 600,
+			fontSize: 22,
 		},
 		header20: {
-			fontFamily: ['Kanit', 'sans-serif'].join(','),
+			fontFamily: ['Anuphan', 'sans-serif'].join(','),
 			fontStyle: 'normal',
-			fontWeight: 'bold',
+			fontWeight: 600,
 			fontSize: 20,
 		},
 		header18: {
-			fontFamily: ['Kanit', 'sans-serif'].join(','),
+			fontFamily: ['Anuphan', 'sans-serif'].join(','),
 			fontStyle: 'normal',
-			fontWeight: 'bold',
+			fontWeight: 600,
 			fontSize: 18,
 		},
 		header16: {
-			fontFamily: ['Kanit', 'sans-serif'].join(','),
+			fontFamily: ['Anuphan', 'sans-serif'].join(','),
 			fontStyle: 'normal',
-			fontWeight: 'bold',
+			fontWeight: 600,
 			fontSize: 16,
 		},
 		body16: {
-			fontFamily: ['Kanit', 'sans-serif'].join(','),
+			fontFamily: ['Anuphan', 'sans-serif'].join(','),
 			fontStyle: 'normal',
 			fontWeight: 'normal',
 			fontSize: 16,
 		},
-		body15: {
-			fontFamily: ['Kanit', 'sans-serif'].join(','),
-			fontStyle: 'normal',
-			fontWeight: 'normal',
-			fontSize: 15,
-		},
 		body14: {
-			fontFamily: ['Kanit', 'sans-serif'].join(','),
+			fontFamily: ['Anuphan', 'sans-serif'].join(','),
 			fontStyle: 'normal',
 			fontWeight: 'normal',
 			fontSize: 14,
 		},
-		body12: {
-			fontFamily: ['Kanit', 'sans-serif'].join(','),
-			fontStyle: 'normal',
-			fontWeight: 'normal',
-			fontSize: 12,
-		},
 		body10: {
-			fontFamily: ['Kanit', 'sans-serif'].join(','),
+			fontFamily: ['Anuphan', 'sans-serif'].join(','),
 			fontStyle: 'normal',
 			fontWeight: 'normal',
 			fontSize: 10,
