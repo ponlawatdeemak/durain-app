@@ -1,7 +1,6 @@
 import { Typography } from '@mui/material'
 import Avatar from '@mui/material/Avatar'
 import { Session } from 'next-auth'
-import styles from './UserAvatar.module.css'
 
 interface UserAvatarProps {
 	user: Session['user']
@@ -20,14 +19,14 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ user }) => {
 		return (
 			<>
 				<Typography>{`${firstName}.${lastName.charAt(0)}`}</Typography>
-				<Avatar src={user?.image} alt={firstName} className={styles.main} />
+				<Avatar src={user?.image} alt={firstName} className='ml-4 mr-6 w-[35px]' />
 			</>
 		)
 	} else if (user) {
 		return (
 			<>
 				<Typography>{`${firstName}.${lastName.charAt(0)}`}</Typography>
-				<Avatar alt={firstName} className={styles.main}>
+				<Avatar alt={firstName} className='ml-4 mr-6 w-[35px]'>
 					{avatarTextName}
 				</Avatar>
 			</>

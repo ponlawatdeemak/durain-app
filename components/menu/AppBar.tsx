@@ -7,8 +7,7 @@ import { Button, Typography } from '@mui/material'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
-import UserAvatar from '../UserAvatar/UserAvatar'
-import styles from './AppBar.module.css'
+import UserAvatar from './UserAvatar'
 
 const AppBar = () => {
 	const router = useRouter()
@@ -32,16 +31,15 @@ const AppBar = () => {
 			{ locale },
 		)
 	}
-
 	return (
-		<div className={styles.main}>
-			<div className={styles.leftHeader}>
+		<div className='flex h-[86px] flex-row items-center justify-between border-0 border-b border-solid border-[#e9ecee] bg-white px-[30px]'>
+			<div className='flex items-center'>
 				<AppLogo />
-				<Typography variant='header24' className={styles.appName}>
+				<Typography variant='header24' className='ml-5 text-center'>
 					ระบบวิเคราะห์พื้นที่ปลูกทุเรียน
 				</Typography>
 			</div>
-			<div className={styles.rightHeader}>
+			<div className='flex items-center'>
 				<Button variant='outlined' onClick={switchLanguage}>
 					Toggle Language
 				</Button>

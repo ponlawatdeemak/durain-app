@@ -1,5 +1,5 @@
 import service from '@/api'
-import PageContainer from '@/components/Layout/PageContainer/PageContainer'
+import PageContainer from '@/components/layout/PageContainer'
 import { DEFAULT_LOCALE } from '@/webapp.config'
 import { GetServerSideProps } from 'next'
 import { UserConfig, useTranslation } from 'next-i18next'

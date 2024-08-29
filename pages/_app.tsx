@@ -1,4 +1,4 @@
-import MainLayout from '@/components/Layout/MainLayout/MainLayout'
+import MainLayout from '@/components/layout/MainLayout'
 import IdentityProvider from '@/providers/IdentityProvider'
 import PageManager from '@/providers/PageManager'
 import CssBaseline from '@mui/material/CssBaseline'
