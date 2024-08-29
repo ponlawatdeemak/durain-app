@@ -1,5 +1,5 @@
 import service from '@/api'
-import { updateAccessToken } from '@/api/core'
+import { apiAccessToken, updateAccessToken } from '@/api/core'
 import type { NextAuthOptions } from 'next-auth'
 import NextAuth from 'next-auth'
 import { JWT } from 'next-auth/jwt'
@@ -119,14 +119,17 @@ export const authOptions: NextAuthOptions = {
 		async session({ session, token }) {
 			// Send properties to the client, like an access_token from a provider.
 
-			const res = await service.um.getProfile()
-			const profile = res?.data
+			let profile
+			if (apiAccessToken) {
+				const res = await service.um.getProfile()
+				profile = res?.data
+			}
 
-			session.user.id = profile?.id
-			session.user.username = profile?.username
-			session.user.firstName = profile?.firstName
-			session.user.lastName = profile?.lastName
-			session.user.email = profile?.email
+			session.user.id = profile?.id ?? token.sub
+			session.user.username = profile?.username ?? token.username
+			session.user.firstName = profile?.firstName ?? token.given_name
+			session.user.lastName = profile?.lastName ?? token.family_name
+			session.user.email = profile?.email ?? token.email
 			session.user.image = profile?.image
 			session.user.orgCode = profile?.orgCode
 			session.user.role = profile?.role
