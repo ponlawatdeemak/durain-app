@@ -87,7 +87,7 @@ export const authOptions: NextAuthOptions = {
 			}
 
 			if (token.access_token) {
-				updateAccessToken(token.access_token)
+				updateAccessToken({ accessToken: token.access_token, refreshToken: token.refresh_token ?? undefined })
 			}
 
 			const isSignIn = trigger == 'signIn'

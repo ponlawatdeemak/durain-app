@@ -30,7 +30,7 @@ export default function IdentityProvider(props: Props) {
 			if (data) {
 				const accessToken = data.tokens?.accessToken ?? ''
 				if (accessToken) {
-					updateAccessToken(accessToken)
+					updateAccessToken({ accessToken, refreshToken: data.tokens?.refreshToken })
 					setToken(accessToken)
 				}
 			}
@@ -45,7 +45,10 @@ export default function IdentityProvider(props: Props) {
 		if (token) return
 		// session is undefined mean session not successfully loaded yet
 		if (session?.user?.accessToken) {
-			updateAccessToken(session.user.accessToken)
+			updateAccessToken({
+				accessToken: session.user.accessToken,
+				refreshToken: session?.user?.refreshToken ?? undefined,
+			})
 			setToken(session.user.accessToken)
 		} else if (session === null) {
 			getGuestAccessToken()

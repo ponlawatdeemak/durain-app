@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosRequestConfig } from 'axios'
 import { APIConfigType, APIService, AppAPI } from './interface'
+import service from '@/api'
 
 const APIConfigs: { [key: string]: APIConfigType } = {
 	[APIService.WebAPI]: {
@@ -15,6 +16,9 @@ const APIConfigs: { [key: string]: APIConfigType } = {
 		apiKey: process.env.NEXT_PUBLIC_API_KEY_TILE || '',
 	},
 }
+
+export let apiAccessToken: string | null = null
+let apiRefreshToken: string | null = null
 
 export const axiosInstance = axios.create({
 	baseURL: process.env.NEXT_PUBLIC_API_HOSTNAME,
@@ -65,56 +69,52 @@ const getConfig = (service: APIService, config: AxiosRequestConfig<any> | undefi
 // 		return response
 // 	},
 // 	async function (error) {
+// 		const errorData = error.response.data
 // 		if (error instanceof AxiosError && error.config && error.response?.status === 401) {
 // 			try {
 // 				const originalRequest = error.config as any
 // 				if (!originalRequest?._retry) {
 // 					originalRequest._retry = true
-// 					const { updateToken } = await import('@arv-bedrock/auth')
-// 					const result = await updateToken()
-// 					const newToken = `${AuthType.Arv}-${result?.access_token}`
-// 					updateAccessToken(newToken)
+
+// 					console.log('refreshhhhh')
+// 					console.log('apiRefreshToken : ', apiRefreshToken)
+// 					const res = await service.auth.refreshToken({ refreshToken: apiRefreshToken })
+// 					const newAccessToken = res.data?.access_token
+// 					updateAccessToken({ accessToken: newAccessToken })
 // 					return axiosInstance({
 // 						...originalRequest,
 // 						headers: {
 // 							...originalRequest.headers,
-// 							authorization: `Bearer ${newToken}`,
+// 							authorization: `Bearer ${newAccessToken}`,
 // 						},
 // 					}).catch((err) => {
-// 						if (isModalShown) return
-// 						isModalShown = true
-// 						const href =
-// 							typeof location !== 'undefined' ? `${location.protocol}//${location.host}${basePath}` : ''
-// 						return new Promise((resolve) => {
-// 							Modal.confirm({
-// 								closable: false,
-// 								okCancel: false,
-// 								okText: 'ตกลง',
-// 								title: 'ระยะเวลาการใช้งานหมดอายุ',
-// 								content: 'โปรดเข้าสู่ระบบอีกครั้ง',
-// 								onOk: () =>
-// 									import('@arv-bedrock/auth')
-// 										.then(({ doLogout }) => doLogout(href))
-// 										.then(() => {
-// 											isModalShown = false
-// 											resolve(err)
-// 										}),
-// 							})
-// 						})
+// 						console.error(err)
 // 					})
 // 				}
 // 			} catch (err) {
-// 				return Promise.reject(err)
+// 				return Promise.reject({
+// 					title: errorData.title || errorData.message,
+// 					status: errorData.status || errorData.success,
+// 					detail: errorData.detail,
+// 				})
 // 			}
 // 		}
-// 		return Promise.reject(error)
+// 		return Promise.reject({
+// 			title: errorData.title || errorData.message,
+// 			status: errorData.status || errorData.success,
+// 			detail: errorData.detail,
+// 		})
 // 	},
 // )
 
-export function updateAccessToken(token?: string | void) {
-	if (token) {
-		axiosInstance.defaults.headers.common.authorization = 'Bearer ' + token
+export function updateAccessToken({ accessToken, refreshToken }: { accessToken?: string; refreshToken?: string }) {
+	if (accessToken) {
+		axiosInstance.defaults.headers.common.authorization = 'Bearer ' + accessToken
+		apiAccessToken = accessToken
+		if (refreshToken) apiRefreshToken = refreshToken
 	} else {
-		axiosInstance.defaults.headers.common.authorization = ''
+		axiosInstance.defaults.headers.common.authorization = null
+		apiAccessToken = null
+		apiRefreshToken = null
 	}
 }
