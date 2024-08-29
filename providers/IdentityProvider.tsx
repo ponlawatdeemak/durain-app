@@ -1,5 +1,6 @@
 import service from '@/api'
 import { updateAccessToken } from '@/api/core'
+import LoadingScreen from '@/components/loading/LoadingScreen'
 import { allowGuestPages } from '@/config/app.config'
 import { signIn, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
@@ -63,5 +64,5 @@ export default function IdentityProvider(props: Props) {
 		return children
 	}
 
-	return null // loading
+	return <LoadingScreen />
 }
