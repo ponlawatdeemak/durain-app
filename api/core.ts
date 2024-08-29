@@ -64,48 +64,46 @@ const getConfig = (service: APIService, config: AxiosRequestConfig<any> | undefi
 	},
 })
 
-// axiosInstance.interceptors.response.use(
-// 	(response) => {
-// 		return response
-// 	},
-// 	async function (error) {
-// 		const errorData = error.response.data
-// 		if (error instanceof AxiosError && error.config && error.response?.status === 401) {
-// 			try {
-// 				const originalRequest = error.config as any
-// 				if (!originalRequest?._retry) {
-// 					originalRequest._retry = true
-
-// 					console.log('refreshhhhh')
-// 					console.log('apiRefreshToken : ', apiRefreshToken)
-// 					const res = await service.auth.refreshToken({ refreshToken: apiRefreshToken })
-// 					const newAccessToken = res.data?.access_token
-// 					updateAccessToken({ accessToken: newAccessToken })
-// 					return axiosInstance({
-// 						...originalRequest,
-// 						headers: {
-// 							...originalRequest.headers,
-// 							authorization: `Bearer ${newAccessToken}`,
-// 						},
-// 					}).catch((err) => {
-// 						console.error(err)
-// 					})
-// 				}
-// 			} catch (err) {
-// 				return Promise.reject({
-// 					title: errorData.title || errorData.message,
-// 					status: errorData.status || errorData.success,
-// 					detail: errorData.detail,
-// 				})
-// 			}
-// 		}
-// 		return Promise.reject({
-// 			title: errorData.title || errorData.message,
-// 			status: errorData.status || errorData.success,
-// 			detail: errorData.detail,
-// 		})
-// 	},
-// )
+axiosInstance.interceptors.response.use(
+	(response) => {
+		return response
+	},
+	async function (error) {
+		const errorData = error.response.data
+		if (error instanceof AxiosError && error.config && error.response?.status === 401) {
+			try {
+				const originalRequest = error.config as any
+				if (!originalRequest?._retry) {
+					originalRequest._retry = true
+					const res = await service.auth.refreshToken({ refreshToken: apiRefreshToken })
+					const newAccessToken = res.data?.access_token
+					updateAccessToken({ accessToken: newAccessToken })
+					return axiosInstance({
+						...originalRequest,
+						headers: {
+							...originalRequest.headers,
+							authorization: `Bearer ${newAccessToken}`,
+						},
+					}).catch((err) => {
+						console.error(err)
+						// TODO: modal logout
+					})
+				}
+			} catch (err) {
+				return Promise.reject({
+					title: errorData.title || errorData.message,
+					status: errorData.status || errorData.success,
+					detail: errorData.detail,
+				})
+			}
+		}
+		return Promise.reject({
+			title: errorData.title || errorData.message,
+			status: errorData.status || errorData.success,
+			detail: errorData.detail,
+		})
+	},
+)
 
 export function updateAccessToken({ accessToken, refreshToken }: { accessToken?: string; refreshToken?: string }) {
 	if (accessToken) {

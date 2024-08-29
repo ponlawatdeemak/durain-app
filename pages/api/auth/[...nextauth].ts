@@ -121,7 +121,7 @@ export const authOptions: NextAuthOptions = {
 					accessToken: token.access_token ?? undefined,
 					refreshToken: token.refresh_token ?? undefined,
 				})
-				const res = await service.um.getProfile()
+				const res = await service.um.getProfile().catch((error) => console.error(error))
 				profile = res?.data
 			}
 
