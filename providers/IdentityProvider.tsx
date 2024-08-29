@@ -42,6 +42,7 @@ export default function IdentityProvider(props: Props) {
 	}, [])
 
 	useEffect(() => {
+		if (token) return
 		// session is undefined mean session not successfully loaded yet
 		if (session?.user?.accessToken) {
 			updateAccessToken(session.user.accessToken)
@@ -49,7 +50,7 @@ export default function IdentityProvider(props: Props) {
 		} else if (session === null) {
 			getGuestAccessToken()
 		}
-	}, [getGuestAccessToken, session])
+	}, [getGuestAccessToken, session, token])
 
 	if (requireLogin && !session && status != 'loading') {
 		signIn(NEXTAUTH_PROVIDER_ID)
