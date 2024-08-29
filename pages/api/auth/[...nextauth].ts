@@ -86,10 +86,6 @@ export const authOptions: NextAuthOptions = {
 				token.expire_at = account.expires_at
 			}
 
-			if (token.access_token) {
-				updateAccessToken({ accessToken: token.access_token, refreshToken: token.refresh_token ?? undefined })
-			}
-
 			const isSignIn = trigger == 'signIn'
 			if (isSignIn) {
 				// NOTE: workaround, for cogito provider
@@ -120,7 +116,11 @@ export const authOptions: NextAuthOptions = {
 			// Send properties to the client, like an access_token from a provider.
 
 			let profile
-			if (apiAccessToken) {
+			if (!apiAccessToken || apiAccessToken !== token.access_token) {
+				updateAccessToken({
+					accessToken: token.access_token ?? undefined,
+					refreshToken: token.refresh_token ?? undefined,
+				})
 				const res = await service.um.getProfile()
 				profile = res?.data
 			}
