@@ -1,11 +1,10 @@
-import service from '@/api'
-import PageContainer from '@/components/Layout/PageContainer/PageContainer'
 import { DEFAULT_LOCALE } from '@/webapp.config'
 import { GetServerSideProps } from 'next'
-import { UserConfig, useTranslation } from 'next-i18next'
+import { UserConfig } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { useEffect } from 'react'
 import nextI18NextConfig from '../../next-i18next.config.js'
+import { useEffect } from 'react'
+import service from '@/api'
 
 export const getServerSideProps: GetServerSideProps = async (context) => ({
 	props: {
@@ -17,24 +16,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => ({
 	},
 })
 
-const OverviewPage = () => {
-	const { t } = useTranslation('common')
-
+const UserManagementPage = () => {
 	useEffect(() => {
-		service.overview
-			.overviewSummary()
+		service.um
+			.umSearch()
 			.then((res) => {
-				console.log('overview : ', res)
+				console.log('um : ', res)
 			})
 			.catch((error) => console.log(error))
 	}, [])
-
-	return (
-		<PageContainer>
-			<div>OverviewPage</div>
-			<div>test</div>
-		</PageContainer>
-	)
+	return <div>UserManagementPage</div>
 }
 
-export default OverviewPage
+export default UserManagementPage
