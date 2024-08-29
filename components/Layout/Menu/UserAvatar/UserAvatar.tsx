@@ -1,15 +1,15 @@
-import Avatar from '@mui/material/Avatar'
-import { Profile } from 'next-auth'
-import styles from './UserAvatar.module.css'
 import { Typography } from '@mui/material'
+import Avatar from '@mui/material/Avatar'
+import { Session } from 'next-auth'
+import styles from './UserAvatar.module.css'
 
 interface UserAvatarProps {
-	user?: Profile
+	user: Session['user']
 }
 
-export default function UserAvatar({ user }: UserAvatarProps) {
-	const firstName = user?.given_name ?? ''
-	const lastName = user?.family_name ?? ''
+const UserAvatar: React.FC<UserAvatarProps> = ({ user }) => {
+	const firstName = user?.firstName ?? ''
+	const lastName = user?.lastName ?? ''
 
 	let avatarTextName = (firstName.at(0)?.toUpperCase() ?? '') + (lastName.at(0)?.toUpperCase() ?? '')
 	if (avatarTextName.length == 0) {
@@ -35,3 +35,5 @@ export default function UserAvatar({ user }: UserAvatarProps) {
 	}
 	return null
 }
+
+export default UserAvatar

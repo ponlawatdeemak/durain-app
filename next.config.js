@@ -14,8 +14,8 @@ const nextConfig = {
 
 	env: {
 		WEB_HOSTNAME: process.env.WEB_HOSTNAME,
-		API_HOSTNAME: process.env.API_HOSTNAME,
-		API_KEY: process.env.API_KEY,
+		API_HOSTNAME: process.env.NEXT_PUBLIC_API_HOSTNAME,
+		API_KEY: process.env.NEXT_PUBLIC_API_KEY,
 
 		COGNITO_CLIENT_ID: process.env.COGNITO_CLIENT_ID,
 		COGNITO_CLIENT_SECRET: process.env.COGNITO_CLIENT_SECRET,
@@ -27,8 +27,8 @@ const nextConfig = {
 		console.log('NODE_ENV = %o', process.env.NODE_ENV)
 
 		console.log('WEB_HOSTNAME = %o', process.env.WEB_HOSTNAME)
-		console.log('API_HOSTNAME = %o', process.env.API_HOSTNAME)
-		console.log('API_KEY = %o', process.env.API_KEY)
+		console.log('API_HOSTNAME = %o', process.env.NEXT_PUBLIC_API_HOSTNAME)
+		console.log('API_KEY = %o', process.env.NEXT_PUBLIC_API_KEY)
 
 		console.log('COGNITO_CLIENT_ID = %o', process.env.COGNITO_CLIENT_ID)
 		console.log('COGNITO_CLIENT_SECRET = %o', process.env.COGNITO_CLIENT_SECRET)
@@ -38,7 +38,7 @@ const nextConfig = {
 		return [
 			{
 				source: '/durian-api/:path*',
-				destination: `${process.env.API_HOSTNAME}/:path*`,
+				destination: `${process.env.NEXT_PUBLIC_API_HOSTNAME}/:path*`,
 			},
 		]
 	},

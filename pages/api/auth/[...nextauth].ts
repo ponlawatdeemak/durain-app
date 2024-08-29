@@ -1,51 +1,18 @@
-/**
- * File: [...nextauth].ts
- * Desc: Custom NextAuth.js Initializing Page
- * Created By: anirutn@thaicom.net
- * Date: 2022/04/16
- * Last Update: 2024/08/15
- *
- * NOTE:
- *   - modified to get info from OAuth2 profile
- *
- */
-import axios from 'axios'
-import https from 'https'
-import NextAuth from 'next-auth'
+import service from '@/api'
+import { updateAccessToken } from '@/api/core'
 import type { NextAuthOptions } from 'next-auth'
+import NextAuth from 'next-auth'
 import { JWT } from 'next-auth/jwt'
 import CognitoProvider from 'next-auth/providers/cognito'
 import { getSession } from 'next-auth/react'
-import OpenidConfiguration from '@/models/OpenidConfiguration'
 
 async function refreshAccessToken(token: JWT): Promise<JWT> {
 	try {
-		const responseWellknow = await axios.get(`${process.env.COGNITO_WELLKNOWN}`)
-		const cognitoWellKnown: OpenidConfiguration = responseWellknow.data
-
-		const agent = new https.Agent({
-			rejectUnauthorized: false,
-		})
-
-		const config = {
-			httpsAgent: agent,
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded',
-				Authorization: `Basic ${Buffer.from(`${process.env.COGNITO_CLIENT_ID}:${process.env.COGNITO_CLIENT_SECRET}`).toString('base64')}`,
-			},
-		}
-
-		const payload = `grant_type=refresh_token&client_id=${process.env.COGNITO_CLIENT_ID}&refresh_token=${token.refresh_token}`
-		const responseRefreshToken = await axios.post(cognitoWellKnown.token_endpoint, payload, config)
-
-		console.log('refreshAccessToken: responseRefreshToken = ', responseRefreshToken) // DEBUG
-		const newJWT: JWT = responseRefreshToken.data
-
+		const res = await service.auth.refreshToken({ refreshToken: token.refresh_token })
 		return {
 			...token,
-			access_token: newJWT.access_token,
-			refresh_token: newJWT.refresh_token ?? token.refresh_token,
-			expire_at: newJWT.expire_at,
+			access_token: res.data?.access_token,
+			expire_in: res.data?.expires_in,
 		}
 	} catch (error) {
 		console.error(error)
@@ -103,9 +70,8 @@ export const authOptions: NextAuthOptions = {
 			if (token.expire_at ?? 0 < Date.now()) {
 				console.log('nextauth: jwt: accessToken Expired, check refresh token')
 
-				// await refreshAccessToken();
 				// Access token has expired, try to update it
-				var newToken = await refreshAccessToken(token)
+				const newToken = await refreshAccessToken(token)
 				token.access_token = newToken.access_token
 
 				if (newToken.expire_in) {
@@ -120,6 +86,10 @@ export const authOptions: NextAuthOptions = {
 				token.expire_at = account.expires_at
 			}
 
+			if (token.access_token) {
+				updateAccessToken(token.access_token)
+			}
+
 			const isSignIn = trigger == 'signIn'
 			if (isSignIn) {
 				// NOTE: workaround, for cogito provider
@@ -127,9 +97,7 @@ export const authOptions: NextAuthOptions = {
 					profile.username = profile?.['cognito:username'] ?? ''
 				}
 
-				token.uid = user.id // if use mysql
-				// token.uid = user._id;  // if use mongodb
-
+				token.uid = user.id
 				token.username = profile?.username
 				token.given_name = profile?.given_name
 				token.family_name = profile?.family_name
@@ -148,20 +116,24 @@ export const authOptions: NextAuthOptions = {
 		 * By default, only a subset of the token is returned for increased security.
 		 * If you want to make something available (you added to the token through the jwt() callback), you have to explicitly forward it here to make it available to the client.
 		 */
-		async session({ session, token, user }) {
+		async session({ session, token }) {
 			// Send properties to the client, like an access_token from a provider.
 
-			// NOTE: "user" parameter available if use database for store session, else fallback to "token" for jwt as session store
-			session.user.id = user?.id ?? token.id ?? '' // if use jwt for store session (config above: session:{jwt: true})
-			session.user.username = user?.username ?? token.username ?? '' // TODO
-			session.user.email = user?.email ?? token.email ?? ''
-			session.user.phone_number = user?.phone_number ?? token.phone_number ?? ''
-			session.user.given_name = user?.given_name ?? token.given_name ?? ''
-			session.user.family_name = user?.family_name ?? token.family_name ?? ''
-			session.user.role = user?.role ?? token.role ?? ''
-			session.user.orgCode = user?.orgCode ?? token.orgCode ?? ''
-			session.user.access_token = user?.access_token ?? token.access_token ?? ''
-			session.user.refresh_token = user?.refresh_token ?? token.refresh_token ?? ''
+			const res = await service.um.getProfile()
+			const profile = res?.data
+
+			session.user.id = profile?.id
+			session.user.username = profile?.username
+			session.user.firstName = profile?.firstName
+			session.user.lastName = profile?.lastName
+			session.user.email = profile?.email
+			session.user.image = profile?.image
+			session.user.orgCode = profile?.orgCode
+			session.user.role = profile?.role
+			session.user.responsibleProvinceCode = profile?.responsibleProvinceCode
+			session.user.responsibleDistrictCode = profile?.responsibleDistrictCode
+			session.user.accessToken = token.access_token ?? ''
+			session.user.refreshToken = token.refresh_token ?? ''
 
 			return session
 		},

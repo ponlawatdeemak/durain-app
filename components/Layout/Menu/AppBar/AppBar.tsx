@@ -4,7 +4,6 @@ import { NEXTAUTH_PROVIDER_ID } from '@/webapp.config'
 import ExitToAppIcon from '@mui/icons-material/ExitToApp'
 import LockOpenIcon from '@mui/icons-material/LockOpen'
 import { Button, Typography } from '@mui/material'
-import { Profile } from 'next-auth'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
@@ -14,7 +13,6 @@ import styles from './AppBar.module.css'
 const AppBar = () => {
 	const router = useRouter()
 	const { data: session } = useSession()
-	const user = session?.user
 	const { t, i18n } = useTranslation('common')
 
 	const switchLanguage = () => {
@@ -47,9 +45,9 @@ const AppBar = () => {
 				<Button variant='outlined' onClick={switchLanguage}>
 					Toggle Language
 				</Button>
-				{user ? (
+				{session?.user ? (
 					<>
-						<UserAvatar user={user as Profile} />
+						<UserAvatar user={session.user} />
 						<Button variant='contained' startIcon={<ExitToAppIcon />} onClick={() => signOut()}>
 							{t('LOGOUT')}
 						</Button>

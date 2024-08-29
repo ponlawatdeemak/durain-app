@@ -1,24 +1,27 @@
-import '../styles/globals.css'
-import theme from '../styles/theme'
-import type { AppProps } from 'next/app'
+import MainLayout from '@/components/Layout/MainLayout/MainLayout'
+import IdentityProvider from '@/providers/IdentityProvider'
+import PageManager from '@/providers/PageManager'
+import CssBaseline from '@mui/material/CssBaseline'
+import { ThemeProvider } from '@mui/material/styles'
 import { Session } from 'next-auth'
 import { SessionProvider } from 'next-auth/react'
 import { SSRConfig, appWithTranslation } from 'next-i18next'
-import CssBaseline from '@mui/material/CssBaseline'
-import { ThemeProvider } from '@mui/material/styles'
-import AuthProvider from '@/components/AuthProvider'
-import MainLayout from '@/components/Layout/MainLayout/MainLayout'
+import type { AppProps } from 'next/app'
+import '../styles/globals.css'
+import theme from '../styles/theme'
 
 function MyApp({ Component, pageProps }: AppProps<{ session: Session } & SSRConfig>) {
 	return (
 		<SessionProvider session={pageProps.session}>
 			<ThemeProvider theme={theme}>
 				<CssBaseline />
-				<AuthProvider>
-					<MainLayout>
-						<Component {...pageProps} />
-					</MainLayout>
-				</AuthProvider>
+				<PageManager>
+					<IdentityProvider>
+						<MainLayout>
+							<Component {...pageProps} />
+						</MainLayout>
+					</IdentityProvider>
+				</PageManager>
 			</ThemeProvider>
 		</SessionProvider>
 	)
