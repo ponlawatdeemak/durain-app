@@ -33,16 +33,16 @@ const AppBar = () => {
 	}
 	return (
 		<div className='flex h-[86px] flex-row items-center justify-between border-0 border-b border-solid border-[#e9ecee] bg-white px-[30px]'>
-			<div className='flex items-center'>
+			<div className='flex items-center gap-4'>
 				<AppLogo />
 				<Typography variant='header24' className='ml-5 text-center'>
 					ระบบวิเคราะห์พื้นที่ปลูกทุเรียน
 				</Typography>
 			</div>
-			<div className='flex items-center'>
-				<Button variant='outlined' onClick={switchLanguage}>
+			<div className='flex items-center gap-4'>
+				{/* <Button variant='outlined' onClick={switchLanguage}>
 					Toggle Language
-				</Button>
+				</Button> */}
 				{session?.user ? (
 					<>
 						<UserAvatar user={session.user} />
