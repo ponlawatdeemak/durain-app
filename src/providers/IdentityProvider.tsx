@@ -5,7 +5,7 @@ import { allowGuestPages } from '@/config/app.config'
 import { signIn, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
-import { NEXTAUTH_PROVIDER_ID } from '../webapp.config'
+import { NEXTAUTH_PROVIDER_ID } from '../../webapp.config'
 
 interface Props {
 	children: ReactNode

@@ -1,6 +1,5 @@
 import AppLogo from '@/components/svg/AppLogo'
-import { Languages } from '@/config/app.config'
-import { NEXTAUTH_PROVIDER_ID } from '@/webapp.config'
+import { NEXTAUTH_PROVIDER_ID } from '@/../webapp.config'
 import ExitToAppIcon from '@mui/icons-material/ExitToApp'
 import LockOpenIcon from '@mui/icons-material/LockOpen'
 import { Button, Typography } from '@mui/material'
@@ -8,6 +7,7 @@ import { signIn, signOut, useSession } from 'next-auth/react'
 import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
 import UserAvatar from './UserAvatar'
+import { Languages } from '@/config/app.config'
 
 const AppBar = () => {
 	const router = useRouter()

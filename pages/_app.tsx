@@ -1,14 +1,14 @@
 import MainLayout from '@/components/Layout/MainLayout'
-import IdentityProvider from '@/providers/IdentityProvider'
 import PageManager from '@/providers/PageManager'
+import IdentityProvider from '@/providers/IdentityProvider'
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
 import { Session } from 'next-auth'
 import { SessionProvider } from 'next-auth/react'
 import { SSRConfig, appWithTranslation } from 'next-i18next'
 import type { AppProps } from 'next/app'
-import '../styles/globals.css'
-import theme from '../styles/theme'
+import '../src/styles/globals.css'
+import theme from '../src/styles/theme'
 
 function MyApp({ Component, pageProps }: AppProps<{ session: Session } & SSRConfig>) {
 	return (
