@@ -1,11 +1,11 @@
 import service from '@/api'
-import { updateAccessToken } from '@/api/core'
-import LoadingScreen from '@/components/loading/LoadingScreen'
+import { updateAccessToken } from '@/api/core' 
 import { allowGuestPages } from '@/config/app.config'
 import { signIn, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { NEXTAUTH_PROVIDER_ID } from '../../webapp.config'
+import LoadingScreen from '@/components/common/loading/LoadingScreen'
 
 interface Props {
 	children: ReactNode
