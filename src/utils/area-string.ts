@@ -1,10 +1,11 @@
 import { AreaUnitKey } from '@/enum'
 
-
 export function areaUnitString(key: AreaUnitKey) {
 	if (key === AreaUnitKey.Rai) {
-		return 'menu.areaUnitUnit.rai'
+		return 'areaUnit.rai'
+	} else if(key === AreaUnitKey.Sqkm) {
+		return 'areaUnit.sqkm'
 	} else {
-		return 'menu.areaUnitUnit.landPlot'
+		return 'areaUnit.hectare'
 	}
 }
