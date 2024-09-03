@@ -5,32 +5,12 @@ import LockOpenIcon from '@mui/icons-material/LockOpen'
 import { Button, Typography } from '@mui/material'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import { useTranslation } from 'next-i18next'
-import { useRouter } from 'next/router'
 import UserAvatar from './UserAvatar'
-import { Languages } from '@/config/app.config'
 
 const AppBar = () => {
-	const router = useRouter()
 	const { data: session } = useSession()
-	const { t, i18n } = useTranslation('common')
+	const { t } = useTranslation('common')
 
-	const switchLanguage = () => {
-		let locale
-		if (i18n.language === Languages.EN) {
-			locale = Languages.TH
-		} else {
-			locale = Languages.EN
-		}
-		i18n.changeLanguage(Languages.EN)
-		router.push(
-			{
-				pathname: router.pathname,
-				query: router.query,
-			},
-			router.asPath,
-			{ locale },
-		)
-	}
 	return (
 		<div className='flex h-[86px] flex-row items-center justify-between border-0 border-b border-solid border-[#e9ecee] bg-white px-[30px]'>
 			<div className='flex items-center gap-4'>
@@ -40,9 +20,6 @@ const AppBar = () => {
 				</Typography>
 			</div>
 			<div className='flex items-center gap-4'>
-				{/* <Button variant='outlined' onClick={switchLanguage}>
-					Toggle Language
-				</Button> */}
 				{session?.user ? (
 					<>
 						<UserAvatar user={session.user} />

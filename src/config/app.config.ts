@@ -1,10 +1,9 @@
 export enum AppPath {
 	Overview = '/overview',
 	Analyze = '/analyze',
-	RegisterData = '/register-data',
+	RegistrationInfo = '/registration-info',
 	UserManagement = '/user-management',
 	AboutUs = '/about-us',
-	Profile = '/profile',
 }
 
 export const allowGuestPages = [AppPath.Overview, AppPath.AboutUs]
