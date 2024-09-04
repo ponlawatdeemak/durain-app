@@ -1,5 +1,5 @@
 import service from '@/api'
-import { updateAccessToken } from '@/api/core' 
+import { updateAccessToken } from '@/api/core'
 import { allowGuestPages } from '@/config/app.config'
 import { signIn, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
