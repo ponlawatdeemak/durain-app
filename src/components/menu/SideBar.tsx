@@ -2,60 +2,56 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { styled, ToggleButtonGroup, toggleButtonGroupClasses, toggleButtonClasses } from '@mui/material'
 import SettingsIcon from '@mui/icons-material/Settings'
-import {
-	OverviewIcon,
-	AnalyzeIcon,
-	RegisterInfoIcon,
-	UserManagementIcon,
-	AbountUsIcon,
-} from '@/components/svg/MenuIcon'
+import { OverviewIcon, AnalyzeIcon, RegistrationIcon, UserManagementIcon, AbountIcon } from '@/components/svg/MenuIcon'
 import MenuButton from '@/components/menu/MenuButton'
-import SettingDialog from '@/components/SettingDialog'
+import SettingDialog from '@/components/menu/SettingDialog'
 import { AppPath } from '@/config/app.config'
-
-const menuConfig = [
-	{
-		id: 'Overview',
-		path: AppPath.Overview,
-		label: 'ภาพรวมการปลูกทุเรียน',
-		icon: <OverviewIcon />,
-	},
-	{
-		id: 'Analyze',
-		path: AppPath.Analyze,
-		label: 'วิเคราะห์พื้นที่ปลูกทุเรียน',
-		icon: <AnalyzeIcon />,
-	},
-	{
-		id: 'RegistrationInfo',
-		path: AppPath.RegistrationInfo,
-		label: 'ข้อมูลการขึ้นทะเบียนปลูกทุเรียน',
-		icon: <RegisterInfoIcon />,
-	},
-	{
-		id: 'UserManagement',
-		path: AppPath.UserManagement,
-		label: 'การจัดการผู้ใช้งาน',
-		icon: <UserManagementIcon />,
-	},
-	{
-		id: 'Setting',
-		path: '/',
-		label: 'การตั้งค่า',
-		icon: <SettingsIcon />,
-	},
-	{
-		id: 'AboutUs',
-		path: AppPath.AboutUs,
-		label: 'เกี่ยวกับเรา',
-		icon: <AbountUsIcon />,
-	},
-]
+import { useTranslation } from 'react-i18next'
 
 const SideBar = () => {
 	const router = useRouter()
 	const [menu, setMenu] = useState('')
+	const { t } = useTranslation('common')
 	const [openSettingDialog, setOpenSettingDialog] = useState<boolean>(false)
+
+	const menuConfig = [
+		{
+			id: 'Overview',
+			path: AppPath.Overview,
+			label: t('menuOverview'),
+			icon: <OverviewIcon />,
+		},
+		{
+			id: 'Analyze',
+			path: AppPath.Analyze,
+			label: t('menuAnalyze'),
+			icon: <AnalyzeIcon />,
+		},
+		{
+			id: 'Registration',
+			path: AppPath.Registration,
+			label: t('menuRegistration'),
+			icon: <RegistrationIcon />,
+		},
+		{
+			id: 'UserManagement',
+			path: AppPath.UserManagement,
+			label: t('menuUserManagement'),
+			icon: <UserManagementIcon />,
+		},
+		{
+			id: 'Setting',
+			path: '/',
+			label: t('menuSetting'),
+			icon: <SettingsIcon />,
+		},
+		{
+			id: 'About',
+			path: AppPath.About,
+			label: t('menuAbout'),
+			icon: <AbountIcon />,
+		},
+	]
 
 	useEffect(() => {
 		const item = menuConfig.find((item) => item.path === router.pathname)
@@ -64,7 +60,7 @@ const SideBar = () => {
 
 	const handleMenuChange = (_: React.MouseEvent<HTMLElement>, value: string) => {
 		const item = menuConfig.find((item) => item.id === value)
-		if (item?.path === '/') setMenu(value || menu)
+		if (item?.path === '/' && value !== null) setMenu(value)
 	}
 
 	const handleCloseDialog = useCallback(() => {
@@ -78,10 +74,10 @@ const SideBar = () => {
 			border: 0,
 		},
 		[`& .${toggleButtonClasses.root} svg`]: {
-			fill: '#D5E2DC !important',
+			fill: '#D5E2DC',
 		},
 		[`& .${toggleButtonClasses.root}:hover svg`]: {
-			fill: '#8DB9AA !important',
+			fill: '#8DB9AA',
 		},
 		[`& .${toggleButtonClasses.selected} svg`]: {
 			fill: '#0C5D52 !important',

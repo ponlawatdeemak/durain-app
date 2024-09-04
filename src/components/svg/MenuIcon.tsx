@@ -24,7 +24,7 @@ export const AnalyzeIcon: React.FC<SVGProps> = ({ width = 25, height = 24 }) => 
 	)
 }
 
-export const RegisterInfoIcon: React.FC<SVGProps> = ({ width = 25, height = 24 }) => {
+export const RegistrationIcon: React.FC<SVGProps> = ({ width = 25, height = 24 }) => {
 	return (
 		<svg width={width} height={height} viewBox='0 0 25 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
 			<path
@@ -56,7 +56,7 @@ export const UserManagementIcon: React.FC<SVGProps> = ({ width = 25, height = 24
 	)
 }
 
-export const AbountUsIcon: React.FC<SVGProps> = ({ width = 25, height = 25 }) => {
+export const AbountIcon: React.FC<SVGProps> = ({ width = 25, height = 25 }) => {
 	return (
 		<svg width={width} height={height} viewBox='0 0 25 25' fill='none' xmlns='http://www.w3.org/2000/svg'>
 			<path

@@ -1,17 +1,17 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
-import { AreaUnitKey } from '@/enum'
+import { AreaUnit } from '@/enum'
 
-type StoreAreaUnitKey = {
-	areaUnit: AreaUnitKey
-	setAreaUnit: (areaUnit: AreaUnitKey) => void
+type StoreAreaUnit = {
+	areaUnit: AreaUnit
+	setAreaUnit: (areaUnit: AreaUnit) => void
 }
 
 const useAreaUnit = create(
-	persist<StoreAreaUnitKey>(
+	persist<StoreAreaUnit>(
 		(set) => ({
-			areaUnit: AreaUnitKey.Rai,
-			setAreaUnit: (areaUnit: AreaUnitKey) =>
+			areaUnit: AreaUnit.Rai,
+			setAreaUnit: (areaUnit: AreaUnit) =>
 				set(() => {
 					return { areaUnit: areaUnit }
 				}),

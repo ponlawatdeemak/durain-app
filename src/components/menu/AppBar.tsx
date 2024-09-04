@@ -16,7 +16,7 @@ const AppBar = () => {
 			<div className='flex items-center gap-4'>
 				<AppLogo />
 				<Typography variant='header24' className='ml-5 text-center'>
-					ระบบวิเคราะห์พื้นที่ปลูกทุเรียน
+					{t('appName')}
 				</Typography>
 			</div>
 			<div className='flex items-center gap-4'>
@@ -24,7 +24,7 @@ const AppBar = () => {
 					<>
 						<UserAvatar user={session.user} />
 						<Button variant='contained' startIcon={<ExitToAppIcon />} onClick={() => signOut()}>
-							{t('LOGOUT')}
+							{t('logout')}
 						</Button>
 					</>
 				) : (
@@ -33,7 +33,7 @@ const AppBar = () => {
 						startIcon={<LockOpenIcon />}
 						onClick={() => signIn(NEXTAUTH_PROVIDER_ID)}
 					>
-						{t('LOGIN')}
+						{t('login')}
 					</Button>
 				)}
 			</div>

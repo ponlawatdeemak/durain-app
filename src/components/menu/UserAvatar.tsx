@@ -2,14 +2,14 @@ import { Typography } from '@mui/material'
 import Avatar from '@mui/material/Avatar'
 import { Session } from 'next-auth'
 import { useState } from 'react'
-import ProfileDialog from '../profile'
+import UserDialog, { UserDialogMode } from '@/components/shared/UserDialog'
 
 interface UserAvatarProps {
 	user: Session['user']
 }
 
 const UserAvatar: React.FC<UserAvatarProps> = ({ user }) => {
-	const [openForm, setOpenForm] = useState<boolean>(false)
+	const [openUserDialog, setOpenUserDialog] = useState<boolean>(false)
 	const firstName = user?.firstName ?? ''
 	const lastName = user?.lastName ?? ''
 
@@ -21,7 +21,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ user }) => {
 	return (
 		<>
 			{user ? (
-				<div onClick={() => setOpenForm(true)} className='flex cursor-pointer items-center'>
+				<div onClick={() => setOpenUserDialog(true)} className='flex cursor-pointer items-center'>
 					<Typography className='pr-2'>{`${firstName}.${lastName.charAt(0)}`}</Typography>
 					{user.image ? (
 						<Avatar src={user.image} alt={firstName} className='w-[35px]' />
@@ -32,7 +32,11 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ user }) => {
 					)}
 				</div>
 			) : null}
-			<ProfileDialog open={openForm} onClose={() => setOpenForm(false)}></ProfileDialog>
+			<UserDialog
+				open={openUserDialog}
+				mode={UserDialogMode.UserProfile}
+				onClose={() => setOpenUserDialog(false)}
+			/>
 		</>
 	)
 }

@@ -15,14 +15,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => ({
 	},
 })
 
-const RegistrationInfoPage = () => {
+const AboutPage = () => {
 	const { t } = useTranslation('common')
 
 	return (
 		<PageContainer>
-			<div>RegistrationInfoPage</div>
+			<div>AboutPage</div>
 		</PageContainer>
 	)
 }
 
-export default RegistrationInfoPage
+export default AboutPage

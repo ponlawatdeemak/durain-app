@@ -1,14 +1,9 @@
 export enum AppPath {
 	Overview = '/overview',
 	Analyze = '/analyze',
-	RegistrationInfo = '/registration-info',
+	Registration = '/registration',
 	UserManagement = '/user-management',
-	AboutUs = '/about-us',
+	About = '/about',
 }
 
-export const allowGuestPages = [AppPath.Overview, AppPath.AboutUs]
-
-export enum Languages {
-	TH = 'th',
-	EN = 'en',
-}
+export const allowGuestPages = [AppPath.Overview, AppPath.About]
