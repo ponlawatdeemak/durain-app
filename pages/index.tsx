@@ -14,6 +14,8 @@ import PageContainer from '@/components/PageContainer';
 import UserAvatar from '@/components/UserAvatar';
 import styles from "@/styles/Home.module.css";
 
+import axios from 'axios';
+import OpenidConfiguration from '@/models/OpenidConfiguration.js';
 import { DEFAULT_LOCALE, NEXTAUTH_PROVIDER_ID } from "../webapp.config";
 
 export const getServerSideProps: GetServerSideProps = async (context) => ({
@@ -37,7 +39,20 @@ export default function HomePage(_props: InferGetStaticPropsType<typeof getServe
       <Grid  sx={{mt: 2}}>
       <Grid container item xs={12} justifyContent={"center"}>
         { user ? 
-          <Box><UserAvatar user={user as Profile} size="large" /> <Button variant='contained' onClick={() => signOut()}>{t("LOGOUT")}</Button></Box> 
+          <Box><UserAvatar user={user as Profile} size="large" /> <Button variant='contained' onClick={async () => {
+            signOut({ redirect: false }).then(() => {
+              // redirect to clear login session on SSO web
+              axios.get(`${process.env.COGNITO_WELLKNOWN}`)
+              .then((response) => {
+                const cognitoWellKnown: OpenidConfiguration = response.data;
+                const logoutEndpoint = `${cognitoWellKnown.end_session_endpoint}?client_id=${process.env.COGNITO_CLIENT_ID}&logout_uri=${window.location.href}`;
+                window.location.href = logoutEndpoint;
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+            });
+          }}>{t("LOGOUT")}</Button></Box> 
           : <Button variant='contained' onClick={() => signIn(NEXTAUTH_PROVIDER_ID)}>{t("LOGIN")}</Button>
         }
       </Grid>
