@@ -40,7 +40,7 @@ export interface PutProfileUMDtoIn {
 	firstName: string
 	lastName: string
 	email: string
-	image: string
+	image: string | File
 	orgCode: string
 	role: string
 	responsibleProvinceCode: string
@@ -52,7 +52,7 @@ export interface PostProfileUMDtoIn {
 	firstName: string
 	lastName: string
 	email: string
-	image: string
+	image: string | File
 	orgCode: string
 	role: string
 	responsibleProvinceCode: string
