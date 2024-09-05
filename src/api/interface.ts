@@ -1,3 +1,4 @@
+import { SortType } from '@/enum'
 import { AxiosRequestConfig, AxiosResponse } from 'axios'
 
 export enum APIService {
@@ -68,4 +69,11 @@ export interface Tokens {
 export interface ResponseLanguage {
 	th: string
 	en: string
+}
+
+export interface TablePagination {
+	sortField: string
+	sortOrder: SortType
+	limit: number
+	offset: number
 }
