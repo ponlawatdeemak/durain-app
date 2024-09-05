@@ -1,5 +1,5 @@
 import { Dialog, DialogContent, DialogTitle, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
 import { AreaUnit, Languages } from '@/enum'
 import useAreaUnit from '@/store/area-unit'

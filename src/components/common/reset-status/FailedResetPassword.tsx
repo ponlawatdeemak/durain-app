@@ -1,4 +1,3 @@
- 
 // import { useTranslation } from '@/i18n'
 import { mdiCloseThick } from '@mdi/js'
 import Icon from '@mdi/react'
@@ -14,7 +13,7 @@ const FailedResetPassword: React.FC<FailedResetPasswordProps> = ({ buttonLabel, 
 	return (
 		<div className='flex flex-col items-center gap-4'>
 			<div className='relative flex size-24 items-center justify-center overflow-hidden rounded-full'>
-				<div className='absolute h-full w-full bg-error opacity-20' />
+				<div className='bg-error absolute h-full w-full opacity-20' />
 				<Icon path={mdiCloseThick} size={2} className='text-error' />
 			</div>
 			<Typography className='text-2xl font-bold'>{t('auth.headerResetPasswordUnsuccess')}</Typography>
