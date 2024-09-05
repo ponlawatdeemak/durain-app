@@ -1,4 +1,3 @@
-'use client'
 import { forwardRef, memo, useCallback, useImperativeHandle, useRef, useState } from 'react'
 import classNames from 'classnames'
 import { Box } from '@mui/material'

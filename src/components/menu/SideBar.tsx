@@ -6,7 +6,7 @@ import { OverviewIcon, AnalyzeIcon, RegistrationIcon, UserManagementIcon, Abount
 import MenuButton from '@/components/menu/MenuButton'
 import SettingDialog from '@/components/menu/SettingDialog'
 import { AppPath } from '@/config/app.config'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'next-i18next'
 
 const SideBar = () => {
 	const router = useRouter()

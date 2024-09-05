@@ -7,7 +7,7 @@ import { FormikProps } from 'formik'
 import { useEffect } from 'react'
 import service from '@/api'
 import { useQuery } from '@tanstack/react-query'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'next-i18next'
 // import { useSwitchLanguage } from '@/i18n/client'
 
 import classNames from 'classnames'

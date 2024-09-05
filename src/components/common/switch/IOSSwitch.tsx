@@ -1,5 +1,3 @@
-'use client'
-
 import * as React from 'react'
 import { styled } from '@mui/material/styles'
 import Switch, { SwitchProps } from '@mui/material/Switch'

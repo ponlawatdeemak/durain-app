@@ -2,7 +2,7 @@
 import { mdiCloseThick } from '@mdi/js'
 import Icon from '@mdi/react'
 import { Button, Typography } from '@mui/material'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'next-i18next'
 interface FailedResetPasswordProps {
 	buttonLabel: string
 	buttonHref: string

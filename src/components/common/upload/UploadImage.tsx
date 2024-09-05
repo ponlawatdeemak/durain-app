@@ -1,11 +1,9 @@
-'use client'
-
 import { mdiAccountOutline, mdiDeleteOutline, mdiTrayArrowUp } from '@mdi/js'
 import Icon from '@mdi/react'
 import { Avatar, Button, FormHelperText } from '@mui/material'
 import { FormikProps } from 'formik'
 import React, { ChangeEvent, useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'next-i18next'
 
 export interface UploadImageProps {
 	name: string
@@ -77,11 +75,11 @@ const UploadImage: React.FC<UploadImageProps> = ({
 					<Avatar
 						src={image}
 						alt='Profile Image'
-						className='h-[120px] w-[120px] bg-success-light'
+						className='bg-success-light h-[120px] w-[120px]'
 						onError={handleImageError}
 					/>
 				) : (
-					<Avatar className='h-[120px] w-[120px] bg-success-light'>
+					<Avatar className='bg-success-light h-[120px] w-[120px]'>
 						<Icon path={defaultImage} size={'90px'} className='text-primary' />
 					</Avatar>
 				)}
@@ -101,7 +99,7 @@ const UploadImage: React.FC<UploadImageProps> = ({
 					role={undefined}
 					variant='outlined'
 					tabIndex={-1}
-					className='flex h-[32px] gap-[4px] border-gray py-[6px] pl-[8px] pr-[10px] text-base text-black [&_.MuiButton-startIcon]:m-0'
+					className='border-gray flex h-[32px] gap-[4px] py-[6px] pl-[8px] pr-[10px] text-base text-black [&_.MuiButton-startIcon]:m-0'
 					startIcon={<Icon path={mdiTrayArrowUp} size={'20px'} />}
 					disabled={disabled}
 				>

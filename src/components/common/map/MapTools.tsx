@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react'
 import { Box, ToggleButton, ToggleButtonGroup, Typography, IconButton, Popover } from '@mui/material'
 import { mdiLayersOutline, mdiMinus, mdiPlus } from '@mdi/js'
 import Icon from '@mdi/react'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'next-i18next'
 
 const basemapList = [
 	{
