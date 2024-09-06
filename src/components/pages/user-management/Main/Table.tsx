@@ -177,7 +177,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 		queryKey: ['umSearch', searchParams],
 		queryFn: () => {
 			const res = um.umSearch(searchParams)
-			console.log('res :: ', res)
+			// console.log('res :: ', res)
 			setIsSearch(false)
 			return res
 		},

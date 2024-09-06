@@ -17,7 +17,7 @@ import { AlertInfoType, FormValues } from '@/components/shared/ProfileForm/inter
 import { useFormik } from 'formik'
 import service from '@/api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-// import * as yup from 'yup'
+import * as yup from 'yup'
 import { useTranslation } from 'react-i18next'
 // import { useSwitchLanguage } from '@/i18n/client'
 // import { Language } from '@/enum'
@@ -86,14 +86,14 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 		isEdit ? setIsConfirmEditOpen(true) : setIsConfirmAddOpen(true)
 	}
 
-	// const validationSchema = yup.object({
-	// 	firstName: yup.string().required(t('warning.inputFirstName')),
-	// 	lastName: yup.string().required(t('warning.inputLastName')),
-	// 	email: yup.string().email(t('warning.invalidEmailFormat')).required(t('warning.inputEmail')),
-	// 	responsibleProvinceCode: yup.string().required(t('warning.inputProvince')),
-	// 	orgCode: yup.string().required(t('warning.inputOrgCode')),
-	// 	role: yup.string().required(t('warning.inputRole')),
-	// })
+	const validationSchema = yup.object({
+		firstName: yup.string().required(t('warning.inputFirstName')),
+		lastName: yup.string().required(t('warning.inputLastName')),
+		email: yup.string().email(t('warning.invalidEmailFormat')).required(t('warning.inputEmail')),
+		responsibleProvinceCode: yup.string().required(t('warning.inputProvince')),
+		orgCode: yup.string().required(t('warning.inputOrgCode')),
+		role: yup.string().required(t('warning.inputRole')),
+	})
 	const {
 		data: userData,
 		isLoading: isUserDataLoading,
@@ -101,10 +101,10 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 	} = useQuery({
 		queryKey: ['getUM', userId],
 		queryFn: async () => {
-			// const res = await service.um.getUM({
-			// 	userId: props.userId,
-			// })
-			// return res
+			const res = await service.um.getUM({
+				userId: props.userId,
+			})
+			return res
 		},
 		enabled: !!userId,
 	})
@@ -275,10 +275,8 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 
 	const formik = useFormik<UMFormValues>({
 		enableReinitialize: true,
-		initialValues:
-			// userData?.data ||
-			defaultFormValues,
-		// validationSchema: validationSchema,
+		initialValues: userData?.data || defaultFormValues,
+		validationSchema: validationSchema,
 		onSubmit,
 	})
 	return (
