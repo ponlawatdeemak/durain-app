@@ -189,7 +189,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 		mutateAsync: mutatePatchStatus,
 	} = useMutation({
 		mutationFn: async (payload: PatchStatusDtoIn) => {
-			// return await um.patchStatus(payload)
+			return await um.patchStatus(payload)
 		},
 	})
 
@@ -199,7 +199,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 		mutateAsync: mutateDeleteProfile,
 	} = useMutation({
 		mutationFn: async (payload: DeleteProfileDtoIn) => {
-			// return await um.deleteProfile(payload)
+			return await um.deleteProfile(payload)
 		},
 	})
 

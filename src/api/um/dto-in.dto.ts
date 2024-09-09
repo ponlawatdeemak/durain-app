@@ -11,6 +11,7 @@ export interface PostUploadFilesDtoIn {
 
 export interface PutProfileDtoIn {
 	id: string
+	username: string
 	firstName: string
 	lastName: string
 	email: string

@@ -81,6 +81,14 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 					<div className='flex gap-[12px] max-lg:flex-col'>
 						<FormInput
 							className='w-full text-sm font-medium lg:w-[240px]'
+							name='username'
+							label={t('username')}
+							formik={formik}
+							required
+							disabled={loading}
+						/>
+						<FormInput
+							className='w-full text-sm font-medium lg:w-[240px]'
 							name='firstName'
 							label={t('firstName')}
 							formik={formik}

@@ -87,6 +87,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 	}
 
 	const validationSchema = yup.object({
+		username: yup.string().required(t('warning.inputUserName')),
 		firstName: yup.string().required(t('warning.inputFirstName')),
 		lastName: yup.string().required(t('warning.inputLastName')),
 		email: yup.string().email(t('warning.invalidEmailFormat')).required(t('warning.inputEmail')),
@@ -116,9 +117,9 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 		isPending: isPutProfileUMPending,
 	} = useMutation({
 		mutationFn: async (payload: PutProfileUMDtoIn) => {
-			// const res = await um.putProfileUM(payload)
+			const res = await um.putProfileUM(payload)
 			queryClient.invalidateQueries({ queryKey: ['getUM', userId] })
-			// return res
+			return res
 		},
 	})
 
@@ -129,7 +130,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 		isPending: isPostProfileUMPending,
 	} = useMutation({
 		mutationFn: async (payload: PostProfileUMDtoIn) => {
-			// return await um.postProfileUM(payload)
+			return await um.postProfileUM(payload)
 		},
 	})
 
@@ -141,7 +142,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 					return
 				}
 				const payload: DeleteProfileDtoIn = { id: userId }
-				// const res = await um.deleteProfile(payload)
+				const res = await um.deleteProfile(payload)
 				setIsSearch(true)
 				setAlertInfo({ open: true, severity: 'success', message: t('profileDeleteSuccess', { ns: 'um' }) })
 				setOpen(false)
