@@ -8,15 +8,26 @@ import SettingDialog from '@/components/menu/SettingDialog'
 import { AppPath } from '@/config/app.config'
 import { useTranslation } from 'react-i18next'
 import useResponsive from '@/hook/responsive'
+import { UserRole } from '@/enum'
+import { useSession } from 'next-auth/react'
+
+interface MenuConfigType {
+	id: string
+	path: string
+	label: string
+	icon: React.JSX.Element
+	access?: string[]
+}
 
 const SideBar = () => {
 	const router = useRouter()
+	const { data: session } = useSession()
 	const [menu, setMenu] = useState('')
 	const { t } = useTranslation('common')
 	const [openSettingDialog, setOpenSettingDialog] = useState<boolean>(false)
 	const { isDesktop } = useResponsive()
 
-	const menuConfig = [
+	const menuConfig: MenuConfigType[] = [
 		{
 			id: 'Overview',
 			path: AppPath.Overview,
@@ -28,18 +39,21 @@ const SideBar = () => {
 			path: AppPath.Analyze,
 			label: t('menuAnalyze'),
 			icon: <AnalyzeIcon />,
+			access: [UserRole.Root, UserRole.Admin, UserRole.Analyst],
 		},
 		{
 			id: 'Registration',
 			path: AppPath.Registration,
 			label: t('menuRegistration'),
 			icon: <RegistrationIcon />,
+			access: [UserRole.Root, UserRole.Admin, UserRole.Analyst],
 		},
 		{
 			id: 'UserManagement',
 			path: AppPath.UserManagement,
 			label: t('menuUserManagement'),
 			icon: <UserManagementIcon />,
+			access: [UserRole.Root, UserRole.Admin],
 		},
 		{
 			id: 'Setting',
@@ -90,8 +104,24 @@ const SideBar = () => {
 		isDesktop && (
 			<div className='flex w-full max-w-[90px] flex-1 flex-col bg-white'>
 				<MenuButtonGroup orientation='vertical' value={menu} exclusive onChange={handleMenuChange}>
-					{menuConfig.map((item, index) => {
-						return (
+					{menuConfig.map((item, index) =>
+						(item.access?.length || 0) > 0 ? (
+							item.access?.includes(session?.user.role || '') && (
+								<MenuButton
+									key={index}
+									value={item.id}
+									label={item.label}
+									icon={item.icon}
+									onClick={() => {
+										if (item.id === 'Setting') {
+											setOpenSettingDialog(true)
+										} else {
+											router.push(item.path)
+										}
+									}}
+								/>
+							)
+						) : (
 							<MenuButton
 								key={index}
 								value={item.id}
@@ -105,8 +135,8 @@ const SideBar = () => {
 									}
 								}}
 							/>
-						)
-					})}
+						),
+					)}
 				</MenuButtonGroup>
 				<SettingDialog open={openSettingDialog} onClose={() => handleCloseDialog()}></SettingDialog>
 			</div>
