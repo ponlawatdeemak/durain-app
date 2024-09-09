@@ -7,12 +7,14 @@ import MenuButton from '@/components/menu/MenuButton'
 import SettingDialog from '@/components/menu/SettingDialog'
 import { AppPath } from '@/config/app.config'
 import { useTranslation } from 'react-i18next'
+import useResponsive from '@/hook/responsive'
 
 const SideBar = () => {
 	const router = useRouter()
 	const [menu, setMenu] = useState('')
 	const { t } = useTranslation('common')
 	const [openSettingDialog, setOpenSettingDialog] = useState<boolean>(false)
+	const { isDesktop } = useResponsive()
 
 	const menuConfig = [
 		{
@@ -85,28 +87,30 @@ const SideBar = () => {
 	}))
 
 	return (
-		<div className='flex w-full max-w-[90px] flex-1 flex-col bg-white'>
-			<MenuButtonGroup orientation='vertical' value={menu} exclusive onChange={handleMenuChange}>
-				{menuConfig.map((item, index) => {
-					return (
-						<MenuButton
-							key={index}
-							value={item.id}
-							label={item.label}
-							icon={item.icon}
-							onClick={() => {
-								if (item.id === 'Setting') {
-									setOpenSettingDialog(true)
-								} else {
-									router.push(item.path)
-								}
-							}}
-						/>
-					)
-				})}
-			</MenuButtonGroup>
-			<SettingDialog open={openSettingDialog} onClose={() => handleCloseDialog()}></SettingDialog>
-		</div>
+		isDesktop && (
+			<div className='flex w-full max-w-[90px] flex-1 flex-col bg-white'>
+				<MenuButtonGroup orientation='vertical' value={menu} exclusive onChange={handleMenuChange}>
+					{menuConfig.map((item, index) => {
+						return (
+							<MenuButton
+								key={index}
+								value={item.id}
+								label={item.label}
+								icon={item.icon}
+								onClick={() => {
+									if (item.id === 'Setting') {
+										setOpenSettingDialog(true)
+									} else {
+										router.push(item.path)
+									}
+								}}
+							/>
+						)
+					})}
+				</MenuButtonGroup>
+				<SettingDialog open={openSettingDialog} onClose={() => handleCloseDialog()}></SettingDialog>
+			</div>
+		)
 	)
 }
 

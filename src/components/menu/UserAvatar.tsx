@@ -21,12 +21,17 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ user }) => {
 	return (
 		<>
 			{user ? (
-				<div onClick={() => setOpenUserDialog(true)} className='flex cursor-pointer items-center'>
-					<Typography className='pr-2'>{`${firstName}.${lastName.charAt(0)}`}</Typography>
+				<div
+					onClick={() => setOpenUserDialog(true)}
+					className='flex cursor-pointer items-center gap-2 max-lg:flex-row-reverse max-lg:px-2 max-lg:py-1 lg:gap-4'
+				>
+					<Typography className='text-[#333333] max-lg:underline max-lg:decoration-1 max-lg:underline-offset-2'>
+						{`${firstName}.${lastName.charAt(0)}`}
+					</Typography>
 					{user.image ? (
-						<Avatar src={user.image} alt={firstName} className='w-[35px]' />
+						<Avatar src={user.image} alt={firstName} className='!h-8 !w-8 lg:!h-[35px] lg:!w-[35px]' />
 					) : (
-						<Avatar alt={firstName} className='w-[35px]'>
+						<Avatar alt={firstName} className='!h-8 !w-8 lg:!h-[35px] lg:!w-[35px]'>
 							{getLetterAvatar()}
 						</Avatar>
 					)}
