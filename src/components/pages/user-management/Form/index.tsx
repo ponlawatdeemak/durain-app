@@ -296,10 +296,20 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 
 	const formik = useFormik<UMFormValues>({
 		enableReinitialize: true,
-		initialValues: userData?.data || userProfileData?.data || defaultFormValues,
+		initialValues:
+			userDialogMode === UserDialogMode.UserAdd
+				? defaultFormValues
+				: (userData?.data as UMFormValues) || (userProfileData?.data as UMFormValues) || defaultFormValues,
 		validationSchema: validationSchema,
 		onSubmit,
 	})
+
+	// initialValues:
+	// 		userDialogMode === UserDialogMode.UserAdd
+	// 			? userData?.data
+	// 			: userDialogMode === UserDialogMode.UserProfile
+	// 				? userProfileData?.data
+	// 				: defaultFormValues,
 	return (
 		<div className='flex flex-col'>
 			<Dialog
