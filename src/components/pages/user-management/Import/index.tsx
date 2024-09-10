@@ -34,6 +34,7 @@ import {
 import AlertConfirm from '@/components/common/dialog/AlertConfirm'
 import CloseIcon from '@mui/icons-material/Close'
 import { mdiCloseCircleOutline } from '@mdi/js'
+import LoadingButton from '@mui/lab/LoadingButton'
 
 const maxFileSize = 1.5e7
 export interface FormImportProps {
@@ -112,8 +113,8 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 						const payload: PostImportXLSXUMDtoIn = {
 							data: formData,
 						}
-						// const res = await um.postImportCSVUM(payload)
-						// console.log(res)
+						const res = await um.postImportCSVUM(payload)
+						console.log(res)
 						setAlertInfo({
 							open: true,
 							severity: 'success',
@@ -127,7 +128,7 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 						console.log(error)
 						const data: PostImportCSVErrorDtoOut[] = error.data
 						setImportFile(undefined)
-						console.log(data)
+						console.log('error :: ', data)
 						setImportError(data)
 					}
 				} else {
@@ -138,8 +139,8 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 						const payload: PostImportXLSXUMDtoIn = {
 							data: formData,
 						}
-						// const res = await um.postImportXLSXUM(payload)
-						// console.log(res)
+						const res = await um.postImportXLSXUM(payload)
+						console.log(res)
 						setAlertInfo({
 							open: true,
 							severity: 'success',
@@ -153,6 +154,8 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 						console.log(error)
 						const data: PostImportXLSXErrorDtoOut[] = error.data
 						setImportFile(undefined)
+						console.log('error :: ', data)
+
 						setImportError(data)
 					}
 				}
@@ -170,11 +173,11 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 		try {
 			let res
 			if (type === 'csv') {
-				// res = await um.getTemplateCSVUM()
-				// console.log(res)
+				res = await um.getTemplateCSVUM()
+				console.log(res)
 				const a = document.createElement('a')
 				a.download = 'users_data_csv.' + type
-				// a.href = window.URL.createObjectURL(res) // blob return from res
+				a.href = window.URL.createObjectURL(res) // blob return from res
 				const clickEvt = new MouseEvent('click', {
 					view: window,
 					bubbles: true,
@@ -183,11 +186,11 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 				a.dispatchEvent(clickEvt)
 				a.remove()
 			} else {
-				// res = await um.getTemplateXLSXUM()
-				// console.log(res)
+				res = await um.getTemplateXLSXUM()
+				console.log(res)
 				const a = document.createElement('a')
 				a.download = 'users_data_excel.' + type
-				// a.href = window.URL.createObjectURL(res) // blob return from res
+				a.href = window.URL.createObjectURL(res) // blob return from res
 				const clickEvt = new MouseEvent('click', {
 					view: window,
 					bubbles: true,
@@ -250,7 +253,7 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 							<Typography className='text-base font-medium'>{t('importUser', { ns: 'um' })}</Typography>
 							{importFile ? (
 								<Box className='flex flex-col items-center'>
-									{/* <Button
+									<Button
 										endIcon={
 											<IconButton disableRipple onClick={handleRemoveFile}>
 												<ClearIcon />
@@ -261,7 +264,7 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 										className='h-[40px]'
 									>
 										{importFile.name}
-									</Button> */}
+									</Button>
 									<Box className='border-gray bg-background flex flex-row items-center rounded-lg border-solid p-1'>
 										<Typography className='p-[4px] text-base font-semibold'>
 											{importFile.name}
@@ -373,7 +376,7 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 							>
 								{t('cancel')}
 							</Button>
-							{/* <LoadingButton
+							<LoadingButton
 								fullWidth
 								loading={isLoading}
 								loadingPosition='start'
@@ -387,7 +390,7 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 								disabled={isLoading}
 							>
 								<span> {t('confirm')}</span>
-							</LoadingButton> */}
+							</LoadingButton>
 						</div>
 					</DialogActions>
 				)}
