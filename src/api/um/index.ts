@@ -9,6 +9,7 @@ import {
 	PostImportCSVUMDtoOut,
 	PostImportXLSXUMDtoOut,
 	PostProfileUMDtoOut,
+	PostUploadFilesDtoOut,
 	PutProfileDtoOut,
 	PutProfileUMDtoOut,
 } from './dto-out.dto'
@@ -20,6 +21,7 @@ import {
 	PostImportCSVUMDtoIn,
 	PostImportXLSXUMDtoIn,
 	PostProfileUMDtoIn,
+	PostUploadFilesDtoIn,
 	PutProfileDtoIn,
 	PutProfileUMDtoIn,
 } from './dto-in.dto'
@@ -51,6 +53,15 @@ const um = {
 		await api.post('/um/import/csv', payload.data),
 	postImportXLSXUM: async (payload: PostImportXLSXUMDtoIn): Promise<ResponseDto<PostImportXLSXUMDtoOut>> =>
 		await api.post('/um/import/xlsx', payload.data),
+	postUploadFiles: async (payload: PostUploadFilesDtoIn): Promise<ResponseDto<PostUploadFilesDtoOut>> => {
+		const formData = new FormData()
+		formData.append('file', payload.file)
+		return await api.post('/files/upload', formData, APIService.WebAPI, {
+			headers: {
+				'Content-Type': 'multipart/form-data',
+			},
+		})
+	},
 }
 
 export default um

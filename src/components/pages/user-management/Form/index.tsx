@@ -23,7 +23,13 @@ import { useTranslation } from 'react-i18next'
 // import { Language } from '@/enum'
 import { useSession } from 'next-auth/react'
 import AlertConfirm from '@/components/common/dialog/AlertConfirm'
-import { DeleteProfileDtoIn, PostProfileUMDtoIn, PostUploadFilesDtoIn, PutProfileUMDtoIn } from '@/api/um/dto-in.dto'
+import {
+	DeleteProfileDtoIn,
+	PostProfileUMDtoIn,
+	PostUploadFilesDtoIn,
+	PutProfileDtoIn,
+	PutProfileUMDtoIn,
+} from '@/api/um/dto-in.dto'
 import um from '@/api/um'
 import Icon from '@mdi/react'
 import { mdiTrashCanOutline } from '@mdi/js'
@@ -150,6 +156,17 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 		},
 	})
 
+	const {
+		data,
+		error,
+		mutateAsync: mutateUpdateProfile,
+	} = useMutation({
+		mutationFn: async (payload: PutProfileDtoIn) => {
+			await service.um.putProfile(payload)
+			queryClient.invalidateQueries({ queryKey: ['getProfile'] })
+		},
+	})
+
 	const onDelete = useCallback(
 		async (userId: string) => {
 			try {
@@ -182,11 +199,15 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 					const imagePayload: PostUploadFilesDtoIn = {
 						file: values.image,
 					}
-					// const res = await um.postUploadFiles(imagePayload)
-					// values.image = res.data?.download_file_url || ''
+					const res = await um.postUploadFiles(imagePayload)
+					values.image = res.data?.download_file_url || ''
+					// response does not have image signature
+					console.log('invalues.image :: ', res)
 				}
 				if (userDialogMode === UserDialogMode.UserEdit) {
 					// put method edit existing user
+					console.log('userEdit')
+					console.log('image :: ', values.image)
 					try {
 						const payload: PutProfileUMDtoIn = {
 							id: values.id,
@@ -274,6 +295,42 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 					}
 				} else if (userDialogMode === UserDialogMode.UserProfile) {
 					// user Profile
+					const profileData: PutProfileDtoIn = {
+						username: values.username,
+						id: values.id,
+						firstName: values.firstName,
+						lastName: values.lastName,
+						email: values.email,
+						image: values.image,
+						responsibleProvinceCode: values.responsibleProvinceCode,
+						responsibleDistrictCode: values.responsibleDistrictCode,
+					}
+					try {
+						await mutateUpdateProfile(profileData)
+					} catch (error) {
+						throw new Error('Profile update failed')
+					}
+
+					let userImage
+					try {
+						userImage = (await service.um.getProfile()).data?.image
+					} catch (error) {
+						throw new Error('Access Profile failed')
+					}
+
+					// ใช้ update ค่า data จาก useSession
+					try {
+						await update({
+							firstName: profileData.firstName,
+							lastName: profileData.lastName,
+							email: profileData.email,
+							image: userImage,
+							responsibleProvinceCode: profileData.responsibleProvinceCode,
+							responsibleDistrictCode: profileData.responsibleDistrictCode,
+						})
+					} catch (error) {
+						throw new Error('Failed to update session')
+					}
 				} else {
 					console.error('Unknown component mode :: ', userDialogMode)
 				}
