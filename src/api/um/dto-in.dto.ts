@@ -46,7 +46,7 @@ export interface PutProfileUMDtoIn {
 	role: string
 	responsibleProvinceCode: string
 	responsibleDistrictCode: string
-	flagStatus: string
+	flagStatus?: string
 }
 export interface PostProfileUMDtoIn {
 	username: string
@@ -58,7 +58,7 @@ export interface PostProfileUMDtoIn {
 	role: string
 	responsibleProvinceCode: string
 	responsibleDistrictCode: string
-	flagStatus: string
+	flagStatus?: string
 }
 
 export interface PostImportCSVUMDtoIn {

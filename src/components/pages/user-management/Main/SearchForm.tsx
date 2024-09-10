@@ -10,6 +10,7 @@ import { GetSearchUMDtoIn } from '@/api/um/dto-in.dto'
 import { useTranslation } from 'react-i18next'
 import useResponsive from '@/hook/responsive'
 import { FormImport } from '../Import'
+import { UserDialogMode } from '@/components/shared/UserDialog'
 
 export interface UserManagementSearchFormProps {
 	setSearchParams: React.Dispatch<React.SetStateAction<GetSearchUMDtoIn>>
@@ -93,8 +94,9 @@ const UserManagementSearchForm: React.FC<UserManagementSearchFormProps> = ({
 				isEdit={false}
 				setOpen={setOpenForm}
 				setIsSearch={setIsSearch}
+				userDialogMode={UserDialogMode.UserAdd}
 			/>
-			<FormImport 
+			<FormImport
 				open={openImport}
 				onClose={() => setOpenImport(false)}
 				setOpen={setOpenImport}

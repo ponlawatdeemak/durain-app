@@ -3,6 +3,7 @@ import Avatar from '@mui/material/Avatar'
 import { Session } from 'next-auth'
 import { useState } from 'react'
 import UserDialog, { UserDialogMode } from '@/components/shared/UserDialog'
+import { FormMain } from '../pages/user-management/Form'
 
 interface UserAvatarProps {
 	user: Session['user']
@@ -32,11 +33,20 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ user }) => {
 					)}
 				</div>
 			) : null}
-			<UserDialog
+			<FormMain
+				open={openUserDialog}
+				onClose={() => setOpenUserDialog(false)}
+				isEdit={true}
+				setOpen={setOpenUserDialog}
+				userDialogMode={UserDialogMode.UserProfile}
+				userId=''
+				setIsSearch={() => {}}
+			/>
+			{/* <UserDialog
 				open={openUserDialog}
 				mode={UserDialogMode.UserProfile}
 				onClose={() => setOpenUserDialog(false)}
-			/>
+			/> */}
 		</>
 	)
 }

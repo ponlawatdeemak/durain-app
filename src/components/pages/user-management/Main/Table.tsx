@@ -45,6 +45,7 @@ import classNames from 'classnames'
 import { mdiAccount } from '@mdi/js'
 import { mdiAccountOff } from '@mdi/js'
 import { FormMain } from '../Form'
+import { UserDialogMode } from '@/components/shared/UserDialog'
 
 interface Data {
 	id: string
@@ -825,6 +826,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 				isEdit={true}
 				setOpen={setIsEditOpen}
 				setIsSearch={setIsSearch}
+				userDialogMode={UserDialogMode.UserEdit}
 			/>
 		</div>
 	)

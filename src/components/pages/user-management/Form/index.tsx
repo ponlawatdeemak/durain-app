@@ -29,6 +29,7 @@ import Icon from '@mdi/react'
 import { mdiTrashCanOutline } from '@mdi/js'
 import useResponsive from '@/hook/responsive'
 import classNames from 'classnames'
+import { UserDialogMode } from '@/components/shared/UserDialog'
 // import LoadingButton from '@mui/lab/LoadingButton'
 
 export interface UserManagementProps {
@@ -38,10 +39,11 @@ export interface UserManagementProps {
 	isEdit: boolean
 	setOpen: React.Dispatch<React.SetStateAction<boolean>>
 	setIsSearch: React.Dispatch<React.SetStateAction<boolean>>
+	userDialogMode: UserDialogMode
 }
 
 interface UMFormValues extends FormValues {
-	flagStatus: string
+	flagStatus?: string
 }
 
 const defaultFormValues: UMFormValues = {
@@ -60,7 +62,7 @@ const defaultFormValues: UMFormValues = {
 
 export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 	const { t, i18n } = useTranslation(['default', 'um'])
-	const { open, onClose, userId, isEdit, setOpen, setIsSearch } = props
+	const { open, onClose, userId, isEdit, setOpen, setIsSearch, userDialogMode } = props
 	// const { i18n: i18nWithCookie } = useSwitchLanguage(i18n.language as Language, 'appbar')
 	const [isConfirmAddOpen, setIsConfirmAddOpen] = useState<boolean>(false)
 	const [isConfirmEditOpen, setIsConfirmEditOpen] = useState<boolean>(false)
@@ -95,6 +97,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 		orgCode: yup.string().required(t('warning.inputOrgCode')),
 		role: yup.string().required(t('warning.inputRole')),
 	})
+
 	const {
 		data: userData,
 		isLoading: isUserDataLoading,
@@ -102,12 +105,25 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 	} = useQuery({
 		queryKey: ['getUM', userId],
 		queryFn: async () => {
-			const res = await service.um.getUM({
-				userId: props.userId,
-			})
-			return res
+			if (userDialogMode === UserDialogMode.UserEdit) {
+				const res = await service.um.getUM({
+					userId: props.userId,
+				})
+				return res
+			}
 		},
 		enabled: !!userId,
+	})
+
+	const { data: userProfileData, isLoading: isUserProfileLoading } = useQuery({
+		queryKey: ['getProfile'],
+		queryFn: async () => {
+			if (userDialogMode === UserDialogMode.UserProfile) {
+				const res = await service.um.getProfile()
+				console.log('ProfileRes :: ', res)
+				return res
+			}
+		},
 	})
 
 	const {
@@ -169,7 +185,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 					// const res = await um.postUploadFiles(imagePayload)
 					// values.image = res.data?.download_file_url || ''
 				}
-				if (isEdit) {
+				if (userDialogMode === UserDialogMode.UserEdit) {
 					// put method edit existing user
 					try {
 						const payload: PutProfileUMDtoIn = {
@@ -224,7 +240,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 							message: error?.title ? error.title : t('profileUpdateFail', { ns: 'um' }),
 						})
 					}
-				} else {
+				} else if (userDialogMode === UserDialogMode.UserAdd) {
 					// post method add new user
 					try {
 						const payload: PostProfileUMDtoIn = {
@@ -256,6 +272,10 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 							message: error?.title ? error.title : t('profileAddFail', { ns: 'um' }),
 						})
 					}
+				} else if (userDialogMode === UserDialogMode.UserProfile) {
+					// user Profile
+				} else {
+					console.error('Unknown component mode :: ', userDialogMode)
 				}
 			} catch (error: any) {
 				console.log(error)
@@ -276,7 +296,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 
 	const formik = useFormik<UMFormValues>({
 		enableReinitialize: true,
-		initialValues: userData?.data || defaultFormValues,
+		initialValues: userData?.data || userProfileData?.data || defaultFormValues,
 		validationSchema: validationSchema,
 		onSubmit,
 	})

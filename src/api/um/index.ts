@@ -9,6 +9,7 @@ import {
 	PostImportCSVUMDtoOut,
 	PostImportXLSXUMDtoOut,
 	PostProfileUMDtoOut,
+	PutProfileDtoOut,
 	PutProfileUMDtoOut,
 } from './dto-out.dto'
 import {
@@ -19,6 +20,7 @@ import {
 	PostImportCSVUMDtoIn,
 	PostImportXLSXUMDtoIn,
 	PostProfileUMDtoIn,
+	PutProfileDtoIn,
 	PutProfileUMDtoIn,
 } from './dto-in.dto'
 
@@ -28,6 +30,8 @@ const um = {
 			`/um/search?keyword=${payload.keyword}&sortField=${payload.sortField}&sortOrder=${payload.sortOrder}&limit=${payload.limit}&offset=${payload.offset}&respLang=${payload.respLang}`,
 		),
 	getProfile: async (): Promise<ResponseDto<GetProfileDtoOut>> => await api.get('/profile'),
+	putProfile: async (payload: PutProfileDtoIn): Promise<ResponseDto<PutProfileDtoOut>> =>
+		await api.put('/profile', payload),
 	getUM: async (payload: GetUmDtoIn): Promise<ResponseDto<GetUmDtoOut>> => await api.get(`/um/${payload.userId}`),
 	deleteProfile: async (payload: DeleteProfileDtoIn): Promise<ResponseDto<DeleteProfileDtoOut>> =>
 		await api.delete(`/um/${payload.id}`),
