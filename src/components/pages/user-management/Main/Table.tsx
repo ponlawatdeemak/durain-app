@@ -439,10 +439,10 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 		>
 			<Paper className='relative flex flex-col gap-[8px] px-[24px] py-[16px]'>
 				<div className='flex items-baseline gap-[12px]'>
-					<Typography variant='body1' className='font-semibold'>
+					<Typography variant='body1' className='!font-semibold'>
 						{t('userList', { ns: 'um' })}
 					</Typography>
-					<Typography variant='body2' className='text-[#7A7A7A]'>
+					<Typography variant='body2' className='!font-medium !text-[#7A7A7A]'>
 						{t('showing', { ns: 'um' })} {(page - 1) * 10 + 1}-{Math.min(page * 10, total)}{' '}
 						{t('of', { ns: 'um' })} {total} {t('item', { ns: 'um' })}
 					</Typography>

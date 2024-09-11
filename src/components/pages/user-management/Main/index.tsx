@@ -29,11 +29,11 @@ export const UserManagementMain = () => {
 		<div
 			className={`flex flex-col ${isDesktop ? 'pl-[32px] pr-[32px] pt-[16px]' : 'pl-[0px] pr-[0px] pt-[12px]'} ${isDesktop ? 'w-[calc(100vw-90px)]' : 'w-[calc(100vw-50px)]'} self-center`}
 		>
-			<Box className='flex flex-row'>
+			<Box className='flex flex-row items-center gap-[16px] pb-[16px]'>
 				<div className='[&>svg]:fill-[#0C5D52]'>
 					<UserManagementIcon width={24} height={24} />
 				</div>
-				<Typography>การจัดการผู้ใช้งาน</Typography>
+				<Typography className='!text-2xl !font-medium text-[#21573F]'>การจัดการผู้ใช้งาน</Typography>
 			</Box>
 			<UserManagementSearchForm setSearchParams={setSearchParams} setIsSearch={setIsSearch} setPage={setPage} />
 			<UserManagementTable
