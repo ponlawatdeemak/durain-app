@@ -11,6 +11,9 @@
 	"login": "เข้าสู่ระบบ",
 	"logout": "ออกจากระบบ",
 
+	"confirm": "ยืนยัน",
+	"cancel": "ยกเลิก",
+
 	"unitArea": "หน่วยพื้นที่",
 	"unitRai": "ไร่",
 	"unitSqkm": "ตร.กม",
@@ -18,5 +21,25 @@
 
 	"languages": "ภาษา",
 	"languagesTh": "ภาษาไทย",
-	"languagesEn": "English"
+	"languagesEn": "English",
+
+	"username": "ชื่อผู้ใช้งาน",
+	"nameSurname": "ชื่อ นามสกุล",
+	"email": "อีเมล",
+	"firstName": "ชื่อจริง",
+	"lastName": "นามสกุล",
+	"org": "หน่วยงาน",
+	"role": "บทบาท",
+	"province": "จังหวัด",
+	"allProvinces": "จังหวัดทั้งหมด",
+	"district": "อำเภอ",
+	"allDistricts": "อำเภอทั้งหมด",
+	"subDistrict": "ตำบล",
+	"allSubDistricts": "ตำบลทั้งหมด",
+	"village": "หมู่บ้าน",
+	"areaRai": "ไร่",
+	"areaPlot": "แปลง",
+	"status": "สถานะ",
+	"previous": "ก่อนหน้า",
+	"next": "ถัดไป"
 }

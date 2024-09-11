@@ -16,7 +16,7 @@ import {
 	Typography,
 } from '@mui/material'
 import React from 'react'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'next-i18next'
 import ClearIcon from '@mui/icons-material/Clear'
 import { PostImportXLSXUMDtoIn } from '@/api/um/dto-in.dto'
 import Icon from '@mdi/react'
@@ -45,7 +45,7 @@ export interface FormImportProps {
 }
 
 export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
-	const { t, i18n } = useTranslation(['default', 'um'])
+	const { t, i18n } = useTranslation(['common', 'um'])
 	// const { i18n: i18nWithCookie } = useSwitchLanguage(i18n.language as Language, 'appbar')
 	const [importFile, setImportFile] = React.useState<File>()
 	const { open, onClose, setOpen, setIsSearch } = props

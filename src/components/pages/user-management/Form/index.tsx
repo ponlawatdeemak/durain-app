@@ -18,7 +18,7 @@ import { useFormik } from 'formik'
 import service from '@/api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import * as yup from 'yup'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'next-i18next'
 // import { useSwitchLanguage } from '@/i18n/client'
 // import { Language } from '@/enum'
 import { useSession } from 'next-auth/react'
@@ -67,7 +67,7 @@ const defaultFormValues: UMFormValues = {
 }
 
 export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
-	const { t, i18n } = useTranslation(['default', 'um'])
+	const { t, i18n } = useTranslation(['common', 'um'])
 	const { open, onClose, userId, isEdit, setOpen, setIsSearch, userDialogMode } = props
 	// const { i18n: i18nWithCookie } = useSwitchLanguage(i18n.language as Language, 'appbar')
 	const [isConfirmAddOpen, setIsConfirmAddOpen] = useState<boolean>(false)
@@ -380,7 +380,11 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 					'': !isDesktop,
 				})}
 			>
-				<DialogTitle>{isEdit ? t('editUserAccount', { ns: 'um' }) : t('addUser', { ns: 'um' })}</DialogTitle>
+				<DialogTitle>
+					{isEdit || userDialogMode === UserDialogMode.UserProfile
+						? t('editUserAccount', { ns: 'um' })
+						: t('addUser', { ns: 'um' })}
+				</DialogTitle>
 				<DialogContent dividers={true} className='flex flex-col justify-between max-lg:gap-3'>
 					<div className='flex flex-col items-center gap-3 max-lg:block lg:flex-row'>
 						<ProfileForm

@@ -30,7 +30,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 	isFormUM = false,
 	isEditFormUM = false,
 }) => {
-	const { t, i18n } = useTranslation(['default', 'um'])
+	const { t, i18n } = useTranslation(['common', 'um'])
 	// const { i18n: i18nWithCookie } = useSwitchLanguage(i18n.language as Languages, 'appbar')
 
 	const { data: provinceLookupData, isLoading: isProvinceDataLoading } = useQuery({

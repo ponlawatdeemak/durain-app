@@ -28,7 +28,7 @@ import { SortType } from '@/enum'
 import um from '@/api/um'
 import { DeleteProfileDtoIn, GetSearchUMDtoIn, PatchStatusDtoIn } from '@/api/um/dto-in.dto'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'next-i18next'
 // import { useSwitchLanguage } from '@/i18n/client'
 // import { Language } from '@/enum'
 import { GetSearchUMDtoOut } from '@/api/um/dto-out.dto'
@@ -92,7 +92,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 	const [dense, setDense] = React.useState(false)
 	const queryClient = useQueryClient()
 
-	const { t, i18n } = useTranslation(['default', 'um'])
+	const { t, i18n } = useTranslation(['common', 'um'])
 	// const { i18n: i18nWithCookie } = useSwitchLanguage(i18n.language as Language, 'appbar')
 	const { isDesktop } = useResponsive()
 
@@ -448,7 +448,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 					</Typography>
 				</div>
 
-				<Box className='flex h-[calc(100vh-200px)] flex-col gap-[16px] lg:h-[calc(100vh-220px)]'>
+				<Box className='flex h-[calc(100vh-275px)] flex-col gap-[16px] lg:h-[calc(100vh-260px)]'>
 					<TableContainer
 						className='flex flex-col overflow-y-auto'
 						sx={{ minHeight: '90%', flex: 1 }}

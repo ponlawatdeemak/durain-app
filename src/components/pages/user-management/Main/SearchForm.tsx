@@ -7,7 +7,7 @@ import GroupAddOutlinedIcon from '@mui/icons-material/GroupAddOutlined'
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt'
 import React, { ChangeEvent, FormEvent, useState } from 'react'
 import { GetSearchUMDtoIn } from '@/api/um/dto-in.dto'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'next-i18next'
 import useResponsive from '@/hook/responsive'
 import { FormImport } from '../Import'
 import { UserDialogMode } from '@/components/shared/UserDialog'
@@ -25,7 +25,7 @@ const UserManagementSearchForm: React.FC<UserManagementSearchFormProps> = ({
 }) => {
 	const [openForm, setOpenForm] = useState<boolean>(false)
 	const [openImport, setOpenImport] = useState<boolean>(false)
-	const { t, i18n } = useTranslation(['default', 'um'])
+	const { t, i18n } = useTranslation(['common', 'um'])
 	const { isDesktop } = useResponsive()
 	const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
 		// setSearchString(event.target.value)

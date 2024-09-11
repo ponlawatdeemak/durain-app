@@ -40,7 +40,7 @@ const AlertConfirm: React.FC<AlertConfirmProps> = ({
 	onClose,
 	onConfirm,
 }) => {
-	const { t } = useTranslation(['default'])
+	const { t } = useTranslation(['common'])
 
 	return (
 		<Dialog open={open} onClose={onClose} className='[&_.MuiDialog-paper]:w-[560px]'>

@@ -11,6 +11,9 @@
 	"login": "Login",
 	"logout": "Logout",
 
+	"confirm": "Confirm",
+	"cancel": "Cancel",
+
 	"unitArea": "Units",
 	"unitRai": "Rai",
 	"unitSqkm": "Sqkm",
@@ -18,5 +21,25 @@
 
 	"languages": "Languages",
 	"languagesTh": "ภาษาไทย",
-	"languagesEn": "English"
+	"languagesEn": "English",
+
+	"username": "Username",
+	"nameSurname": "Name Surname",
+	"email": "E-mail",
+	"firstName": "First Name",
+	"lastName": "Last Name",
+	"org": "Organization",
+	"role": "Role",
+	"province": "Province",
+	"allProvinces": "All Provinces",
+	"district": "District",
+	"allDistricts": "All Districts",
+	"subDistrict": "Sub District",
+	"allSubDistricts": "All Sub District",
+	"village": "Village",
+	"areaRai": "Rai",
+	"areaPlot": "LandPlot",
+	"status": "Status",
+	"previous": "Previous",
+	"next": "Next"
 }
