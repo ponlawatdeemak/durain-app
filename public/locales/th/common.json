@@ -41,5 +41,9 @@
 	"areaPlot": "แปลง",
 	"status": "สถานะ",
 	"previous": "ก่อนหน้า",
-	"next": "ถัดไป"
+	"next": "ถัดไป",
+	"common": {
+		"uploadImg": "อัปโหลดรูปภาพ",
+		"conditionImg": "ขนาดไฟล์ไม่เกิน 3 MB (jpg หรือ png)"
+	}
 }

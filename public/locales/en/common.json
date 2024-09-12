@@ -41,5 +41,10 @@
 	"areaPlot": "LandPlot",
 	"status": "Status",
 	"previous": "Previous",
-	"next": "Next"
+	"next": "Next",
+
+	"common": {
+		"uploadImg": "Upload Image",
+		"conditionImg": "File size does not exceed 3 MB (jpg or png)"
+	}
 }

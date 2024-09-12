@@ -37,6 +37,7 @@ import useResponsive from '@/hook/responsive'
 import classNames from 'classnames'
 import { UserDialogMode } from '@/components/shared/UserDialog'
 // import LoadingButton from '@mui/lab/LoadingButton'
+import clsx from 'clsx'
 
 export interface UserManagementProps {
 	open: boolean
@@ -376,23 +377,36 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 				// onSubmit={handleSubmitUser}
 				fullWidth
 				scroll='paper'
-				className={classNames('[&_.MuiPaper-root]:h-[636px] [&_.MuiPaper-root]:max-w-[700px]', {
+				className={classNames('[&_.MuiPaper-root]:h-[636px] [&_.MuiPaper-root]:max-w-[90vw]', {
 					'': !isDesktop,
 				})}
 			>
-				<DialogTitle>
+				<DialogTitle
+					className={clsx('', {
+						'!pl-[32px]': isDesktop,
+					})}
+				>
 					{isEdit || userDialogMode === UserDialogMode.UserProfile
 						? t('editUserAccount', { ns: 'um' })
 						: t('addUser', { ns: 'um' })}
 				</DialogTitle>
-				<DialogContent dividers={true} className='flex flex-col justify-between max-lg:gap-3'>
-					<div className='flex flex-col items-center gap-3 max-lg:block lg:flex-row'>
+				<DialogContent
+					dividers={true}
+					className={clsx('flex flex-col justify-between p-[24px] !pt-[24px] max-lg:gap-3', {
+						'!pl-[32px]': isDesktop,
+					})}
+				>
+					<div className='flex grow !flex-row-reverse items-center justify-between gap-3 max-lg:block lg:flex-row'>
 						<ProfileForm
 							formik={formik}
 							loading={isPostProfileUMPending || isPutProfileUMPending || isUserDataLoading}
 							isFormUM={true}
 							isEditFormUM={isEdit}
 							isDisabledProfile={userId === session?.user.id}
+							userDialogmode={userDialogMode}
+							userData={
+								userDialogMode === UserDialogMode.UserProfile ? userProfileData?.data : userData?.data
+							}
 						/>
 					</div>
 					{session?.user.id !== userId && (
@@ -405,7 +419,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 							control={
 								<div className='pointer-events-auto'>
 									<IOSSwitch
-										className='m-0 mr-2 [&_.Mui-checked+.MuiSwitch-track]:bg-[#0C626D]'
+										className='m-0 mr-2 [&_.Mui-checked+.MuiSwitch-track]:!bg-[#2F7A59]'
 										checked={formik.values.flagStatus === 'A' ? true : false}
 										onChange={(event) => {
 											formik.setFieldValue('flagStatus', event.target.checked ? 'A' : 'C')

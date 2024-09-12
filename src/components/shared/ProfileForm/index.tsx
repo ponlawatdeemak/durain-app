@@ -2,7 +2,7 @@ import React from 'react'
 import AutocompleteInput from '@/components/common/input/AutocompleteInput'
 import FormInput from '@/components/common/input/FormInput'
 import UploadImage from '@/components/common/upload/UploadImage'
-import { Box } from '@mui/material'
+import { Box, Divider, Typography } from '@mui/material'
 import { FormikProps } from 'formik'
 import { useEffect } from 'react'
 import service from '@/api'
@@ -11,6 +11,12 @@ import { useTranslation } from 'next-i18next'
 // import { useSwitchLanguage } from '@/i18n/client'
 
 import classNames from 'classnames'
+import { UserDialogMode } from '../UserDialog'
+import useResponsive from '@/hook/responsive'
+import { ContactIcon, EmailIcon } from '@/components/svg/MenuIcon'
+import { GetProfileDtoOut, GetUmDtoOut } from '@/api/um/dto-out.dto'
+import { Language } from '@mui/icons-material'
+import { ResponseLanguage } from '@/api/interface'
 // import { Languages } from '@/config/app.config'
 
 export interface ProfileFormProps {
@@ -20,6 +26,8 @@ export interface ProfileFormProps {
 	isHiddenProfile?: boolean
 	isFormUM?: boolean
 	isEditFormUM?: boolean
+	userDialogmode?: UserDialogMode
+	userData?: GetProfileDtoOut | GetUmDtoOut
 }
 
 const ProfileForm: React.FC<ProfileFormProps> = ({
@@ -29,9 +37,12 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 	isHiddenProfile = false,
 	isFormUM = false,
 	isEditFormUM = false,
+	userDialogmode,
+	userData,
 }) => {
 	const { t, i18n } = useTranslation(['common', 'um'])
 	// const { i18n: i18nWithCookie } = useSwitchLanguage(i18n.language as Languages, 'appbar')
+	const isDesktop = useResponsive()
 
 	const { data: provinceLookupData, isLoading: isProvinceDataLoading } = useQuery({
 		queryKey: ['getProvince'],
@@ -66,17 +77,63 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 		queryFn: () => service.lookup.get('roles'),
 	})
 
+	console.log('userData :: ', userData)
+	console.log('provinceData :: ', provinceLookupData)
+	console.log('districtLookupData :: ', districtLookupData)
 	return (
 		<>
-			<div className='w-full lg:w-[214px]'>
+			<div className='w-full self-start lg:w-[324px]'>
 				<UploadImage
 					name='image'
 					formik={formik}
-					className='flex flex-col items-center gap-[12px] py-[16px]'
+					className='flex flex-col items-center gap-[12px] py-[16px] [&_.MuiAvatar-root]:h-[168px] [&_.MuiAvatar-root]:w-[168px]'
 					disabled={loading}
 				/>
+				{userDialogmode !== UserDialogMode.UserAdd && (
+					<Box className='mb-[16px] flex flex-col items-center gap-[16px]'>
+						<Typography className='max-w-full !overflow-hidden !text-ellipsis !whitespace-nowrap !text-lg !font-medium'>
+							{userData?.firstName}
+							&nbsp;
+							{userData?.lastName}
+						</Typography>
+						<Box className='max-w-full'>
+							<Typography className='max-w-full !overflow-hidden !text-ellipsis !whitespace-nowrap'>
+								<span className='inline-flex items-center'>
+									<div className='[&>svg]:fill-[#0C5D52]'>
+										<EmailIcon width={26} height={24} />
+									</div>
+								</span>
+								&nbsp;&nbsp;&nbsp;
+								<span>{userData?.email}</span>
+							</Typography>
+							<Typography className='max-w-full !overflow-hidden !text-ellipsis !whitespace-nowrap'>
+								<Box className='inline-flex items-center'>
+									<div className='[&>svg]:fill-[#0C5D52]'>
+										<ContactIcon width={26} height={24} />
+									</div>
+									&nbsp;&nbsp;&nbsp;
+									<span className='inline-flex'>
+										{userData?.orgCode.toLocaleUpperCase()},&nbsp;
+										{
+											provinceLookupData?.data?.find(
+												(item) => item.code === parseInt(userData?.responsibleProvinceCode),
+											)?.name[i18n.language as keyof ResponseLanguage]
+										}
+										,&nbsp;
+										{
+											districtLookupData?.data?.find(
+												(item) => item.code === parseInt(userData?.responsibleDistrictCode),
+											)?.name[i18n.language as keyof ResponseLanguage]
+										}
+									</span>
+								</Box>
+							</Typography>
+						</Box>
+					</Box>
+				)}
 			</div>
-			<div className='flex flex-col gap-[16px]'>
+			{isDesktop && <Divider orientation='vertical' flexItem />}
+			<div className='flex flex-col gap-[16px] self-start'>
 				<Box className='flex flex-col gap-[12px]'>
 					<div className='flex gap-[12px] max-lg:flex-col'>
 						<FormInput
@@ -85,8 +142,22 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 							label={t('username')}
 							formik={formik}
 							required
-							disabled={loading}
+							disabled={
+								loading ||
+								userDialogmode === UserDialogMode.UserEdit ||
+								userDialogmode === UserDialogMode.UserProfile
+							}
 						/>
+						<FormInput
+							className='w-full text-sm font-medium lg:w-[240px]'
+							name='email'
+							label={t('email')}
+							formik={formik}
+							required
+							disabled={isDisabledProfile || loading || isEditFormUM}
+						/>
+					</div>
+					<div className='flex gap-[12px] max-lg:flex-col'>
 						<FormInput
 							className='w-full text-sm font-medium lg:w-[240px]'
 							name='firstName'
@@ -102,16 +173,6 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 							formik={formik}
 							required
 							disabled={loading}
-						/>
-					</div>
-					<div className='flex gap-[12px] max-lg:flex-col'>
-						<FormInput
-							className='w-full text-sm font-medium lg:w-[240px]'
-							name='email'
-							label={t('email')}
-							formik={formik}
-							required
-							disabled={isDisabledProfile || loading || isEditFormUM}
 						/>
 					</div>
 				</Box>

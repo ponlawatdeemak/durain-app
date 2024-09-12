@@ -113,7 +113,7 @@ const UploadImage: React.FC<UploadImageProps> = ({
 					/>
 				</Button>
 			</div>
-			<p className='m-0 w-[123px] text-center text-sm text-[#7A7A7A]'>{t('common.conditionImg')}</p>
+			<p className='m-0 w-[216px] text-center text-sm text-[#7A7A7A]'>{t('common.conditionImg')}</p>
 			{typeof errorMessage === 'string' && <FormHelperText error>{errorMessage}</FormHelperText>}
 		</div>
 	)
