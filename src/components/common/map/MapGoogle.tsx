@@ -45,7 +45,7 @@ function MapGoogle({ viewState, onViewStateChange }: MapGoogleProps, ref: React.
 	}, [overlay])
 
 	return (
-		<APIProvider apiKey={process.env.GOOGLE_MAPS_API_KEY || ''}>
+		<APIProvider apiKey={process.env.GOOGLE_MAPS_API_KEY}>
 			<Map
 				defaultCenter={{ lat: viewState?.latitude!, lng: viewState?.longitude! }}
 				defaultZoom={viewState?.zoom!}

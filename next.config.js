@@ -21,6 +21,9 @@ const nextConfig = {
 		COGNITO_CLIENT_SECRET: process.env.COGNITO_CLIENT_SECRET,
 		COGNITO_WELLKNOWN: process.env.COGNITO_WELLKNOWN,
 		COGNITO_ISSUER: process.env.COGNITO_ISSUER,
+
+		GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
+		GOOGLE_MAPS_API_MAP_ID: process.env.GOOGLE_MAPS_API_MAP_ID,
 	},
 
 	async rewrites() {
@@ -35,6 +38,8 @@ const nextConfig = {
 		console.log('COGNITO_WELLKNOWN = %o', process.env.COGNITO_WELLKNOWN)
 		console.log('COGNITO_ISSUER = %o', process.env.COGNITO_ISSUER)
 
+		console.log('GOOGLE_MAPS_API_KEY = %o', process.env.GOOGLE_MAPS_API_KEY)
+		console.log('GOOGLE_MAPS_API_MAP_ID = %o', process.env.GOOGLE_MAPS_API_MAP_ID)
 		return [
 			{
 				source: '/durian-api/:path*',
