@@ -409,7 +409,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 							}
 						/>
 					</div>
-					{session?.user.id !== userId && (
+					{session?.user.id !== userId && userDialogMode !== UserDialogMode.UserProfile && (
 						<FormControlLabel
 							sx={{
 								pointerEvents: 'none',
@@ -432,18 +432,18 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 					)}
 				</DialogContent>
 				<DialogActions
-					className={classNames('flex justify-between p-6', {
+					className={classNames('flex justify-between !p-4', {
 						'': isEdit || session?.user.id === userId,
 					})}
 				>
 					{session?.user.id !== userId && isEdit && (
 						<Button
-							className='text-red text-error h-[40px] w-[136px] bg-white text-sm'
-							variant='contained'
+							className='h-[40px] w-[150px] !border-[#D6D6D6] bg-white text-sm !text-[#D13438]'
+							variant='outlined'
 							onClick={() => {
 								setIsConfirmDeleteOpen(true)
 							}}
-							startIcon={<Icon path={mdiTrashCanOutline} size={1} color={'var(--error-color-1)'} />}
+							startIcon={<Icon path={mdiTrashCanOutline} size={1} color={'#D13438'} />}
 							disabled={isPostProfileUMPending || isPutProfileUMPending || isUserDataLoading}
 						>
 							{t('deleteUser', { ns: 'um' })}
@@ -457,7 +457,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 					>
 						<Button
 							className='h-[40px] w-[71px] bg-white text-sm text-black'
-							variant='contained'
+							variant='outlined'
 							onClick={handleOnClose}
 							disabled={isPostProfileUMPending || isPutProfileUMPending || isUserDataLoading}
 						>

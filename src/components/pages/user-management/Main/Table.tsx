@@ -43,9 +43,13 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import useResponsive from '@/hook/responsive'
 import classNames from 'classnames'
 import { mdiAccount } from '@mdi/js'
+import { mdiAccountOutline } from '@mdi/js'
+
 import { mdiAccountOff } from '@mdi/js'
+import { mdiAccountOffOutline } from '@mdi/js'
 import { FormMain } from '../Form'
 import { UserDialogMode } from '@/components/shared/UserDialog'
+import clsx from 'clsx'
 
 interface Data {
 	id: string
@@ -456,12 +460,16 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 					>
 						{selected.length > 0 && (
 							<Box
-								sx={{ display: 'inline-flex', backgroundColor: '#F8FAFD', position: 'sticky', left: 0 }}
-								className={
-									isDesktop
-										? 'flex h-[48px] w-auto rounded-[2px] rounded-lg p-2'
-										: 'flex h-[100px] w-auto flex-col rounded-[2px] rounded-lg p-2'
-								}
+								// sx={{ display: 'inline-flex', backgroundColor: '#F8FAFD', position: 'sticky', left: 0 }}
+								// className={
+								// 	isDesktop
+								// 		? 'flex h-[48px] w-auto rounded-[2px] rounded-lg p-2'
+								// 		: 'flex h-[100px] w-auto flex-col rounded-[2px] rounded-lg p-2'
+								// }
+								className={clsx('sticky left-0 inline-flex gap-[8px] !bg-[#F2F2F2]', {
+									'flex h-[48px] w-auto rounded-[2px] rounded-lg p-2': isDesktop,
+									'flex h-[100px] w-auto flex-col rounded-[2px] rounded-lg p-2': !isDesktop,
+								})}
 							>
 								<Typography className='m-4 flex items-center font-medium'>
 									{t('selecting', { ns: 'um' })}{' '}
@@ -472,10 +480,12 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 								</Typography>
 								<Stack direction='row' spacing={1} className='flex items-center'>
 									<Button
-										className='flex h-[40px] shrink-0 gap-[8px] bg-white py-[8px] pl-[12px] pr-[16px] text-sm font-medium text-black [&_.MuiButton-startIcon]:m-0'
-										variant='contained'
+										className='flex !h-[30px] shrink-0 gap-[8px] !border-[#D6D6D6] !bg-white py-[8px] pl-[12px] pr-[16px] text-sm font-medium !text-[#202020] [&_.MuiButton-startIcon]:m-0'
+										variant='outlined'
 										color='primary'
-										startIcon={<Icon path={mdiAccount} size={1} color='var(--black-color)' />}
+										startIcon={
+											<Icon path={mdiAccountOutline} size={1} color='var(--black-color)' />
+										}
 										onClick={() => {
 											setIsConfirmOpenManyOpen(true)
 										}}
@@ -483,10 +493,12 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 										{isDesktop && t('enableUser', { ns: 'um' })}
 									</Button>
 									<Button
-										className='flex h-[40px] shrink-0 gap-[8px] bg-white py-[8px] pl-[12px] pr-[16px] text-sm font-medium text-black [&_.MuiButton-startIcon]:m-0'
-										variant='contained'
+										className='flex !h-[30px] shrink-0 gap-[8px] !border-[#D6D6D6] !bg-white py-[8px] pl-[12px] pr-[16px] text-sm font-medium !text-[#202020] [&_.MuiButton-startIcon]:m-0'
+										variant='outlined'
 										color='primary'
-										startIcon={<Icon path={mdiAccountOff} size={1} color='var(--black-color)' />}
+										startIcon={
+											<Icon path={mdiAccountOffOutline} size={1} color='var(--black-color)' />
+										}
 										onClick={() => {
 											setIsConfirmCloseManyOpen(true)
 										}}
@@ -494,12 +506,10 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 										{isDesktop && t('disableUser', { ns: 'um' })}
 									</Button>
 									<Button
-										className='flex h-[40px] shrink-0 gap-[8px] bg-white py-[8px] pl-[12px] pr-[16px] text-sm font-medium text-black [&_.MuiButton-startIcon]:m-0'
-										variant='contained'
+										className='flex !h-[30px] shrink-0 gap-[8px] !border-[#D6D6D6] !bg-white py-[8px] pl-[12px] pr-[16px] text-sm font-medium !text-[#D13438] [&_.MuiButton-startIcon]:m-0'
+										variant='outlined'
 										color='primary'
-										startIcon={
-											<Icon path={mdiTrashCanOutline} size={1} color='var(--black-color)' />
-										}
+										startIcon={<Icon path={mdiTrashCanOutline} size={1} color='#D13438' />}
 										onClick={() => {
 											setIsConfirmDeleteManyOpen(true)
 										}}
@@ -595,7 +605,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 												/>
 											</TableCell>
 											<TableCell component='th' id={labelId} scope='row' padding='none'>
-												<Box className='flex'>
+												<Box className='flex items-center'>
 													{
 														<Avatar
 															className='bg-primary mr-[4px] h-[24px] w-[24px]'
@@ -621,10 +631,10 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 											<TableCell>
 												{
 													<div
-														className={`flex items-center justify-center rounded-2xl ${row.flagStatus === 'A' ? 'bg-success-light' : 'bg-error-light'} h-[25px] w-[64px]`}
+														className={`flex items-center justify-center rounded ${row.flagStatus === 'A' ? '!bg-[#BFD6CC]' : '!bg-[#f2d8de]'} h-[25px] w-[72px]`}
 													>
 														<Typography
-															className={`p-0.5 text-${row.flagStatus === 'A' ? 'success' : 'error'} text-sm`}
+															className={`p-0.5 ${row.flagStatus === 'A' ? 'text-[#21573F]' : 'text-[#D13438]'} !text-xs !font-medium`}
 														>
 															{
 																row.flagStatusName[
@@ -664,9 +674,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 																path={mdiTrashCanOutline}
 																size={1}
 																color={
-																	session?.user.id === row.id
-																		? 'var(--dark-gray-color)'
-																		: 'var(--error-color-1)'
+																	session?.user.id === row.id ? '#c2c5cc' : '#D13438'
 																}
 															/>
 														</IconButton>

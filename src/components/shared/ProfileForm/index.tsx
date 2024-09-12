@@ -82,7 +82,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 	console.log('districtLookupData :: ', districtLookupData)
 	return (
 		<>
-			<div className='w-full self-start lg:w-[324px]'>
+			<div className='!mr-[24px] w-full self-start lg:w-[324px]'>
 				<UploadImage
 					name='image'
 					formik={formik}

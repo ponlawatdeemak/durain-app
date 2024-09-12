@@ -33,7 +33,9 @@ export const UserManagementMain = () => {
 				<div className='[&>svg]:fill-[#0C5D52]'>
 					<UserManagementIcon width={24} height={24} />
 				</div>
-				<Typography className='!text-2xl !font-medium text-[#21573F]'>การจัดการผู้ใช้งาน</Typography>
+				<Typography className='!text-2xl !font-medium text-[#21573F]'>
+					{t('userManagement', { ns: 'um' })}
+				</Typography>
 			</Box>
 			<UserManagementSearchForm setSearchParams={setSearchParams} setIsSearch={setIsSearch} setPage={setPage} />
 			<UserManagementTable
