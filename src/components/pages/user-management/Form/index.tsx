@@ -436,7 +436,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 						'': isEdit || session?.user.id === userId,
 					})}
 				>
-					{session?.user.id !== userId && isEdit && (
+					{session?.user.id !== userId && isEdit && userDialogMode !== UserDialogMode.UserProfile && (
 						<Button
 							className='h-[40px] w-[150px] !border-[#D6D6D6] bg-white text-sm !text-[#D13438]'
 							variant='outlined'
