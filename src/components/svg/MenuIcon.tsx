@@ -1,3 +1,4 @@
+import { SvgIconClassKey } from '@mui/material'
 import React from 'react'
 
 interface SVGProps {
@@ -70,6 +71,76 @@ export const AbountIcon: React.FC<SVGProps> = ({ width = 25, height = 25 }) => {
 				clipRule='evenodd'
 				d='M7.53418 7.40128C7.53418 4.8729 9.5348 2.82275 12.003 2.82275C14.4712 2.82275 16.4719 4.8729 16.4728 7.40128C16.4728 7.48935 16.4699 7.57742 16.465 7.66446C16.5214 10.1294 12.3403 16.1958 11.9943 16.6945V16.7273C11.9943 16.7273 11.9894 16.7212 11.9826 16.7109C11.9748 16.7212 11.9709 16.7273 11.9709 16.7273V16.6935C11.6676 16.2511 8.42659 11.477 7.70722 8.66701C7.59445 8.26558 7.53418 7.8406 7.53418 7.40128ZM9.97199 7.32129C9.97199 8.45041 10.8813 9.36607 12.0035 9.36607C13.125 9.36607 14.035 8.45041 14.035 7.32129C14.035 6.19216 13.1257 5.2765 12.0035 5.2765C10.8813 5.2765 9.97199 6.19216 9.97199 7.32129Z'
 			/>
+		</svg>
+	)
+}
+
+export const OverviewYearDataIcon: React.FC<SVGProps> = ({ width = 88, height = 88 }) => {
+	return (
+		<svg width={width} height={height} viewBox='0 0 88 88' fill='none' xmlns='http://www.w3.org/2000/svg'>
+			<g opacity='0.390044'>
+				<path
+					fill-rule='evenodd'
+					clip-rule='evenodd'
+					d='M44 0L85.8465 30.4033L69.8625 79.5967H18.1374L2.15351 30.4033L44 0Z'
+					fill='#8DB9AA'
+				/>
+				<path
+					fill-rule='evenodd'
+					clip-rule='evenodd'
+					d='M44.0001 11.7334L74.6875 34.0291L62.9659 70.1043H25.0342L13.3126 34.0291L44.0001 11.7334Z'
+					fill='white'
+				/>
+				<path
+					fill-rule='evenodd'
+					clip-rule='evenodd'
+					d='M44.0001 23.4666L63.5285 37.6547L56.0693 60.6117H31.9309L24.4718 37.6547L44.0001 23.4666Z'
+					fill='#8DB9AA'
+				/>
+			</g>
+		</svg>
+	)
+}
+
+export const OverviewTooltipIcon: React.FC<SVGProps> = ({ width = 60, height = 57 }) => {
+	return (
+		<svg width={width} height={height} viewBox='0 0 60 57' fill='none' xmlns='http://www.w3.org/2000/svg'>
+			<path
+				d='M5.02186 19.8967L31.5 0.659237L57.9781 19.8967L47.8644 51.0237H15.1356L5.02186 19.8967Z'
+				fill='#D5E2DC'
+				stroke='#D5E2DC'
+				stroke-width='1.06667'
+			/>
+			<path
+				d='M12.2495 22.2454L31.4996 8.25933L50.7497 22.2454L43.3968 44.8752H19.6024L12.2495 22.2454Z'
+				fill='#8DB9AA'
+				stroke='#D5E2DC'
+				stroke-width='1.06667'
+			/>
+			<path
+				d='M19.4781 24.5937L31.5002 15.8592L43.5223 24.5937L38.9303 38.7265H24.0701L19.4781 24.5937Z'
+				fill='#0C5D52'
+				stroke='#D5E2DC'
+				stroke-width='1.06667'
+			/>
+			<path d='M19 25L5 20' stroke='#D5E2DC' stroke-width='0.5' />
+			<path d='M48.5 51.5L38 39' stroke='#D5E2DC' stroke-width='0.5' />
+			<path d='M57.5 19.5L43.5 24.5' stroke='#D5E2DC' stroke-width='0.5' />
+			<path d='M31.5 0.5L31 16' stroke='#D5E2DC' stroke-width='0.5' />
+			<path d='M15.5 50.5L24.5 39' stroke='#D5E2DC' stroke-width='0.5' />
+			<path d='M34.5273 23.3633H36.3203V32H34.5273V23.3633Z' fill='white' />
+			<path
+				d='M30.9707 30.2246H27.7891L27.1914 32H25.3047L28.3867 23.3633H30.4258L33.4844 32H31.5273L30.9707 30.2246ZM30.4668 28.7363L29.3887 25.3379L28.2754 28.7363H30.4668Z'
+				fill='white'
+			/>
+			<path d='M37.2121 49H36L37.7879 46H39L37.2121 49Z' fill='#307A59' />
+			<path d='M39.2121 49H38L39.7879 46H41L39.2121 49Z' fill='#307A59' />
+			<path d='M41.2121 49H40L41.7879 46H43L41.2121 49Z' fill='#307A59' />
+			<path d='M2.02008 14H0L2.97992 9H5L2.02008 14Z' fill='#D5E2DC' />
+			<path d='M5.35407 14H3.33398L6.3139 9H8.33398L5.35407 14Z' fill='#8DB9AA' />
+			<path d='M8.6861 14H6.66602L9.64593 9H11.666L8.6861 14Z' fill='#307A59' />
+			<rect x='55' y='51' width='1' height='1' fill='#307A59' />
+			<rect x='52' y='51' width='2' height='1' fill='#307A59' />
 		</svg>
 	)
 }
