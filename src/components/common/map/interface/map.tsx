@@ -1,14 +1,12 @@
-import { Layer, LayersList } from '@deck.gl/core'
-
+import { LayersList } from '@deck.gl/core'
 import { PropsWithChildren } from 'react'
-import { MapLibreRef } from '../MapLibre'
-import { MapGoogleRef } from '../MapGoogle'
 
 export interface MapInterface {
-	ref?: MapLibreRef | MapGoogleRef
 	layers?: LayersList
-	viewState?: MapViewState
-	onViewStateChange?: (viewState: MapViewState) => void
+}
+
+export interface MapViewProps extends PropsWithChildren {
+	className?: string
 }
 export interface MapViewState {
 	longitude: number
@@ -16,6 +14,26 @@ export interface MapViewState {
 	zoom: number
 }
 
-export interface MapViewProps extends PropsWithChildren {
-	className?: string
+export interface BaseMap {
+	value: BasemapType
+	image: string
+	label: string
+}
+
+export interface MapToolsProps {
+	minZoom?: number
+	maxZoom?: number
+	basemapList?: BaseMap[]
+	layersList?: any[]
+}
+
+export enum MapType {
+	Google,
+	Libre,
+}
+
+export enum BasemapType {
+	CartoLight,
+	CartoDark,
+	Google,
 }

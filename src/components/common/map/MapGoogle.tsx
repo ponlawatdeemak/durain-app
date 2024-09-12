@@ -1,14 +1,15 @@
 'use client'
-import React, { forwardRef, useImperativeHandle, useMemo, useEffect, useRef } from 'react'
-import { APIProvider, Map, useMap } from '@vis.gl/react-google-maps'
+import React, { useMemo, useEffect, useRef } from 'react'
+import { APIProvider, Map, useMap as useMapGoogle } from '@vis.gl/react-google-maps'
 import { GoogleMapsOverlay } from '@deck.gl/google-maps'
 import useLayerStore from './store/map'
+import { useMap } from './context/map'
 import { MapInterface } from './interface/map'
 
 const DeckGLOverlay = () => {
 	const layers = useLayerStore((state) => state.layers)
 	const setOverlay = useLayerStore((state) => state.setOverlay)
-	const map = useMap()
+	const map = useMapGoogle()
 	const overlay = useMemo(() => new GoogleMapsOverlay({}), [])
 	useEffect(() => {
 		overlay.setProps({ layers })
@@ -20,23 +21,16 @@ const DeckGLOverlay = () => {
 	return null
 }
 
-interface MapGoogleProps extends MapInterface {}
-
-export interface MapGoogleRef {
-	setExtent: (bounds: google.maps.LatLngBoundsLiteral) => void
-}
-
-function MapGoogle({ viewState, onViewStateChange }: MapGoogleProps, ref: React.Ref<MapGoogleRef>) {
+export default function MapGoogle({ layers }: MapInterface) {
 	const mapRef = useRef<google.maps.Map | null>(null)
 	const overlay = useLayerStore((state) => state.overlay)
+	const { viewState, setViewState, setGoogleMapInstance } = useMap()
 
-	useImperativeHandle(ref, () => ({
-		setExtent: (bounds: google.maps.LatLngBoundsLiteral) => {
-			if (mapRef.current) {
-				mapRef.current.fitBounds(bounds)
-			}
-		},
-	}))
+	useEffect(() => {
+		if (mapRef.current) {
+			setGoogleMapInstance(mapRef.current)
+		}
+	}, [mapRef.current, setGoogleMapInstance])
 
 	useEffect(() => {
 		return () => {
@@ -58,7 +52,7 @@ function MapGoogle({ viewState, onViewStateChange }: MapGoogleProps, ref: React.
 				mapTypeId='hybrid'
 				onBoundsChanged={(evt) => {
 					mapRef.current = evt.map
-					onViewStateChange?.({
+					setViewState?.({
 						latitude: evt.detail.center.lat,
 						longitude: evt.detail.center.lng,
 						zoom: evt.detail.zoom,
@@ -70,5 +64,3 @@ function MapGoogle({ viewState, onViewStateChange }: MapGoogleProps, ref: React.
 		</APIProvider>
 	)
 }
-
-export default forwardRef(MapGoogle)
