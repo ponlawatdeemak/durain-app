@@ -136,14 +136,9 @@ const OverviewMain: React.FC = () => {
 						</div>
 					</div>
 					<div className='relative flex w-full flex-row items-center justify-center rounded bg-white p-4 shadow'>
-						<div className='absolute left-4 flex h-full items-center justify-center'>
+						<div className='flex h-full items-center justify-center'>
 							<div className='[&>svg]:fill-[#0C5D52]'>
 								<OverviewYearDataIcon />
-							</div>
-						</div>
-						<div className='absolute left-12 flex h-full items-center justify-center'>
-							<div className='[&>svg]:fill-[#0C5D52]'>
-								<OverviewIcon />
 							</div>
 						</div>
 						<div className='flex h-full w-[100%] flex-col items-end gap-1'>
