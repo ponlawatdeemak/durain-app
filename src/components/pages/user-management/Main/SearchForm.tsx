@@ -97,7 +97,7 @@ const UserManagementSearchForm: React.FC<UserManagementSearchFormProps> = ({
 						)}
 						variant='contained'
 						color='primary'
-						startIcon={<SystemUpdateAltIcon className={`h-[24px] w-[24px] ${!isDesktop && 'ml-[5px]'}`} />}
+						startIcon={<SystemUpdateAltIcon className={`h-[24px] w-[24px] ${!isDesktop && '!mr-auto'}`} />}
 						onClick={() => setOpenImport(true)}
 					>
 						{isDesktop && t('importUser', { ns: 'um' })}

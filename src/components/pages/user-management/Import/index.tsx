@@ -125,11 +125,19 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 						handleCloseImport(null, 'importFinish')
 					} catch (error: any) {
 						// post service error show in local modal component rows errors
-						console.log(error)
-						const data: PostImportCSVErrorDtoOut[] = error.data
-						setImportFile(undefined)
-						console.log('error :: ', data)
-						setImportError(data)
+						console.log('csv error :: ', error)
+						if (error.data) {
+							const data: PostImportCSVErrorDtoOut[] = error.data
+							setImportFile(undefined)
+							console.log('error :: ', data)
+							setImportError(data)
+						} else {
+							setAlertInfo({
+								open: true,
+								severity: 'error',
+								message: error.title,
+							})
+						}
 					}
 				} else {
 					// case xlsx
@@ -152,11 +160,18 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 					} catch (error: any) {
 						// post service error show in local modal component rows errors
 						console.log(error)
-						const data: PostImportXLSXErrorDtoOut[] = error.data
-						setImportFile(undefined)
-						console.log('error :: ', data)
-
-						setImportError(data)
+						if (error.data) {
+							const data: PostImportXLSXErrorDtoOut[] = error.data
+							setImportFile(undefined)
+							console.log('error :: ', data)
+							setImportError(data)
+						} else {
+							setAlertInfo({
+								open: true,
+								severity: 'error',
+								message: error.title,
+							})
+						}
 					}
 				}
 			}
@@ -247,13 +262,13 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 					className='flex h-full flex-col items-center justify-between overflow-x-hidden max-lg:gap-3'
 				>
 					<Box
-						className={`bg-gray-light2 ml-[24px] mr-[24px] flex w-full flex-col items-center ${!(importError.length > 0) && 'h-full'} ${importFile && 'h-full'}`}
+						className={`ml-[24px] mr-[24px] flex w-full flex-col items-center !bg-[#F2F2F2] ${!(importError?.length > 0) && 'h-full'} ${importFile && 'h-full'}`}
 					>
 						<Box className='flex min-h-[200px] flex-col items-center justify-center gap-2 p-4'>
-							<Typography className='text-base font-medium'>{t('importUser', { ns: 'um' })}</Typography>
+							<Typography className='!text-sm !font-medium'>{t('importUser', { ns: 'um' })}</Typography>
 							{importFile ? (
 								<Box className='flex flex-col items-center'>
-									<Button
+									{/* <Button
 										endIcon={
 											<IconButton disableRipple onClick={handleRemoveFile}>
 												<ClearIcon />
@@ -264,9 +279,9 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 										className='h-[40px]'
 									>
 										{importFile.name}
-									</Button>
-									<Box className='border-gray bg-background flex flex-row items-center rounded-lg border-solid p-1'>
-										<Typography className='p-[4px] text-base font-semibold'>
+									</Button> */}
+									<Box className='border-gray flex flex-row items-center rounded border-solid !bg-[#D6D6D6] p-1'>
+										<Typography className='p-[4px] !text-sm !font-medium'>
 											{importFile.name}
 										</Typography>
 										<IconButton
@@ -298,7 +313,7 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 											value={importFile}
 										/>
 									</Button>
-									{importError.length > 0 && (
+									{importError?.length > 0 && (
 										<Box className='border-error flex flex-col rounded-lg border-solid bg-white p-4'>
 											<div className='text-error flex flex-row items-center gap-1'>
 												<Icon path={mdiCloseCircleOutline} size={1} />
@@ -368,7 +383,7 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 						<div className={'flex justify-end space-x-2'}>
 							<Button
 								className='h-[40px] w-[71px] bg-white text-sm text-black'
-								variant='contained'
+								variant='outlined'
 								onClick={(event) => {
 									handleCloseImport(event, 'cancelClick')
 								}}
