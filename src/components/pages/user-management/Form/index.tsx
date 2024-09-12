@@ -377,7 +377,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 				// onSubmit={handleSubmitUser}
 				fullWidth
 				scroll='paper'
-				className={classNames('[&_.MuiPaper-root]:h-[636px] [&_.MuiPaper-root]:max-w-[90vw]', {
+				className={classNames('[&_.MuiPaper-root]:h-[728px] [&_.MuiPaper-root]:max-w-[80vw]', {
 					'': !isDesktop,
 				})}
 			>

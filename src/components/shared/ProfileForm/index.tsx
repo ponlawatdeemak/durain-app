@@ -82,7 +82,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 	console.log('districtLookupData :: ', districtLookupData)
 	return (
 		<>
-			<div className='!mr-[24px] w-full self-start lg:w-[324px]'>
+			<div className='w-full self-start'>
 				<UploadImage
 					name='image'
 					formik={formik}
@@ -137,7 +137,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 				<Box className='flex flex-col gap-[12px]'>
 					<div className='flex gap-[12px] max-lg:flex-col'>
 						<FormInput
-							className='w-full text-sm font-medium lg:w-[240px]'
+							className='!lg:w-[50%] w-full text-sm font-medium'
 							name='username'
 							label={t('username')}
 							formik={formik}
