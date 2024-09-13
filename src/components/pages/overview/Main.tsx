@@ -53,7 +53,7 @@ const OverviewMain: React.FC = () => {
 			backgroundColor: 'white',
 			color: 'black',
 			margin: isDesktop ? 35 : 10,
-			padding: 8,
+			padding: 14,
 			boxShadow: 'rgba(0, 0, 0, 0.15) 0px 0px 10px 5px',
 		},
 		[`& .${tooltipClasses.arrow}`]: {
@@ -77,7 +77,9 @@ const OverviewMain: React.FC = () => {
 			.availabilityDurian()
 			.then((res) => {
 				setAvailabilityData(res.data)
-				setYear(res.data![res.data!.length - 1].year)
+				if (!year) {
+					setYear(res.data![res.data!.length - 1].year)
+				}
 			})
 			.catch((error) => console.log(error))
 	}, [year])
@@ -96,10 +98,10 @@ const OverviewMain: React.FC = () => {
 					isDesktop ? 'mb-3' : 'mb-4 justify-center',
 				)}
 			>
-				<div className={classNames('[&>svg]:fill-[#0C5D52]', isDesktop ? '' : '')}>
+				<div className={classNames('[&>svg]:fill-primary')}>
 					<OverviewIcon />
 				</div>
-				<p className='text-2xl font-semibold text-[#0C5D52]'>{t('overview:overviewOfDurianPlantation')}</p>
+				<p className='text-primary text-2xl font-semibold'>{t('overview:overviewOfDurianPlantation')}</p>
 			</div>
 			<div className={classNames('flex h-full w-full gap-4', isDesktop ? 'flex-row' : 'flex-col-reverse')}>
 				<div className={classNames('flex bg-red-100', isDesktop ? 'h-full flex-grow' : 'h-[500px]')}></div>
@@ -138,12 +140,9 @@ const OverviewMain: React.FC = () => {
 							</Select>
 						</div>
 					</div>
-					<div className='relative flex w-full flex-row items-center justify-center rounded bg-white p-4 shadow'>
+					<div className='flex w-full flex-row items-center justify-center rounded bg-white p-4 shadow'>
 						<div className='flex h-full items-center justify-center'>
-							{/* TO FIX: เอา div ออก */}
-							<div className='[&>svg]:fill-[#0C5D52]'>
-								<OverviewYearDataIcon />
-							</div>
+							<OverviewYearDataIcon />
 						</div>
 						<div className='flex h-full w-[100%] flex-col items-end gap-1'>
 							<div className='flex items-center text-right text-sm font-medium'>
@@ -152,20 +151,19 @@ const OverviewMain: React.FC = () => {
 								<StyledTooltip
 									className='ml-1 hover:text-[#D5E2DC]'
 									title={
-										<div className='flex flex-row items-center'>
-											<div>
+										<div className='flex flex-row items-center gap-2'>
+											<p className='text-xs'>
 												{language === 'th'
 													? 'พื้นที่ปลูกทุเรียนได้จากการจำแนกภาพถ่ายจากดาวเทียมความละเอียดสูงโดยใช้ AI and Machine Learning'
 													: 'Identifying durian cultivation areas through the analysis of high resolution satellite imagery, enhanced by AI and Machine Learning technologies'}
-											</div>
-											{/* TO FIX: เอา div ออก */}
-											<div className='[&>svg]:fill-[#0C5D52]'>
+											</p>
+											<div>
 												<OverviewTooltipIcon />
 											</div>
 										</div>
 									}
 								>
-									<InfoIcon fontSize='small' className='text-yellow-400' />
+									<InfoIcon fontSize='small' className='text-secondary' />
 								</StyledTooltip>
 							</div>
 							<p className='text-[22px] font-semibold'>
@@ -173,7 +171,7 @@ const OverviewMain: React.FC = () => {
 							</p>
 							<div className='flex h-full w-full flex-col items-end'>
 								<p className='text-base font-medium'>{t(`overview:${areaUnit}`)}</p>
-								<p className='text-top text-[36px] font-bold leading-7 text-[#0C5D52]'>
+								<p className='text-top text-primary text-[36px] font-bold leading-7'>
 									{overviewData?.overall.area[areaUnit] ?? '-'}
 								</p>
 							</div>
@@ -196,7 +194,7 @@ const OverviewMain: React.FC = () => {
 						</div>
 						<hr className={classNames('w-full', isDesktop ? 'mb-2' : 'my-4')} />
 						<div className='mb-2 flex w-full text-sm font-medium text-[#5C5C5C]'>
-							<div className={classNames('flex w-1/2 flex-row items-center', isDesktop ? '' : 'ml-4')}>
+							<div className={classNames('flex w-1/2 flex-row items-center', isDesktop ? '' : 'ml-5')}>
 								<Box marginRight={1} width='10px' />
 								{t('overview:age')}
 							</div>
@@ -210,7 +208,7 @@ const OverviewMain: React.FC = () => {
 									<div
 										className={classNames(
 											'flex w-1/2 flex-row items-center',
-											isDesktop ? '' : 'ml-4',
+											isDesktop ? '' : 'ml-5',
 										)}
 									>
 										<Box

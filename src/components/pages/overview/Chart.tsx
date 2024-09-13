@@ -4,6 +4,8 @@ import 'billboard.js/dist/billboard.css'
 import { useTranslation } from 'next-i18next'
 import useResponsive from '@/hook/responsive'
 import useAreaUnit from '@/store/area-unit'
+import classNames from 'classnames'
+import { Languages } from '@/enum'
 
 // ทำ interface สำหรับ data เพิ่มด้วย
 interface OverviewBarTableProps {
@@ -82,9 +84,9 @@ const Chart: React.FC<OverviewBarTableProps> = ({ data }) => {
 				padding: {
 					mode: 'fit' as const,
 					top: 20,
-					bottom: 0,
-					right: isDesktop ? 25 : language === 'en' ? 40 : 25,
-					left: language === 'en' ? 25 : 5,
+					bottom: 10,
+					right: isDesktop ? 25 : language === Languages.TH ? 25 : 45,
+					left: language === Languages.TH ? 20 : 40,
 				},
 				resize: {
 					auto: true,
@@ -99,9 +101,34 @@ const Chart: React.FC<OverviewBarTableProps> = ({ data }) => {
 				},
 			})
 		}
-	}, [data, generateTooltips])
+	}, [data, generateTooltips, language, isDesktop])
 
-	return <div id='chart'></div>
+	return (
+		<div
+			id='chart'
+			className={classNames(
+				`bb`,
+				`[&_.bb-main]:font-[anuphan,sans-serif]`,
+				`[&_.bb-axis>.tick>line]:hidden`,
+				`[&_.bb-axis-x-label]:translate-y-[-13px] [&_.bb-axis-x-label]:text-[10px] [&_.bb-axis-x-label]:font-normal`,
+				`[&_.bb-axis-x]:text-sm [&_.bb-axis-x]:font-medium`,
+				`[&_.bb-axis-y-label]:translate-x-[26px] [&_.bb-axis-y-label]:translate-y-[-22px]`,
+				`[&_.bb-axis-y>.tick]:text-[10px] [&_.bb-axis-y>.tick]:opacity-35`,
+				`[&_.bb-tooltip]:mb-1 [&_.bb-tooltip]:w-max [&_.bb-tooltip]:p-1 [&_.bb-tooltip]:text-center [&_.bb-tooltip]:text-white [&_.bb-tooltip]:shadow-xl`,
+				`[&_.bb-xgrid-focus]:hidden`,
+				`[&_.bb-ygrids]:opacity-45`,
+				`[&_.domain]:hidden [&_.value]:text-center`,
+				isDesktop
+					? language === 'en'
+						? `[&_.bb-axis-x-label]:translate-x-[-254px]`
+						: `[&_.bb-axis-x-label]:translate-x-[-269px]`
+					: `[&_.bb-axis-x-label]:translate-y-[0px]`,
+				// : language === 'en'
+				// 	? `[&_.bb-axis-x-label]:translate-x-[-227px]`
+				// 	: `[&_.bb-axis-x-label]:translate-x-[-263px]`,
+			)}
+		></div>
+	)
 }
 
 export default Chart
