@@ -13,6 +13,7 @@
 
 	"confirm": "Confirm",
 	"cancel": "Cancel",
+	"back": "Back",
 
 	"unitArea": "Units",
 	"unitRai": "Rai",
@@ -46,5 +47,10 @@
 	"common": {
 		"uploadImg": "Upload Image",
 		"conditionImg": "File size does not exceed 3 MB (jpg or png)"
-	}
+	},
+
+	"resetPassword": "Reset Password",
+	"password": "Password",
+	"passwordNew": "New Password",
+	"passwordConfirm": "Confirm Password"
 }

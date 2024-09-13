@@ -48,5 +48,6 @@
 		"invalidFileType": "นามสกุลไฟล์ไม่ถูกต้อง",
 		"fileSizeLimitExceed": "ขนาดไฟล์ต้องไม่เกิน 15 MB (csv หรือ xlsx)"
 	},
-	"userManagement": "การจัดการผู้ใช้งาน"
+	"userManagement": "การจัดการผู้ใช้งาน",
+	"profileManagement": "จัดการข้อมูลส่วนตัว"
 }

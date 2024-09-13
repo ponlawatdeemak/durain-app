@@ -13,6 +13,7 @@
 
 	"confirm": "ยืนยัน",
 	"cancel": "ยกเลิก",
+	"back": "ย้อนกลับ",
 
 	"unitArea": "หน่วยพื้นที่",
 	"unitRai": "ไร่",
@@ -45,5 +46,10 @@
 	"common": {
 		"uploadImg": "อัปโหลดรูปภาพ",
 		"conditionImg": "ขนาดไฟล์ไม่เกิน 3 MB (jpg หรือ png)"
-	}
+	},
+
+	"resetPassword": "รีเซ็ตรหัสผ่าน",
+	"password": "รหัสผ่าน",
+	"passwordNew": "รหัสผ่านใหม่",
+	"passwordConfirm": "ยืนยันรหัสผ่าน"
 }

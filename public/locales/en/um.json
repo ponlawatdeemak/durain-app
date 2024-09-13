@@ -48,5 +48,6 @@
 		"invalidFileType": "Invalid file extension",
 		"fileSizeLimitExceed": "File size does not exceed 15 MB (csv or xlsx)"
 	},
-	"userManagement": "User Management"
+	"userManagement": "User Management",
+	"profileManagement": "Profile Management"
 }
