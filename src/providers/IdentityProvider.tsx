@@ -29,7 +29,7 @@ export default function IdentityProvider(props: Props) {
 		try {
 			const { data } = await service.auth.loginGuest()
 			if (data) {
-				const accessToken = data.tokens?.accessToken ?? ''
+				const accessToken = data.tokens?.idToken ?? ''
 				if (accessToken) {
 					updateAccessToken({ accessToken, refreshToken: data.tokens?.refreshToken })
 					setToken(accessToken)
