@@ -22,6 +22,20 @@
 	--foreground-color: white;
 	--background-color: #f2f5f8;
 
+	--primary-color-1: #0c5d52;
+	--primary-color-2: #8db9aa;
+	--primary-color-3: #d5e2dc;
+
+	--secondary-color-1: #dcba09;
+
+	/* success color */
+	--success-color-1: #0c626d;
+	--success-color-2: #edf8f4;
+
+	/* error color */
+	--error-color-1: #d13438;
+	--error-color-2: #f2d8de;
+
 	/* Deep Green */
 	--deep-green-50: #eaf2ee;
 	--deep-green-100: #d5e2dc;
