@@ -13,8 +13,8 @@ const AboutMain: React.FC = ({}) => {
 	return (
 		<div
 			className={classNames(
-				'flex max-h-[calc(100vh-130px)] w-full flex-1 flex-col',
-				isDesktop ? 'h-full p-6' : 'box-border p-4',
+				'flex w-full flex-1 flex-col',
+				isDesktop ? 'h-full max-h-[calc(100vh-130px)] p-6' : 'box-border p-4',
 			)}
 		>
 			<div
@@ -53,7 +53,7 @@ const AboutMain: React.FC = ({}) => {
 							? 'Durian Plantation Areas Analytics System using Satellite Data and Artificial Intelligence'
 							: 'ภาษาไทย'}
 					</div>
-					<div className='flex w-full flex-grow overflow-scroll text-sm font-light'>
+					<div className='flex w-full flex-grow overflow-y-auto pr-0 text-sm font-light [&&::-webkit-scrollbar-thumb]:rounded [&&::-webkit-scrollbar-thumb]:bg-[#307A59] [&::-webkit-scrollbar-track]:rounded [&::-webkit-scrollbar-track]:bg-[#FFFFFF] [&::-webkit-scrollbar]:w-[4px]'>
 						{language === Languages.EN
 							? `Lorem ipsum dolor sit amet consectetur. Sit vel malesuada sed dictum euismod nisi viverra nisi
 						tincidunt. Viverra malesuada consectetur in ut. Cras diam consectetur enim mattis mattis eget
@@ -113,7 +113,7 @@ const AboutMain: React.FC = ({}) => {
 					<div className='flex justify-center rounded-t-lg bg-[#21573F] py-12'>
 						<AboutCompanyLogo />
 					</div>
-					<div className='flex flex-col gap-6 px-5 font-light'>
+					<div className='flex flex-col gap-6 px-5 pb-5 font-light'>
 						<p className='text-center text-2xl text-[#21573F]'>
 							{language === Languages.EN ? 'English' : 'บริษัท ไทย แอดวานซ์ อินโนเวชั่น จำกัด'}
 						</p>
