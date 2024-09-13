@@ -1,5 +1,5 @@
 import { useTranslation } from 'next-i18next'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import service from '@/api/index'
 import { OverviewIcon, OverviewYearDataIcon, OverviewTooltipIcon } from '@/components/svg/MenuIcon'
 import { Box, MenuItem, Select } from '@mui/material'
@@ -7,11 +7,11 @@ import { availabilityDurianDtoOut, OverviewSummaryDtoOut } from '@/api/overview/
 import { ResponseLanguage } from '@/api/interface'
 import useAreaUnit from '@/store/area-unit'
 import InfoIcon from '@mui/icons-material/Info'
-import OverviewBar from './OverviewBar'
 import { styled } from '@mui/material/styles'
 import Tooltip, { tooltipClasses } from '@mui/material/Tooltip'
 import useResponsive from '@/hook/responsive'
 import classNames from 'classnames'
+import Chart from './Chart'
 
 const OverviewMain: React.FC = () => {
 	const { t, i18n } = useTranslation()
@@ -23,13 +23,17 @@ const OverviewMain: React.FC = () => {
 	const [availabilityData, setAvailabilityData] = useState<availabilityDurianDtoOut[]>()
 	const [overviewData, setOverviewData] = useState<OverviewSummaryDtoOut>()
 
-	const availableAdm = availabilityData?.find((item: availabilityDurianDtoOut) => item.year === year)?.availableAdm
-	const selectedYearObj = availabilityData?.find((item: availabilityDurianDtoOut) => item.year === year)
-	const selectedAdm = selectedYearObj?.availableAdm.find((item) => item.admCode === admCode)?.admName
-	const overviewBarXAxis = overviewData?.overall.ageClass.map((item) => item.name[language])
-	const overviewBarColumns = overviewData?.overall.ageClass.map((item) => item.percent)
-	const overviewBarTooltipData = overviewData?.overall.ageClass.map((item) => item.area[areaUnit])
-	const overviewBarColorArr = overviewData?.overall.ageClass.map((item) => item.color)
+	const availableAdm = useMemo(() => {
+		return availabilityData?.find((item: availabilityDurianDtoOut) => item.year === year)?.availableAdm
+	}, [availabilityData, year])
+
+	const selectedYearObj = useMemo(() => {
+		return availabilityData?.find((item: availabilityDurianDtoOut) => item.year === year)
+	}, [availabilityData, year])
+
+	const selectedAdm = useMemo(() => {
+		return selectedYearObj?.availableAdm.find((item) => item.admCode === admCode)?.admName
+	}, [selectedYearObj?.availableAdm, admCode])
 
 	const StyledTooltip = styled(
 		({ className, title, children, ...props }: { className?: any; title: any; children: any }) => (
@@ -72,7 +76,6 @@ const OverviewMain: React.FC = () => {
 		service.overview
 			.availabilityDurian()
 			.then((res) => {
-				console.log('availabilityDurian : ', res.data)
 				setAvailabilityData(res.data)
 				setYear(res.data![res.data!.length - 1].year)
 			})
@@ -137,6 +140,7 @@ const OverviewMain: React.FC = () => {
 					</div>
 					<div className='relative flex w-full flex-row items-center justify-center rounded bg-white p-4 shadow'>
 						<div className='flex h-full items-center justify-center'>
+							{/* TO FIX: เอา div ออก */}
 							<div className='[&>svg]:fill-[#0C5D52]'>
 								<OverviewYearDataIcon />
 							</div>
@@ -154,6 +158,7 @@ const OverviewMain: React.FC = () => {
 													? 'พื้นที่ปลูกทุเรียนได้จากการจำแนกภาพถ่ายจากดาวเทียมความละเอียดสูงโดยใช้ AI and Machine Learning'
 													: 'Identifying durian cultivation areas through the analysis of high resolution satellite imagery, enhanced by AI and Machine Learning technologies'}
 											</div>
+											{/* TO FIX: เอา div ออก */}
 											<div className='[&>svg]:fill-[#0C5D52]'>
 												<OverviewTooltipIcon />
 											</div>
@@ -187,15 +192,7 @@ const OverviewMain: React.FC = () => {
 							{selectedAdm?.[language] ?? t('overview:allProvinces')}
 						</p>
 						<div className={classNames('flex', isDesktop ? 'flex-grow' : '')}>
-							{overviewBarXAxis && overviewBarColumns && overviewBarTooltipData && (
-								<OverviewBar
-									key={JSON.stringify(overviewBarXAxis)}
-									overviewBarColorArr={overviewBarColorArr}
-									overviewBarXAxis={overviewBarXAxis}
-									overviewBarColumns={['data', ...overviewBarColumns]}
-									overviewBarTooltipData={overviewBarTooltipData}
-								/>
-							)}
+							<Chart data={overviewData}></Chart>
 						</div>
 						<hr className={classNames('w-full', isDesktop ? 'mb-2' : 'my-4')} />
 						<div className='mb-2 flex w-full text-sm font-medium text-[#5C5C5C]'>
