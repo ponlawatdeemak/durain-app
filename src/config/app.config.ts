@@ -7,4 +7,4 @@ export enum AppPath {
 	Playground = '/playground',
 }
 
-export const allowGuestPages = [AppPath.Overview, AppPath.About]
+export const allowGuestPages = [AppPath.Overview, AppPath.About, AppPath.Playground]

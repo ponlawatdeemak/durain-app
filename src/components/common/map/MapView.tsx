@@ -6,8 +6,6 @@ import MapLibre from './MapLibre'
 import MapTools from './MapTool'
 import { useMap } from './context/map'
 
-const MAX_ZOOM: number = 18
-const MIN_ZOOM: number = 5
 const basemapList: BaseMap[] = [
 	{
 		value: BasemapType.CartoLight,
@@ -26,12 +24,12 @@ const basemapList: BaseMap[] = [
 	},
 ]
 
-export default function MapView({ className = '' }: MapViewProps) {
+export default function MapView({ className = '', onMapClick }: MapViewProps) {
 	const { mapType } = useMap()
 	return (
 		<div className={classNames('relative flex h-full flex-1 flex-col overflow-hidden', className)}>
-			<MapTools minZoom={MIN_ZOOM} maxZoom={MAX_ZOOM} basemapList={basemapList}></MapTools>
-			{mapType === MapType.Libre ? <MapLibre /> : <MapGoogle />}
+			<MapTools basemapList={basemapList}></MapTools>
+			{mapType === MapType.Libre ? <MapLibre onMapClick={onMapClick} /> : <MapGoogle onMapClick={onMapClick} />}
 		</div>
 	)
 }

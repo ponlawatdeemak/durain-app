@@ -1,6 +1,6 @@
 import { createContext, useState, ReactNode, useContext, useEffect, useCallback } from 'react'
 import maplibregl from 'maplibre-gl'
-import { BasemapType, MapType, MapViewState } from '../interface/map'
+import { BasemapType, MapPoint, MapType, MapViewState } from '../interface/map'
 
 interface MapContextProps {
 	setViewState: (viewState: MapViewState) => void
@@ -10,12 +10,12 @@ interface MapContextProps {
 	setGoogleMapInstance: (mapInstance: google.maps.Map | null) => void
 	setMapLibreInstance: (mapInstance: maplibregl.Map | null) => void
 	getLocation: () => void
+	getPopup: (point: MapPoint, node: any) => void
 	viewState: MapViewState
 	mapType: MapType
 	basemap: BasemapType
 	googleMapInstance: google.maps.Map | null
 	mapLibreInstance: maplibregl.Map | null
-	currentLocation: { lat: number; lng: number } | null
 }
 
 const MapContext = createContext<MapContextProps>({
@@ -26,6 +26,7 @@ const MapContext = createContext<MapContextProps>({
 	setGoogleMapInstance: () => {},
 	setMapLibreInstance: () => {},
 	getLocation: () => {},
+	getPopup: () => {},
 	viewState: {
 		longitude: 100,
 		latitude: 13,
@@ -35,7 +36,6 @@ const MapContext = createContext<MapContextProps>({
 	basemap: BasemapType.CartoLight,
 	googleMapInstance: null,
 	mapLibreInstance: null,
-	currentLocation: null,
 })
 
 export const MapProvider = ({ children }: { children: ReactNode }) => {
@@ -47,19 +47,22 @@ export const MapProvider = ({ children }: { children: ReactNode }) => {
 	})
 	const [googleMapInstance, setGoogleMapInstance] = useState<google.maps.Map | null>(null)
 	const [mapLibreInstance, setMapLibreInstance] = useState<maplibregl.Map | null>(null)
-	const [currentLocation, setCurrentLocation] = useState<{ lat: number; lng: number } | null>(null)
+	// const [currentLocation, setCurrentLocation] = useState<{ lat: number; lng: number } | null>(null)
 	const [basemap, setBasemap] = useState(BasemapType.CartoLight)
 
 	useEffect(() => {
 		console.log('mapLibreInstance', mapLibreInstance)
 		console.log('googleMapInstance', googleMapInstance)
-		// window['mapLibreInstance'] = mapLibreInstance
-		// window['googleMapInstance'] = googleMapInstance
 	}, [mapLibreInstance, googleMapInstance])
 
 	useEffect(() => {
-		if (basemap === BasemapType.Google) setMapType(MapType.Google)
-		else setMapType(MapType.Libre)
+		if (basemap === BasemapType.Google) {
+			setMapType(MapType.Google)
+			setMapLibreInstance(null)
+		} else {
+			setMapType(MapType.Libre)
+			setGoogleMapInstance(null)
+		}
 	}, [basemap])
 
 	const setExtent = useCallback(
@@ -82,36 +85,26 @@ export const MapProvider = ({ children }: { children: ReactNode }) => {
 	)
 
 	const getLocation = useCallback(() => {
+		// add toggle marker
 		// if (currentLocation) {
+		// 	// remove marker pin current location
 		// 	setCurrentLocation(null)
-		// } else
+		// re
+		// }
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(
 				async (position) => {
-					const { latitude, longitude } = position.coords
-					setCurrentLocation({ lat: latitude, lng: longitude })
-					setViewState({ longitude, latitude, zoom: 14 })
-					if (mapType === MapType.Google && googleMapInstance) {
-						// googleMapInstance.setCenter(new google.maps.LatLng(latitude, longitude))
-						// googleMapInstance.setZoom(14)
-					} else if (mapType === MapType.Libre && mapLibreInstance) {
-						// mapLibreInstance.setCenter([longitude, latitude])
-						// mapLibreInstance.setZoom(14)
-						// const image = await mapLibreInstance.loadImage(
-						// 	'https://upload.wikimedia.org/wikipedia/commons/7/7c/201408_cat.png',
-						// )
-						// mapLibreInstance.addImage('cat', image.data)
-						// mapLibreInstance.getImage('cat')
-						// mapLibreInstance.addLayer({
-						// 	id: 'points',
-						// 	type: 'symbol',
-						// 	source: 'point',
-						// 	layout: {
-						// 		'icon-image': 'cat',
-						// 		'icon-size': 0.25,
-						// 	},
-						// })
-						// const marker = new maplibregl.Marker().setLngLat([longitude, latitude]).addTo(mapLibreInstanc)
+					const { longitude, latitude } = position.coords
+					if (mapType === MapType.Libre && mapLibreInstance) {
+						mapLibreInstance.setCenter({ lat: latitude, lng: longitude })
+						setViewState({ longitude, latitude, zoom: 14 })
+						// add marker pin current location
+					} else if (mapType === MapType.Google && googleMapInstance) {
+						console.log(googleMapInstance.setCenter)
+						googleMapInstance.setCenter({ lat: latitude, lng: longitude })
+						googleMapInstance.setZoom(14)
+						setViewState({ longitude, latitude, zoom: 14 })
+						// add marker pin current location
 					}
 				},
 				(error) => {
@@ -121,7 +114,31 @@ export const MapProvider = ({ children }: { children: ReactNode }) => {
 		} else {
 			console.log('Geolocation is not supported by this browser.')
 		}
-	}, [mapType, googleMapInstance, mapLibreInstance, currentLocation])
+	}, [mapType, googleMapInstance, mapLibreInstance, setViewState])
+
+	const getPopup = useCallback(
+		(point: MapPoint, _: any) => {
+			// point: จุดที่ต้องการให้ popup แสดง
+			// element: Html ที่ต้องการแสดงใน popup
+			// console.log('getPopup', point)
+			// const element = `<div>Hello</div>`
+			// if (mapType === MapType.Libre && mapLibreInstance) {
+			// 	new maplibregl.Popup().setLngLat(point).setHTML(element).addTo(mapLibreInstance)
+			// 	// add marker
+			// } else if (mapType === MapType.Google && googleMapInstance) {
+			// 	new google.maps.InfoWindow({
+			// 		content: element,
+			// 	}).open(
+			// 		googleMapInstance,
+			// 		new google.maps.Marker({
+			// 			position: point,
+			// 			map: googleMapInstance,
+			// 		}),
+			// 	)
+			// }
+		},
+		[mapType, googleMapInstance, mapLibreInstance],
+	)
 
 	return (
 		<MapContext.Provider
@@ -133,12 +150,12 @@ export const MapProvider = ({ children }: { children: ReactNode }) => {
 				setGoogleMapInstance,
 				setMapLibreInstance,
 				getLocation,
+				getPopup,
 				mapType,
 				basemap,
 				viewState,
 				googleMapInstance,
 				mapLibreInstance,
-				currentLocation,
 			}}
 		>
 			{children}

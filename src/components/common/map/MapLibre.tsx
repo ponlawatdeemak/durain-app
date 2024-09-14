@@ -22,7 +22,7 @@ const DeckGLOverlay = () => {
 	return null
 }
 
-export default function MapLibre({ layers }: MapInterface) {
+export default function MapLibre({ layers, onMapClick }: MapInterface) {
 	const mapRef = useRef<maplibregl.Map>(null)
 	const overlay = useLayerStore((state) => state.overlay)
 	const { viewState, basemap, setViewState, setMapLibreInstance } = useMap()
@@ -46,6 +46,7 @@ export default function MapLibre({ layers }: MapInterface) {
 			preserveDrawingBuffer={true}
 			zoom={viewState?.zoom}
 			onMove={(e) => setViewState?.(e.viewState)}
+			onClick={(e) => onMapClick?.(e.lngLat)}
 			ref={mapRef as unknown as React.LegacyRef<MapRef>}
 		>
 			<DeckGLOverlay />

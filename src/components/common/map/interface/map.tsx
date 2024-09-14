@@ -3,10 +3,12 @@ import { PropsWithChildren } from 'react'
 
 export interface MapInterface {
 	layers?: LayersList
+	onMapClick?: (point: MapPoint | null) => void
 }
 
 export interface MapViewProps extends PropsWithChildren {
 	className?: string
+	onMapClick?: (point: MapPoint | null) => void
 }
 export interface MapViewState {
 	longitude: number
@@ -20,9 +22,12 @@ export interface BaseMap {
 	label: string
 }
 
+export interface MapPoint {
+	lat: number
+	lng: number
+}
+
 export interface MapToolsProps {
-	minZoom?: number
-	maxZoom?: number
 	basemapList?: BaseMap[]
 	layersList?: any[]
 }

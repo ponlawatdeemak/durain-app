@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useState } from 'react'
 import { Box, ToggleButton, ToggleButtonGroup, Typography, IconButton, Popover, List } from '@mui/material'
 import { mdiLayersOutline, mdiMapMarker, mdiMinus, mdiPlus, mdiRulerSquareCompass } from '@mdi/js'
 import Icon from '@mdi/react'
@@ -6,40 +6,31 @@ import { useTranslation } from 'react-i18next'
 import { MapToolsProps } from './interface/map'
 import { useMap } from './context/map'
 
-const MapTools: React.FC<MapToolsProps> = ({ minZoom = 4, maxZoom = 18, basemapList = [], layersList = [] }) => {
+const MapTools: React.FC<MapToolsProps> = ({ basemapList = [], layersList = [] }) => {
 	const { t } = useTranslation()
 	const { viewState, basemap, getLocation, setViewState, setBasemap } = useMap()
 	const [anchorBasemap, setAnchorBasemap] = useState<HTMLButtonElement | null>(null)
 	const [anchorLegend, setAnchorLegend] = useState<HTMLButtonElement | null>(null)
 
-	const handleZoomIn = useCallback(() => {
-		const level = viewState.zoom + 1
-		if (level <= maxZoom) {
-			setViewState({ ...viewState, zoom: level })
-		}
-	}, [viewState])
-
-	const handleZoomOut = useCallback(() => {
-		const level = viewState.zoom - 1
-		if (level >= minZoom) {
-			setViewState({ ...viewState, zoom: level })
-		}
-	}, [viewState])
-
 	return (
 		<>
-			{/* zoom in/out, etc. */}
+			{/* zoom in/out, measurement, current location */}
 			<Box className='absolute right-2 top-2 z-10 flex flex-col gap-2'>
-				<IconButton className='box-shadow rounded-lg bg-white' onClick={handleZoomIn}>
+				<IconButton
+					className='box-shadow rounded-lg bg-white'
+					onClick={() => setViewState({ ...viewState, zoom: viewState.zoom + 1 })}
+				>
 					<Icon path={mdiPlus} size={1} />
 				</IconButton>
-				<IconButton className='box-shadow rounded-lg bg-white' onClick={handleZoomOut}>
+				<IconButton
+					className='box-shadow rounded-lg bg-white'
+					onClick={() => setViewState({ ...viewState, zoom: viewState.zoom - 1 })}
+				>
 					<Icon path={mdiMinus} size={1} />
 				</IconButton>
 				<IconButton className='box-shadow rounded-lg bg-white' onClick={() => {}}>
 					<Icon path={mdiRulerSquareCompass} size={1} />
 				</IconButton>
-
 				<IconButton className='box-shadow rounded-lg bg-white' onClick={() => getLocation()}>
 					<Icon path={mdiMapMarker} size={1} />
 				</IconButton>

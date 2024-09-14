@@ -21,7 +21,7 @@ const DeckGLOverlay = () => {
 	return null
 }
 
-export default function MapGoogle({ layers }: MapInterface) {
+export default function MapGoogle({ layers, onMapClick }: MapInterface) {
 	const mapRef = useRef<google.maps.Map | null>(null)
 	const overlay = useLayerStore((state) => state.overlay)
 	const { viewState, setViewState, setGoogleMapInstance } = useMap()
@@ -50,6 +50,7 @@ export default function MapGoogle({ layers }: MapInterface) {
 				zoom={viewState?.zoom}
 				streetViewControl={false}
 				mapTypeId='hybrid'
+				onClick={(e) => onMapClick?.(e.detail.latLng)}
 				onBoundsChanged={(evt) => {
 					mapRef.current = evt.map
 					setViewState?.({
