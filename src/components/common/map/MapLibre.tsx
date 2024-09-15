@@ -1,11 +1,10 @@
 'use client'
 import 'maplibre-gl/dist/maplibre-gl.css'
-import React, { useRef, useEffect } from 'react'
-import { Map, MapRef, useControl } from 'react-map-gl/maplibre'
-import maplibregl from 'maplibre-gl'
+import React, { useEffect } from 'react'
+import { Map, useControl } from 'react-map-gl/maplibre'
 import { MapboxOverlay } from '@deck.gl/mapbox'
 import useLayerStore from './store/map'
-import { BasemapType, MapInterface } from './interface/map'
+import { BasemapType } from './interface/map'
 import { useMap } from './context/map'
 import { BASEMAP } from '@deck.gl/carto'
 
@@ -14,24 +13,24 @@ const DeckGLOverlay = () => {
 	const setOverlay = useLayerStore((state) => state.setOverlay)
 	const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay({}))
 	useEffect(() => {
-		overlay.setProps({ layers })
+		if (overlay instanceof MapboxOverlay) {
+			overlay.setProps({ layers })
+		}
 	}, [layers, overlay])
 	useEffect(() => {
-		setOverlay(overlay)
+		if (overlay instanceof MapboxOverlay) {
+			setOverlay(overlay)
+		}
+		return () => {
+			overlay.finalize()
+		}
 	}, [overlay, setOverlay])
 	return null
 }
 
-export default function MapLibre({ layers, onMapClick }: MapInterface) {
-	const mapRef = useRef<maplibregl.Map>(null)
+export default function MapLibre() {
 	const overlay = useLayerStore((state) => state.overlay)
-	const { viewState, basemap, setViewState, setMapLibreInstance } = useMap()
-
-	useEffect(() => {
-		if (mapRef.current) {
-			setMapLibreInstance(mapRef.current)
-		}
-	}, [mapRef.current, setMapLibreInstance])
+	const { viewState, basemap, setViewState, setMapLibreInstance, mapType } = useMap()
 
 	useEffect(() => {
 		return () => {
@@ -46,8 +45,7 @@ export default function MapLibre({ layers, onMapClick }: MapInterface) {
 			preserveDrawingBuffer={true}
 			zoom={viewState?.zoom}
 			onMove={(e) => setViewState?.(e.viewState)}
-			onClick={(e) => onMapClick?.(e.lngLat)}
-			ref={mapRef as unknown as React.LegacyRef<MapRef>}
+			ref={(ref) => setMapLibreInstance(ref?.getMap() || null)}
 		>
 			<DeckGLOverlay />
 		</Map>

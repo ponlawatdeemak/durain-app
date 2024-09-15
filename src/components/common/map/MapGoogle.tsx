@@ -1,10 +1,9 @@
 'use client'
-import React, { useMemo, useEffect, useRef } from 'react'
+import React, { useMemo, useEffect } from 'react'
 import { APIProvider, Map, useMap as useMapGoogle } from '@vis.gl/react-google-maps'
 import { GoogleMapsOverlay } from '@deck.gl/google-maps'
 import useLayerStore from './store/map'
 import { useMap } from './context/map'
-import { MapInterface } from './interface/map'
 
 const DeckGLOverlay = () => {
 	const layers = useLayerStore((state) => state.layers)
@@ -12,25 +11,25 @@ const DeckGLOverlay = () => {
 	const map = useMapGoogle()
 	const overlay = useMemo(() => new GoogleMapsOverlay({}), [])
 	useEffect(() => {
-		overlay.setProps({ layers })
+		if (overlay instanceof GoogleMapsOverlay) {
+			overlay.setProps({ layers })
+		}
 	}, [layers, overlay])
 	useEffect(() => {
-		overlay.setMap(map)
-		setOverlay(overlay)
+		if (overlay instanceof GoogleMapsOverlay) {
+			overlay.setMap(map)
+			setOverlay(overlay)
+		}
+		return () => {
+			overlay.finalize()
+		}
 	}, [map, overlay, setOverlay])
 	return null
 }
 
-export default function MapGoogle({ layers, onMapClick }: MapInterface) {
-	const mapRef = useRef<google.maps.Map | null>(null)
+export default function MapGoogle() {
 	const overlay = useLayerStore((state) => state.overlay)
-	const { viewState, setViewState, setGoogleMapInstance } = useMap()
-
-	useEffect(() => {
-		if (mapRef.current) {
-			setGoogleMapInstance(mapRef.current)
-		}
-	}, [mapRef.current, setGoogleMapInstance])
+	const { viewState, setViewState, setGoogleMapInstance, mapType } = useMap()
 
 	useEffect(() => {
 		return () => {
@@ -50,9 +49,8 @@ export default function MapGoogle({ layers, onMapClick }: MapInterface) {
 				zoom={viewState?.zoom}
 				streetViewControl={false}
 				mapTypeId='hybrid'
-				onClick={(e) => onMapClick?.(e.detail.latLng)}
 				onBoundsChanged={(evt) => {
-					mapRef.current = evt.map
+					setGoogleMapInstance(evt.map)
 					setViewState?.({
 						latitude: evt.detail.center.lat,
 						longitude: evt.detail.center.lng,

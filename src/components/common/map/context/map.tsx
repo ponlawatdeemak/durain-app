@@ -1,6 +1,11 @@
 import { createContext, useState, ReactNode, useContext, useEffect, useCallback } from 'react'
 import maplibregl from 'maplibre-gl'
-import { BasemapType, MapPoint, MapType, MapViewState } from '../interface/map'
+import { BasemapType, LatLng, MapInfoWindow, MapType, MapViewState } from '../interface/map'
+import useLayerStore from '../store/map'
+import { IconLayer } from '@deck.gl/layers'
+import { MVTLayer } from '@deck.gl/geo-layers'
+import { Layer } from '@deck.gl/core'
+import { layerIdConfig } from '@/config/app.config'
 
 interface MapContextProps {
 	setViewState: (viewState: MapViewState) => void
@@ -10,12 +15,24 @@ interface MapContextProps {
 	setGoogleMapInstance: (mapInstance: google.maps.Map | null) => void
 	setMapLibreInstance: (mapInstance: maplibregl.Map | null) => void
 	getLocation: () => void
-	getPopup: (point: MapPoint, node: any) => void
+	showMapInfoWindow: (infoWindow: MapInfoWindow) => void
+	hideMapInfoWindow: () => void
 	viewState: MapViewState
 	mapType: MapType
 	basemap: BasemapType
 	googleMapInstance: google.maps.Map | null
 	mapLibreInstance: maplibregl.Map | null
+	mapInfoWindow: MapInfoWindow | null
+}
+
+const DEFAULT = {
+	viewState: {
+		longitude: 100,
+		latitude: 13,
+		zoom: 5,
+	},
+	mapType: MapType.Google,
+	basemap: BasemapType.Google,
 }
 
 const MapContext = createContext<MapContextProps>({
@@ -26,29 +43,24 @@ const MapContext = createContext<MapContextProps>({
 	setGoogleMapInstance: () => {},
 	setMapLibreInstance: () => {},
 	getLocation: () => {},
-	getPopup: () => {},
-	viewState: {
-		longitude: 100,
-		latitude: 13,
-		zoom: 5,
-	},
-	mapType: MapType.Libre,
-	basemap: BasemapType.CartoLight,
+	showMapInfoWindow: () => {},
+	hideMapInfoWindow: () => {},
+	viewState: DEFAULT.viewState,
+	mapType: DEFAULT.mapType,
+	basemap: DEFAULT.basemap,
 	googleMapInstance: null,
 	mapLibreInstance: null,
+	mapInfoWindow: null,
 })
 
 export const MapProvider = ({ children }: { children: ReactNode }) => {
-	const [mapType, setMapType] = useState<MapType>(MapType.Libre)
-	const [viewState, setViewState] = useState<MapViewState>({
-		longitude: 100,
-		latitude: 13,
-		zoom: 5,
-	})
+	const { getLayer, getLayers, setLayers, addLayer, removeLayer } = useLayerStore()
+	const [mapType, setMapType] = useState<MapType>(DEFAULT.mapType)
+	const [basemap, setBasemap] = useState(DEFAULT.basemap)
+	const [viewState, setViewState] = useState<MapViewState>(DEFAULT.viewState)
 	const [googleMapInstance, setGoogleMapInstance] = useState<google.maps.Map | null>(null)
 	const [mapLibreInstance, setMapLibreInstance] = useState<maplibregl.Map | null>(null)
-	// const [currentLocation, setCurrentLocation] = useState<{ lat: number; lng: number } | null>(null)
-	const [basemap, setBasemap] = useState(BasemapType.CartoLight)
+	const [mapInfoWindow, setMapInfoWindow] = useState<MapInfoWindow | null>(null)
 
 	useEffect(() => {
 		console.log('mapLibreInstance', mapLibreInstance)
@@ -64,6 +76,23 @@ export const MapProvider = ({ children }: { children: ReactNode }) => {
 			setGoogleMapInstance(null)
 		}
 	}, [basemap])
+
+	useEffect(() => {
+		const recreateLayers = () => {
+			const layers = getLayers()
+			const newLayers = layers.map((layer) => {
+				if (layer instanceof IconLayer) {
+					return new IconLayer({ ...layer.props })
+				}
+				if (layer instanceof MVTLayer) {
+					return new MVTLayer({ ...layer.props })
+				}
+				return layer
+			})
+			setLayers(newLayers as Layer[])
+		}
+		recreateLayers()
+	}, [mapType, setLayers, getLayers])
 
 	const setExtent = useCallback(
 		(extent: [number, number, number, number]) => {
@@ -85,60 +114,75 @@ export const MapProvider = ({ children }: { children: ReactNode }) => {
 	)
 
 	const getLocation = useCallback(() => {
-		// add toggle marker
-		// if (currentLocation) {
-		// 	// remove marker pin current location
-		// 	setCurrentLocation(null)
-		// re
-		// }
-		if (navigator.geolocation) {
-			navigator.geolocation.getCurrentPosition(
-				async (position) => {
-					const { longitude, latitude } = position.coords
-					if (mapType === MapType.Libre && mapLibreInstance) {
-						mapLibreInstance.setCenter({ lat: latitude, lng: longitude })
-						setViewState({ longitude, latitude, zoom: 14 })
-						// add marker pin current location
-					} else if (mapType === MapType.Google && googleMapInstance) {
-						console.log(googleMapInstance.setCenter)
-						googleMapInstance.setCenter({ lat: latitude, lng: longitude })
-						googleMapInstance.setZoom(14)
-						setViewState({ longitude, latitude, zoom: 14 })
-						// add marker pin current location
-					}
-				},
-				(error) => {
-					console.error('Error fetching location:', error)
-				},
-			)
+		const layer = getLayer(layerIdConfig.toolCurrentLocation)
+		if (layer) {
+			removeLayer(layerIdConfig.toolCurrentLocation)
 		} else {
-			console.log('Geolocation is not supported by this browser.')
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(
+					async (position) => {
+						const { longitude: lng, latitude: lat } = position.coords
+						if (mapType === MapType.Libre && mapLibreInstance) {
+							mapLibreInstance.setCenter({ lat, lng })
+						} else if (mapType === MapType.Google && googleMapInstance) {
+							googleMapInstance.setCenter({ lat, lng })
+							googleMapInstance.setZoom(14)
+						}
+						setViewState({ longitude: lng, latitude: lat, zoom: 14 })
+						addCurrentLocationPin({ lat, lng })
+					},
+					(error) => {
+						console.error('Error fetching location:', error)
+					},
+				)
+			} else {
+				console.log('Geolocation is not supported by this browser.')
+			}
 		}
-	}, [mapType, googleMapInstance, mapLibreInstance, setViewState])
+	}, [mapType, googleMapInstance, mapLibreInstance, setViewState, getLayer, removeLayer])
 
-	const getPopup = useCallback(
-		(point: MapPoint, _: any) => {
-			// point: จุดที่ต้องการให้ popup แสดง
-			// element: Html ที่ต้องการแสดงใน popup
-			// console.log('getPopup', point)
-			// const element = `<div>Hello</div>`
-			// if (mapType === MapType.Libre && mapLibreInstance) {
-			// 	new maplibregl.Popup().setLngLat(point).setHTML(element).addTo(mapLibreInstance)
-			// 	// add marker
-			// } else if (mapType === MapType.Google && googleMapInstance) {
-			// 	new google.maps.InfoWindow({
-			// 		content: element,
-			// 	}).open(
-			// 		googleMapInstance,
-			// 		new google.maps.Marker({
-			// 			position: point,
-			// 			map: googleMapInstance,
-			// 		}),
-			// 	)
-			// }
+	const addCurrentLocationPin = useCallback(
+		(latlnt: LatLng) => {
+			const layer = getLayer(layerIdConfig.toolCurrentLocation)
+			if (!layer) {
+				addLayer(
+					new IconLayer({
+						id: layerIdConfig.toolCurrentLocation,
+						data: [{ coordinates: [latlnt.lng, latlnt.lat] }],
+						iconAtlas: '/images/map/icon-atlas.png',
+						iconMapping: {
+							marker: {
+								x: 0,
+								y: 0,
+								width: 128,
+								height: 128,
+								anchorX: 64,
+								anchorY: 64,
+								mask: true,
+							},
+						},
+						getIcon: () => 'marker',
+						getPosition: (d: any) => {
+							console.log('getPosition', d)
+							return d.coordinates
+						},
+						getSize: 40,
+						getColor: [255, 0, 0],
+						pickable: true,
+					}),
+				)
+			}
 		},
-		[mapType, googleMapInstance, mapLibreInstance],
+		[getLayer, addLayer],
 	)
+
+	const showMapInfoWindow = (infoWindow: MapInfoWindow) => {
+		setMapInfoWindow(infoWindow)
+	}
+
+	const hideMapInfoWindow = () => {
+		setMapInfoWindow(null)
+	}
 
 	return (
 		<MapContext.Provider
@@ -150,12 +194,14 @@ export const MapProvider = ({ children }: { children: ReactNode }) => {
 				setGoogleMapInstance,
 				setMapLibreInstance,
 				getLocation,
-				getPopup,
+				showMapInfoWindow,
+				hideMapInfoWindow,
 				mapType,
 				basemap,
 				viewState,
 				googleMapInstance,
 				mapLibreInstance,
+				mapInfoWindow,
 			}}
 		>
 			{children}

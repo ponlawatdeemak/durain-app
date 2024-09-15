@@ -1,15 +1,5 @@
-import { LayersList } from '@deck.gl/core'
-import { PropsWithChildren } from 'react'
+import { Layer } from '@deck.gl/core'
 
-export interface MapInterface {
-	layers?: LayersList
-	onMapClick?: (point: MapPoint | null) => void
-}
-
-export interface MapViewProps extends PropsWithChildren {
-	className?: string
-	onMapClick?: (point: MapPoint | null) => void
-}
 export interface MapViewState {
 	longitude: number
 	latitude: number
@@ -22,14 +12,30 @@ export interface BaseMap {
 	label: string
 }
 
-export interface MapPoint {
+export interface LatLng {
 	lat: number
 	lng: number
 }
 
-export interface MapToolsProps {
-	basemapList?: BaseMap[]
-	layersList?: any[]
+export interface MapInfoWindow {
+	positon?: {
+		x: number
+		y: number
+	}
+	children?: React.ReactNode
+}
+
+export interface MapLayer {
+	id: string
+	label: string
+	color: string
+	layer: Layer
+}
+
+export interface MapLegend {
+	id: string
+	label: string
+	color: string
 }
 
 export enum MapType {
