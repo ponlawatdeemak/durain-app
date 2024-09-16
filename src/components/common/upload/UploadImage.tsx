@@ -4,6 +4,7 @@ import { Avatar, Button, FormHelperText } from '@mui/material'
 import { FormikProps } from 'formik'
 import React, { ChangeEvent, useEffect, useState } from 'react'
 import { useTranslation } from 'next-i18next'
+import { PictureIcon } from '@/components/svg/MenuIcon'
 
 export interface UploadImageProps {
 	name: string
@@ -75,11 +76,11 @@ const UploadImage: React.FC<UploadImageProps> = ({
 					<Avatar
 						src={image}
 						alt='Profile Image'
-						className='bg-success-light h-[120px] w-[120px]'
+						className='h-[120px] w-[120px] bg-success-light'
 						onError={handleImageError}
 					/>
 				) : (
-					<Avatar className='bg-success-light h-[120px] w-[120px]'>
+					<Avatar className='h-[120px] w-[120px] bg-success-light'>
 						<Icon path={defaultImage} size={'90px'} className='text-primary' />
 					</Avatar>
 				)}
@@ -100,7 +101,7 @@ const UploadImage: React.FC<UploadImageProps> = ({
 					variant='outlined'
 					tabIndex={-1}
 					className='border-gray flex h-[32px] gap-[4px] py-[6px] pl-[8px] pr-[10px] text-base text-black [&_.MuiButton-startIcon]:m-0'
-					startIcon={<Icon path={mdiTrayArrowUp} size={'20px'} />}
+					startIcon={<PictureIcon />}
 					disabled={disabled}
 				>
 					{t('common.uploadImg')}
