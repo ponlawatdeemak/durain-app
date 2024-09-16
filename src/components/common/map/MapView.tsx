@@ -1,4 +1,4 @@
-'use client'
+import { forwardRef, memo, useCallback, useImperativeHandle, useRef, useState } from 'react'
 import classNames from 'classnames'
 import { BaseMap, BasemapType, MapType, MapInfoWindow, MapLayer } from './interface/map'
 import MapGoogle from './MapGoogle'

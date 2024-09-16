@@ -21,7 +21,7 @@ const FormInput: React.FC<FormInputProps> = ({
 	const errorMessage = formik?.touched[name] && formik?.errors[name]
 	return (
 		<FormControl fullWidth={fullWidth} required={required} className={className}>
-			<FormLabel id={`${name}-label`} className='mb-2'>
+			<FormLabel id={`${name}-label`} className='mb-2 [&_.MuiFormLabel-asterisk]:text-error'>
 				{label}
 			</FormLabel>
 			<OutlinedInput

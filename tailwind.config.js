@@ -26,6 +26,16 @@ module.exports = {
 					DEFAULT: 'var(--error-color-1)',
 					light: 'var(--error-color-2)',
 				},
+                green: {
+                    light: 'var(--light-green-color)',
+                    light1: 'var(--light-green-color1)',
+                    dark: 'var(--dark-green-color)',
+                    dark1: 'var(--deep-green-600)',
+                    alpha: 'var(--light-green-color-alpha)'
+                },
+                gray: {
+                    DEFAULT: 'var(--light-gray-color)'
+                }
 			},
 		},
 	},

@@ -1,5 +1,4 @@
-'use client'
-import React, { useMemo, useEffect } from 'react'
+import React, { forwardRef, useImperativeHandle, useMemo, useEffect, useRef } from 'react'
 import { APIProvider, Map, useMap as useMapGoogle } from '@vis.gl/react-google-maps'
 import { GoogleMapsOverlay } from '@deck.gl/google-maps'
 import useLayerStore from './store/map'

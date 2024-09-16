@@ -1,4 +1,3 @@
-'use client'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import React, { useEffect } from 'react'
 import { Map, useControl } from 'react-map-gl/maplibre'
