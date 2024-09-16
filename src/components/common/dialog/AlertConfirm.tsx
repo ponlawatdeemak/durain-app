@@ -62,7 +62,7 @@ const AlertConfirm: React.FC<AlertConfirmProps> = ({
 						onClick={onClose}
 						variant='outlined'
 						size='large'
-						className='border-gray h-[40px] px-[15px] text-base font-semibold text-black'
+						className='!border-gray h-[40px] px-[15px] text-base font-semibold !text-black'
 					>
 						{cancelTitle || t('cancel')}
 					</Button>
@@ -81,7 +81,7 @@ const AlertConfirm: React.FC<AlertConfirmProps> = ({
 						onClick={onConfirm}
 						variant='contained'
 						size='large'
-						className='bg-error h-[40px] px-[16px] text-base font-semibold'
+						className='h-[40px] bg-error px-[16px] text-base font-semibold'
 					>
 						{confirmTitle || t('close')}
 					</Button>

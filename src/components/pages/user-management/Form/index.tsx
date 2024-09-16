@@ -94,6 +94,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 	const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState<boolean>(false)
 	const [isResetPasswordOpen, setIsResetPasswordOpen] = useState<boolean>(false)
 	const [resetPasswordStatus, setResetPasswordStatus] = useState<boolean | null>(null)
+	const [isConfirmResetPasswordOpen, setIsConfirmResetPasswordOpen] = useState<boolean>(false)
 	const [alertInfo, setAlertInfo] = React.useState<AlertInfoType>({
 		open: false,
 		severity: 'success',
@@ -391,35 +392,34 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 		onClose()
 	}, [onClose])
 
+	const handleValidatePassword = useCallback(() => {
+		passwordFormik.validateForm().then(async (errors) => {
+			if (Object.keys(errors).length === 0) {
+				setIsConfirmResetPasswordOpen(true)
+			} else {
+				passwordFormik.handleSubmit()
+			}
+		})
+	}, [])
+
 	const handleResetPassword = useCallback(
-		(passwordFormValues: PasswordFormValues, userProfileData: GetProfileDtoOut | undefined) => {
-			console.log('handleResetPassword')
-			console.log('userProfileData :: ', userProfileData)
-			console.log('values :: ', passwordFormValues)
-			passwordFormik.validateForm().then(async (errors) => {
-				if (Object.keys(errors).length === 0) {
-					console.log('no err')
-					// try resetting password
-					const payload = {
-						userId: userProfileData?.id || '',
-						password: passwordFormValues.currentPassword,
-						newPassword: passwordFormValues.confirmPassword,
-					}
-					try {
-						const res = await mutateChangePassword(payload)
-						console.log('res :: ', res)
-						setResetPasswordStatus(true)
-						// on success
-					} catch (error) {
-						// on error
-						console.log('error :: ', error)
-						setResetPasswordStatus(false)
-					}
-				} else {
-					console.log('some err')
-					passwordFormik.handleSubmit()
-				}
-			})
+		async (passwordFormValues: PasswordFormValues, userProfileData: GetProfileDtoOut | undefined) => {
+			// try resetting password
+			const payload = {
+				userId: userProfileData?.id || '',
+				password: passwordFormValues.currentPassword,
+				newPassword: passwordFormValues.confirmPassword,
+			}
+			try {
+				const res = await mutateChangePassword(payload)
+				console.log('res :: ', res)
+				setResetPasswordStatus(true)
+				// on success
+			} catch (error) {
+				// on error
+				console.log('error :: ', error)
+				setResetPasswordStatus(false)
+			}
 		},
 		[],
 	)
@@ -458,6 +458,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 	const handleClickReturnProfile = () => {
 		setIsResetPasswordOpen(false)
 		setResetPasswordStatus(null)
+		setIsConfirmResetPasswordOpen(false)
 		passwordFormik.resetForm()
 	}
 	return (
@@ -521,7 +522,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 										className='h-[40px] !w-[106px] px-[16px] py-[8px] text-base font-semibold'
 										variant='contained'
 										onClick={() => {
-											handleResetPassword(passwordFormik.values, userProfileData?.data)
+											handleValidatePassword()
 										}}
 										color='primary'
 										// disabled={busy}
@@ -537,13 +538,6 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 										{t('confirm')}
 									</Button>
 								</div>
-								{/* <AlertConfirm
-									open={confirmOpen}
-									title={t('alert.confirmEditPassword')}
-									content={t('alert.confirmChangePassword')}
-									onClose={() => setConfirmOpen(false)}
-									onConfirm={handleConfirmSubmit}
-								/> */}
 							</form>
 						</div>
 					) : isResetPasswordOpen && resetPasswordStatus ? (
@@ -703,6 +697,16 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 				onConfirm={() => {
 					onDelete(userId)
 					setIsConfirmDeleteOpen(false)
+				}}
+			/>
+			{/* Alert Confirm Change Password */}
+			<AlertConfirm
+				open={isConfirmResetPasswordOpen}
+				title={t('alert.confirmEditPassword')}
+				content={t('alert.confirmChangePassword')}
+				onClose={() => setIsConfirmResetPasswordOpen(false)}
+				onConfirm={() => {
+					handleResetPassword(passwordFormik.values, userProfileData?.data)
 				}}
 			/>
 
