@@ -6,19 +6,24 @@ import { useTranslation } from 'next-i18next'
 interface SuccessResetPasswordProps {
 	buttonLabel: string
 	buttonHref: string
+	handleClickReturnProfile: () => void
 }
 
-const SuccessResetPassword: React.FC<SuccessResetPasswordProps> = ({ buttonLabel, buttonHref }) => {
+const SuccessResetPassword: React.FC<SuccessResetPasswordProps> = ({
+	buttonLabel,
+	buttonHref,
+	handleClickReturnProfile,
+}) => {
 	const { t } = useTranslation('appbar')
 	return (
 		<div className='flex flex-col items-center gap-4'>
 			<div className='relative flex size-24 items-center justify-center overflow-hidden rounded-full'>
-				<div className='bg-success-light absolute h-full w-full' />
-				<Icon path={mdiCheckBold} size={2} className='text-success z-10' />
+				<div className='absolute h-full w-full bg-success-light' />
+				<Icon path={mdiCheckBold} size={2} className='z-10 text-success' />
 			</div>
 			<Typography className='text-2xl font-bold'>{t('auth.headerResetPasswordSuccess')}</Typography>
 			<Typography className='text-center'>{t('auth.subHeaderResetPasswordSuccess')}</Typography>
-			<Button variant='contained' className='mt-8' href={buttonHref}>
+			<Button variant='contained' className='mt-8' href={buttonHref} onClick={handleClickReturnProfile}>
 				{t(buttonLabel)}
 			</Button>
 		</div>

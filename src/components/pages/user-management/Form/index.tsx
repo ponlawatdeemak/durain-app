@@ -38,6 +38,12 @@ import classNames from 'classnames'
 import { UserDialogMode } from '@/components/shared/UserDialog'
 // import LoadingButton from '@mui/lab/LoadingButton'
 import clsx from 'clsx'
+import ResetPasswordForm from '@/components/shared/ResetPasswordForm'
+import { mdiArrowLeft } from '@mdi/js'
+import { ResponseDto } from '@/api/interface'
+import { ChangePasswordDtoIn } from '@/api/auth/dto-in.dto'
+import { GetProfileDtoOut } from '@/api/um/dto-out.dto'
+import PasswordResetContent from './PasswordResetContent'
 
 export interface UserManagementProps {
 	open: boolean
@@ -67,6 +73,18 @@ const defaultFormValues: UMFormValues = {
 	flagStatus: 'A',
 }
 
+interface PasswordFormValues {
+	currentPassword: string
+	password: string
+	confirmPassword: string
+}
+
+const defaultPasswordValues: PasswordFormValues = {
+	currentPassword: '',
+	password: '',
+	confirmPassword: '',
+}
+
 export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 	const { t, i18n } = useTranslation(['common', 'um'])
 	const { open, onClose, userId, isEdit, setOpen, setIsSearch, userDialogMode } = props
@@ -74,6 +92,8 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 	const [isConfirmAddOpen, setIsConfirmAddOpen] = useState<boolean>(false)
 	const [isConfirmEditOpen, setIsConfirmEditOpen] = useState<boolean>(false)
 	const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState<boolean>(false)
+	const [isResetPasswordOpen, setIsResetPasswordOpen] = useState<boolean>(false)
+	const [resetPasswordStatus, setResetPasswordStatus] = useState<boolean | null>(null)
 	const [alertInfo, setAlertInfo] = React.useState<AlertInfoType>({
 		open: false,
 		severity: 'success',
@@ -87,8 +107,10 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 		event.preventDefault()
 		formik.validateForm().then((errors) => {
 			if (Object.keys(errors).length === 0) {
+				console.log('no err')
 				isEdit ? setIsConfirmEditOpen(true) : setIsConfirmAddOpen(true)
 			} else {
+				console.log('submit')
 				formik.handleSubmit()
 			}
 		})
@@ -103,6 +125,21 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 		responsibleProvinceCode: yup.string().required(t('warning.inputProvince')),
 		orgCode: yup.string().required(t('warning.inputOrgCode')),
 		role: yup.string().required(t('warning.inputRole')),
+	})
+
+	const passwordValidationSchema = yup.object({
+		password: yup
+			.string()
+			.required(t('warning.inputNewPassword'))
+			.min(8, t('warning.minPasswordCharacters'))
+			.matches(/^(?=.*[0-9])/, t('warning.minPasswordNumber'))
+			.matches(/^(?=.*[a-z])/, t('warning.minPasswordLowercaseLetter'))
+			.matches(/^(?=.*[A-Z])/, t('warning.minPasswordUppercaseLetter'))
+			.matches(/^(?=.*[!@#$%^&*()_+\-=\[\]{};:\\|,.<>~\/?])/, t('warning.minPasswordSymbol')),
+		confirmPassword: yup
+			.string()
+			.required(t('warning.inputConfirmPassword'))
+			.oneOf([yup.ref('password')], t('warning.invalidPasswordMatch')),
 	})
 
 	const {
@@ -349,8 +386,54 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 
 	const handleOnClose = useCallback(() => {
 		formik.resetForm()
+		passwordFormik.resetForm()
+		setIsResetPasswordOpen(false)
+		setResetPasswordStatus(null)
 		onClose()
 	}, [onClose])
+
+	const handleResetPassword = useCallback(
+		(passwordFormValues: PasswordFormValues, userProfileData: GetProfileDtoOut | undefined) => {
+			console.log('handleResetPassword')
+			console.log('userProfileData :: ', userProfileData)
+			console.log('values :: ', passwordFormValues)
+			passwordFormik.validateForm().then(async (errors) => {
+				if (Object.keys(errors).length === 0) {
+					console.log('no err')
+					// try resetting password
+					const payload = {
+						userId: userProfileData?.id || '',
+						password: passwordFormValues.currentPassword,
+						newPassword: passwordFormValues.confirmPassword,
+					}
+					try {
+						const res = await mutateChangePassword(payload)
+						console.log('res :: ', res)
+						setResetPasswordStatus(true)
+						// on success
+					} catch (error) {
+						// on error
+						console.log('error :: ', error)
+						setResetPasswordStatus(false)
+					}
+				} else {
+					console.log('some err')
+					passwordFormik.handleSubmit()
+				}
+			})
+		},
+		[],
+	)
+
+	const {
+		isPending: isChangePasswordPending,
+		error: passwordError,
+		mutateAsync: mutateChangePassword,
+	} = useMutation({
+		mutationFn: async (payload: ChangePasswordDtoIn) => {
+			await service.auth.changePassword(payload)
+		},
+	})
 
 	const formik = useFormik<UMFormValues>({
 		enableReinitialize: true,
@@ -362,12 +445,22 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 		onSubmit,
 	})
 
-	// initialValues:
-	// 		userDialogMode === UserDialogMode.UserAdd
-	// 			? userData?.data
-	// 			: userDialogMode === UserDialogMode.UserProfile
-	// 				? userProfileData?.data
-	// 				: defaultFormValues,
+	const passwordFormik = useFormik<any>({
+		enableReinitialize: true,
+		initialValues: defaultPasswordValues,
+		validationSchema: passwordValidationSchema,
+		onSubmit: () => {},
+	})
+
+	const handleBackResetPassword = () => {
+		setIsResetPasswordOpen((prev) => !prev)
+	}
+
+	const handleClickReturnProfile = () => {
+		setIsResetPasswordOpen(false)
+		setResetPasswordStatus(null)
+		passwordFormik.resetForm()
+	}
 	return (
 		<div className='flex flex-col'>
 			<Dialog
@@ -377,18 +470,23 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 				// onSubmit={handleSubmitUser}
 				fullWidth
 				scroll='paper'
-				className={classNames('[&_.MuiPaper-root]:h-[728px] [&_.MuiPaper-root]:max-w-[80vw]', {
-					'': !isDesktop,
-				})}
+				className={classNames(
+					'[&_.MuiPaper-root]:h-[728px] [&_.MuiPaper-root]:max-w-[80vw] 2xl:[&_.MuiPaper-root]:max-w-[938px]',
+					{
+						'': !isDesktop,
+					},
+				)}
 			>
 				<DialogTitle
 					className={clsx('', {
 						'!pl-[32px]': isDesktop,
 					})}
 				>
-					{isEdit || userDialogMode === UserDialogMode.UserProfile
-						? t('editUserAccount', { ns: 'um' })
-						: t('addUser', { ns: 'um' })}
+					{userDialogMode === UserDialogMode.UserProfile
+						? t('profileManagement', { ns: 'um' })
+						: userDialogMode === UserDialogMode.UserEdit
+							? t('editUserAccount', { ns: 'um' })
+							: t('addUser', { ns: 'um' })}
 				</DialogTitle>
 				<DialogContent
 					dividers={true}
@@ -396,91 +494,163 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 						'!pl-[32px]': isDesktop,
 					})}
 				>
-					<div className='flex grow !flex-row-reverse items-center justify-between gap-3 max-lg:block lg:flex-row'>
-						<ProfileForm
-							formik={formik}
-							loading={isPostProfileUMPending || isPutProfileUMPending || isUserDataLoading}
-							isFormUM={true}
-							isEditFormUM={isEdit}
-							isDisabledProfile={userId === session?.user.id}
-							userDialogmode={userDialogMode}
-							userData={
-								userDialogMode === UserDialogMode.UserProfile ? userProfileData?.data : userData?.data
-							}
-						/>
-					</div>
-					{session?.user.id !== userId && userDialogMode !== UserDialogMode.UserProfile && (
-						<FormControlLabel
-							sx={{
-								pointerEvents: 'none',
-								margin: 0,
-							}}
-							className='max-lg:pt-1'
-							control={
-								<div className='pointer-events-auto'>
-									<IOSSwitch
-										className='m-0 mr-2 [&_.Mui-checked+.MuiSwitch-track]:!bg-[#2F7A59]'
-										checked={formik.values.flagStatus === 'A' ? true : false}
-										onChange={(event) => {
-											formik.setFieldValue('flagStatus', event.target.checked ? 'A' : 'C')
+					{isResetPasswordOpen && resetPasswordStatus === null ? (
+						<div className='flex h-full flex-col gap-[16px] lg:gap-[18px] lg:px-[16px] lg:py-[10px]'>
+							<div>
+								<Button
+									className='flex !w-[106px] gap-[4px] !rounded-xl !border-[#D6D6D6] bg-white py-[4px] pl-[6px] pr-[8px] text-sm !font-medium !text-black [&_.MuiButton-startIcon]:m-0'
+									onClick={handleBackResetPassword}
+									variant='outlined'
+									// disabled={busy}
+									startIcon={<Icon path={mdiArrowLeft} size={'18px'} className='text-black' />}
+								>
+									{t('back')}
+								</Button>
+							</div>
+							<form
+								onSubmit={formik.handleSubmit}
+								className='flex h-full flex-col gap-[28px] max-lg:justify-between lg:w-[306px]'
+							>
+								<ResetPasswordForm
+									className='flex flex-col gap-[16px] lg:gap-[18px]'
+									formik={passwordFormik}
+									changePassword={true}
+									// loading={busy}
+								/>
+								<div className='flex max-lg:justify-center'>
+									<Button
+										className='h-[40px] !w-[106px] px-[16px] py-[8px] text-base font-semibold'
+										variant='contained'
+										onClick={() => {
+											handleResetPassword(passwordFormik.values, userProfileData?.data)
 										}}
-									/>
+										color='primary'
+										// disabled={busy}
+										// startIcon={
+										// 	busy ? (
+										// 		<CircularProgress
+										// 			className='[&_.MuiCircularProgress-circle]:text-[#00000042]'
+										// 			size={16}
+										// 		/>
+										// 	) : null
+										// }
+									>
+										{t('confirm')}
+									</Button>
 								</div>
-							}
-							label={t('enableUser', { ns: 'um' })}
+								{/* <AlertConfirm
+									open={confirmOpen}
+									title={t('alert.confirmEditPassword')}
+									content={t('alert.confirmChangePassword')}
+									onClose={() => setConfirmOpen(false)}
+									onConfirm={handleConfirmSubmit}
+								/> */}
+							</form>
+						</div>
+					) : isResetPasswordOpen && resetPasswordStatus ? (
+						<PasswordResetContent
+							isSuccess={resetPasswordStatus}
+							handleClickReturnProfile={handleClickReturnProfile}
 						/>
+					) : isResetPasswordOpen && !resetPasswordStatus ? (
+						<PasswordResetContent
+							isSuccess={resetPasswordStatus}
+							handleClickReturnProfile={handleClickReturnProfile}
+						/>
+					) : (
+						<>
+							<div className='flex grow !flex-row-reverse items-center justify-between gap-3 max-lg:block lg:flex-row'>
+								<ProfileForm
+									formik={formik}
+									loading={isPostProfileUMPending || isPutProfileUMPending || isUserDataLoading}
+									isFormUM={true}
+									isEditFormUM={isEdit}
+									isDisabledProfile={userId === session?.user.id}
+									userDialogmode={userDialogMode}
+									userData={
+										userDialogMode === UserDialogMode.UserProfile
+											? userProfileData?.data
+											: userData?.data
+									}
+									isResetPasswordOpen={isResetPasswordOpen}
+									setIsResetPasswordOpen={setIsResetPasswordOpen}
+								/>
+							</div>
+							{session?.user.id !== userId && userDialogMode !== UserDialogMode.UserProfile && (
+								<FormControlLabel
+									sx={{
+										pointerEvents: 'none',
+										margin: 0,
+									}}
+									className='max-lg:pt-1'
+									control={
+										<div className='pointer-events-auto'>
+											<IOSSwitch
+												className='m-0 mr-2 [&_.Mui-checked+.MuiSwitch-track]:!bg-[#2F7A59]'
+												checked={formik.values.flagStatus === 'A' ? true : false}
+												onChange={(event) => {
+													formik.setFieldValue('flagStatus', event.target.checked ? 'A' : 'C')
+												}}
+											/>
+										</div>
+									}
+									label={t('enableUser', { ns: 'um' })}
+								/>
+							)}
+						</>
 					)}
 				</DialogContent>
-				<DialogActions
-					className={classNames('flex justify-between !p-4', {
-						'': isEdit || session?.user.id === userId,
-					})}
-				>
-					{session?.user.id !== userId && isEdit && userDialogMode !== UserDialogMode.UserProfile && (
-						<Button
-							className='h-[40px] w-[150px] !border-[#D6D6D6] bg-white text-sm !text-[#D13438]'
-							variant='outlined'
-							onClick={() => {
-								setIsConfirmDeleteOpen(true)
-							}}
-							startIcon={<Icon path={mdiTrashCanOutline} size={1} color={'#D13438'} />}
-							disabled={isPostProfileUMPending || isPutProfileUMPending || isUserDataLoading}
-						>
-							{t('deleteUser', { ns: 'um' })}
-						</Button>
-					)}
-					<div className='flex-1' />
-					<div
-						className={classNames('flex justify-end space-x-2', {
+				{!isResetPasswordOpen && (
+					<DialogActions
+						className={classNames('flex justify-between !p-4', {
 							'': isEdit || session?.user.id === userId,
 						})}
 					>
-						<Button
-							className='h-[40px] w-[71px] bg-white text-sm text-black'
-							variant='outlined'
-							onClick={handleOnClose}
-							disabled={isPostProfileUMPending || isPutProfileUMPending || isUserDataLoading}
+						{session?.user.id !== userId && isEdit && userDialogMode !== UserDialogMode.UserProfile && (
+							<Button
+								className='h-[40px] w-[150px] !border-[#D6D6D6] bg-white text-sm !text-[#D13438]'
+								variant='outlined'
+								onClick={() => {
+									setIsConfirmDeleteOpen(true)
+								}}
+								startIcon={<Icon path={mdiTrashCanOutline} size={1} color={'#D13438'} />}
+								disabled={isPostProfileUMPending || isPutProfileUMPending || isUserDataLoading}
+							>
+								{t('deleteUser', { ns: 'um' })}
+							</Button>
+						)}
+						<div className='flex-1' />
+						<div
+							className={classNames('flex justify-end space-x-2', {
+								'': isEdit || session?.user.id === userId,
+							})}
 						>
-							{t('cancel')}
-						</Button>
-						<Button
-							className='h-[40px] w-[71px] px-[16px] py-[8px] text-base text-sm font-semibold'
-							variant='contained'
-							onClick={handleSubmitUser}
-							color='primary'
-							disabled={isPostProfileUMPending || isPutProfileUMPending || isUserDataLoading}
-							startIcon={
-								isPostProfileUMPending || isPutProfileUMPending || isUserDataLoading ? (
-									<CircularProgress
-										className='[&_.MuiCircularProgress-circle]:text-[#00000042]'
-										size={16}
-									/>
-								) : null
-							}
-						>
-							{t('save', { ns: 'um' })}
-						</Button>
-						{/* <LoadingButton
+							<Button
+								className='h-[40px] w-[71px] bg-white text-sm text-black'
+								variant='outlined'
+								onClick={handleOnClose}
+								disabled={isPostProfileUMPending || isPutProfileUMPending || isUserDataLoading}
+							>
+								{t('cancel')}
+							</Button>
+							<Button
+								className='h-[40px] w-[71px] px-[16px] py-[8px] text-base text-sm font-semibold'
+								variant='contained'
+								onClick={handleSubmitUser}
+								color='primary'
+								disabled={isPostProfileUMPending || isPutProfileUMPending || isUserDataLoading}
+								startIcon={
+									isPostProfileUMPending || isPutProfileUMPending || isUserDataLoading ? (
+										<CircularProgress
+											className='[&_.MuiCircularProgress-circle]:text-[#00000042]'
+											size={16}
+										/>
+									) : null
+								}
+							>
+								{t('save', { ns: 'um' })}
+							</Button>
+							{/* <LoadingButton
 							fullWidth
 							loading={isPostProfileUMPending || isPutProfileUMPending || isUserDataLoading}
 							loadingPosition='start'
@@ -492,8 +662,9 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 						>
 							<span>{t('save', { ns: 'um' })}</span>
 						</LoadingButton> */}
-					</div>
-				</DialogActions>
+						</div>
+					</DialogActions>
+				)}
 			</Dialog>
 			{/* Alert Confirm Add New */}
 			<AlertConfirm

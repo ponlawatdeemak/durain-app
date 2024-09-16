@@ -2,7 +2,7 @@ import React from 'react'
 import AutocompleteInput from '@/components/common/input/AutocompleteInput'
 import FormInput from '@/components/common/input/FormInput'
 import UploadImage from '@/components/common/upload/UploadImage'
-import { Box, Divider, Typography } from '@mui/material'
+import { Box, Button, Divider, Typography } from '@mui/material'
 import { FormikProps } from 'formik'
 import { useEffect } from 'react'
 import service from '@/api'
@@ -28,6 +28,8 @@ export interface ProfileFormProps {
 	isEditFormUM?: boolean
 	userDialogmode?: UserDialogMode
 	userData?: GetProfileDtoOut | GetUmDtoOut
+	isResetPasswordOpen?: boolean
+	setIsResetPasswordOpen?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const ProfileForm: React.FC<ProfileFormProps> = ({
@@ -39,6 +41,8 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 	isEditFormUM = false,
 	userDialogmode,
 	userData,
+	isResetPasswordOpen,
+	setIsResetPasswordOpen = () => {},
 }) => {
 	const { t, i18n } = useTranslation(['common', 'um'])
 	// const { i18n: i18nWithCookie } = useSwitchLanguage(i18n.language as Languages, 'appbar')
@@ -77,9 +81,10 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 		queryFn: () => service.lookup.get('roles'),
 	})
 
-	console.log('userData :: ', userData)
-	console.log('provinceData :: ', provinceLookupData)
-	console.log('districtLookupData :: ', districtLookupData)
+	const handleClickResetPassword = () => {
+		setIsResetPasswordOpen((prev) => !prev)
+	}
+
 	return (
 		<>
 			<div className='w-full self-start'>
@@ -245,6 +250,27 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 							required={isFormUM}
 						/>
 					</div>
+					{userDialogmode === UserDialogMode.UserProfile && (
+						<div
+							className={classNames('flex gap-[16px] max-lg:flex-col lg:mt-[24px] lg:gap-[12px]', {
+								'max-lg:hidden': isHiddenProfile,
+							})}
+						>
+							<Button
+								className='h-[40px] w-[150px] !border-[#2F7A59] bg-white text-sm !text-[#2F7A59] lg:w-[240px]'
+								variant='outlined'
+								onClick={handleClickResetPassword}
+								startIcon={
+									<div className='[&>svg]:fill-[#2F7A59]'>
+										<ContactIcon width={26} height={24} />
+									</div>
+								}
+								// disabled={isPostProfileUMPending || isPutProfileUMPending || isUserDataLoading}
+							>
+								{t('resetPassword')}
+							</Button>
+						</div>
+					)}
 				</Box>
 			</div>
 		</>

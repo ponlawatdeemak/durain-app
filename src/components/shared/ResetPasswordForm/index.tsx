@@ -20,7 +20,7 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
 	changePassword = false,
 	resetPassword = false,
 }) => {
-	const { t } = useTranslation(['default', 'appbar'])
+	const { t } = useTranslation(['common', 'appbar'])
 	return (
 		<div className={className}>
 			{resetPassword && <FormInput name='email' label={t('email')} disabled={isEmail} formik={formik} />}
