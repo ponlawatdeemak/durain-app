@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@billboard.js/react": "^1.1.1",
     "@deck.gl/carto": "^9.0.28",
     "@deck.gl/core": "^9.0.28",
     "@deck.gl/google-maps": "^9.0.28",
@@ -25,6 +26,7 @@
     "@tanstack/react-query": "^5.53.2",
     "@vis.gl/react-google-maps": "^1.1.0",
     "axios": "^1.7.4",
+    "billboard.js": "^3.13.0",
     "classnames": "^2.5.1",
     "cors": "^2.8.5",
     "date-fns": "^3.6.0",
