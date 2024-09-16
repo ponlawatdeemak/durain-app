@@ -55,6 +55,7 @@
 	"passwordConfirm": "Confirm Password",
 
 	"warning": {
+		"inputUserName": "Please enter your username.",
 		"inputEmail": "Please enter your email.",
 		"inputPassword": "Please enter your password.",
 		"inputNewPassword": "Please enter a new password.",
@@ -78,5 +79,8 @@
 	"alert": {
 		"confirmEditPassword": "Confirm password change?",
 		"confirmChangePassword": "Do you want change user password?"
-	}
+	},
+
+	"pleaseEnter": "Please enter",
+	"notEnter": "Not enter"
 }

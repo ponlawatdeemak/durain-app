@@ -130,6 +130,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 	})
 
 	const passwordValidationSchema = yup.object({
+		currentPassword: yup.string().required(t('warning.inputPassword')),
 		password: yup
 			.string()
 			.required(t('warning.inputNewPassword'))
@@ -419,6 +420,8 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 				// on error
 				console.log('error :: ', error)
 				setResetPasswordStatus(false)
+			} finally {
+				setIsConfirmResetPasswordOpen(false)
 			}
 		},
 		[],
@@ -452,6 +455,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 	})
 
 	const handleBackResetPassword = () => {
+		passwordFormik.resetForm()
 		setIsResetPasswordOpen((prev) => !prev)
 	}
 
