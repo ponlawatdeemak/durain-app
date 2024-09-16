@@ -120,6 +120,7 @@ export const authOptions: NextAuthOptions = {
 				updateAccessToken({
 					accessToken: token.access_token ?? undefined,
 					refreshToken: token.refresh_token ?? undefined,
+					accessType: session.user ? 'Login' : 'Guest', // **ไม่แน่ใจถูกไหมนะ
 				})
 				const res = await service.um.getProfile().catch((error) => console.error(error))
 				profile = res?.data

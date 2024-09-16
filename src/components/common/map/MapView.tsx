@@ -1,86 +1,77 @@
-'use client'
 import { forwardRef, memo, useCallback, useImperativeHandle, useRef, useState } from 'react'
 import classNames from 'classnames'
-import { Box } from '@mui/material'
-import { BASEMAP } from '@deck.gl/carto'
-import { MapViewProps, MapViewState } from './interface/map'
-import MapGoogle, { MapGoogleRef } from './MapGoogle'
-import MapLibre, { MapLibreRef } from './MapLibre'
+import { BaseMap, BasemapType, MapType, MapInfoWindow, MapLayer } from './interface/map'
+import MapGoogle from './MapGoogle'
+import MapLibre from './MapLibre'
 import MapTools from './MapTools'
+import { useMap } from './context/map'
+import { Button, Paper } from '@mui/material'
+import { PropsWithChildren, useEffect } from 'react'
+import useLayerStore from './store/map'
 
-const MAX_ZOOM = 10
-const MIN_ZOOM = 3
-const INITIAL_VIEW_STATE: MapViewState = {
-	longitude: 100,
-	latitude: 13,
-	zoom: 5,
+// Remark
+// 1. iconLayer สลับ google, libre แล้วหาย
+// 2. measurement ยังไม่มี solution
+// 3. legend ยังไม่ได้ solution ที่แน่นอน
+
+const basemapList: BaseMap[] = [
+	{
+		value: BasemapType.CartoLight,
+		image: '/images/map/basemap_bright.png',
+		label: 'map.street',
+	},
+	{
+		value: BasemapType.CartoDark,
+		image: '/images/map/basemap_satellite.png',
+		label: 'map.satellite',
+	},
+	{
+		value: BasemapType.Google,
+		image: '/images/map/basemap_satellite_hybrid.png',
+		label: 'map.hybrid',
+	},
+]
+
+export interface MapViewProps extends PropsWithChildren {
+	className?: string
+	initialLayer?: MapLayer[]
 }
 
-export interface MapViewRef {
-	setMapExtent: (bounds: number[][]) => void
-}
+export default function MapView({ className = '', initialLayer }: MapViewProps) {
+	const { mapType, mapInfoWindow, hideMapInfoWindow } = useMap()
+	const { setLayers } = useLayerStore()
 
-function MapView({ className = '' }: MapViewProps, ref: React.Ref<MapViewRef>) {
-	const [viewState, setViewState] = useState<MapViewState>(INITIAL_VIEW_STATE)
-	const [basemap, setBasemap] = useState('carto-light')
-
-	const mapLibreRef = useRef<MapLibreRef | null>(null)
-	const mapGoogleRef = useRef<MapGoogleRef | null>(null)
-
-	useImperativeHandle(ref, () => ({
-		setMapExtent: (bounds: number[][]) => {
-			if (basemap === 'google' && mapGoogleRef.current) {
-				const googleBounds: google.maps.LatLngBoundsLiteral = {
-					north: bounds[1][1],
-					south: bounds[0][1],
-					east: bounds[1][0],
-					west: bounds[0][0],
-				}
-				mapGoogleRef.current.setExtent(googleBounds)
-			} else if (mapLibreRef.current) {
-				mapLibreRef.current.setExtent(bounds)
-			}
-		},
-	}))
-
-	const onViewStateChange = useCallback((v: any) => {
-		setViewState(v)
-	}, [])
-
-	const handleBasemapChange = useCallback((newBasemap: string) => {
-		setBasemap((prev) => newBasemap || prev)
-	}, [])
-
-	const handleZoom = useCallback(
-		(level: number) => {
-			if (level <= MAX_ZOOM && level >= MIN_ZOOM) {
-				setViewState({ ...viewState, zoom: level })
-			}
-		},
-		[viewState],
-	)
+	useEffect(() => {
+		console.log('Hello MapView')
+		if (initialLayer && initialLayer.length) {
+			const layers = initialLayer.map((item) => item.layer)
+			setLayers(layers)
+		}
+	}, [setLayers])
 
 	return (
-		<div className={classNames('relative flex h-full flex-1 flex-col overflow-hidden', className)}>
-			<Box className='absolute bottom-2 left-2 z-10'>
-				<MapTools
-					onBasemapChange={handleBasemapChange}
-					onZoomIn={() => handleZoom(viewState.zoom + 1)}
-					onZoomOut={() => handleZoom(viewState.zoom - 1)}
-				></MapTools>
-			</Box>
-			{basemap !== 'google' ? (
-				<MapLibre
-					ref={mapLibreRef}
-					viewState={viewState as any}
-					mapStyle={basemap === 'carto-light' ? BASEMAP.VOYAGER : BASEMAP.DARK_MATTER}
-					onViewStateChange={onViewStateChange}
-				/>
-			) : (
-				<MapGoogle ref={mapGoogleRef} viewState={viewState} onViewStateChange={onViewStateChange} />
+		<div className={classNames('relative flex flex-1 overflow-hidden', className)}>
+			<MapTools basemapList={basemapList} layerList={initialLayer}></MapTools>
+			{mapType === MapType.Libre ? <MapLibre /> : <MapGoogle />}
+			{mapInfoWindow && (
+				<InfoWindow positon={mapInfoWindow.positon} onClose={hideMapInfoWindow}>
+					{mapInfoWindow.children}
+				</InfoWindow>
 			)}
 		</div>
 	)
 }
 
-export default forwardRef(MapView)
+export interface InfoWindowProps extends MapInfoWindow, PropsWithChildren {
+	onClose?: () => void
+}
+
+const InfoWindow: React.FC<InfoWindowProps> = ({ positon, children, onClose }) => {
+	if (!positon) return null
+	return (
+		<Paper className='absolute z-10 bg-white p-2' style={{ left: positon.x, top: positon.y }}>
+			{children}
+			<Button onClick={onClose}>close</Button>
+		</Paper>
+	)
+}

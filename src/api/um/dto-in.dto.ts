@@ -11,6 +11,7 @@ export interface PostUploadFilesDtoIn {
 
 export interface PutProfileDtoIn {
 	id: string
+	username: string
 	firstName: string
 	lastName: string
 	email: string
@@ -40,24 +41,24 @@ export interface PutProfileUMDtoIn {
 	firstName: string
 	lastName: string
 	email: string
-	image: string
+	image: string | File
 	orgCode: string
 	role: string
 	responsibleProvinceCode: string
 	responsibleDistrictCode: string
-	flagStatus: string
+	flagStatus?: string
 }
 export interface PostProfileUMDtoIn {
 	username: string
 	firstName: string
 	lastName: string
 	email: string
-	image: string
+	image: string | File
 	orgCode: string
 	role: string
 	responsibleProvinceCode: string
 	responsibleDistrictCode: string
-	flagStatus: string
+	flagStatus?: string
 }
 
 export interface PostImportCSVUMDtoIn {

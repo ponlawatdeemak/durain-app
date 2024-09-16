@@ -35,6 +35,17 @@ export interface OverviewSummaryDtoOut {
 	}[]
 }
 
+export interface availabilityDurianDtoOut {
+    availableAdm: availableAdm[]
+    year: number
+    yearName: ResponseLanguage
+}
+
+interface availableAdm {
+    admCode: number
+    admName : ResponseLanguage
+}
+
 interface AgeClass {
 	name: ResponseLanguage
 	id: string
