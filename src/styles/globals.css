@@ -1,0 +1,110 @@
+@import './mui/_.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* @import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,200;0,300;0,400;0,500;0,700;1,200;1,300;1,400;1,500;1,700&display=swap'); */
+
+/* NOTE - workaround fix (mui5 and next.js 12.1.x), about custom font not working on mobile device (chrome, safari) when deploy to production */
+/* REF: https://stackoverflow.com/questions/72399203/google-fonts-not-loading-in-next-js-when-deployed-to-vercel */
+@import '../styles/fonts/fonts-anuphan-latin.css';
+@import '../styles/fonts/fonts-anuphan-thai.css';
+/* @import '../styles/fonts-kanit-latin.css'; */
+/* NOTE - other projects use Kanit for thai text and Inter for english text */
+/* @import '../styles/fonts/fonts-kanit-thai.css'; */
+/* @import '../styles/fonts/fonts-inter.css'; */
+
+:root {
+	--font-mono: ui-monospace, Menlo, Monaco, 'Cascadia Mono', 'Segoe UI Mono', 'Roboto Mono', 'Oxygen Mono',
+		'Ubuntu Monospace', 'Source Code Pro', 'Fira Mono', 'Droid Sans Mono', 'Courier New', monospace;
+
+	--foreground-color: white;
+	--background-color: #f2f5f8;
+
+	--primary-color-1: #0c5d52;
+	--primary-color-2: #8db9aa;
+	--primary-color-3: #d5e2dc;
+
+	--secondary-color-1: #dcba09;
+
+	/* success color */
+	--success-color-1: #0c626d;
+	--success-color-2: #edf8f4;
+
+	/* error color */
+	--error-color-1: #d13438;
+	--error-color-2: #f2d8de;
+
+	/* Deep Green */
+	--deep-green-50: #eaf2ee;
+	--deep-green-100: #d5e2dc;
+	--deep-green-200: #9fc2b3;
+	--deep-green-300: #74a690;
+	--deep-green-400: #59957a;
+	--deep-green-500: #307a59;
+	--deep-green-600: #2b6f51;
+	--deep-green-700: #0c5d52;
+	--deep-green-800: #1a4331;
+	--deep-green-900: #143325;
+
+	/* Gray */
+	--gray-50: #ebebeb;
+	--gray-100: #c0c0c0;
+	--gray-200: #a1a1a1;
+	--gray-300: #767676;
+	--gray-400: #5c5c5c;
+	--gray-500: #333333;
+	--gray-600: #2e2e2e;
+	--gray-700: #242424;
+	--gray-800: #1c1c1c;
+	--gray-900: #151515;
+
+	/* Light Gray */
+	--light-gray-50: #fcfcfd;
+	--light-gray-100: #f5f6f7;
+	--light-gray-200: #f0f2f4;
+	--light-gray-300: #e9ecee;
+	--light-gray-400: #e5e8eb;
+	--light-gray-500: #dee2e6;
+	--light-gray-600: #caced1;
+	--light-gray-700: #9ea0a3;
+	--light-gray-800: #7a7c7f;
+	--light-gray-900: #5d5f61;
+
+	/* Font Size */
+	--font-size-10: 10px;
+	--font-size-14: 14px;
+	--font-size-16: 16px;
+	--font-size-18: 18px;
+	--font-size-20: 20px;
+	--font-size-22: 22px;
+	--font-size-24: 24px;
+	--font-size-30: 30px;
+	--font-size-36: 36px;
+
+    /* Other Color */
+
+    --light-green-color: #2F7A59;
+    --light-green-color1: #BFD6CC;
+    --dark-green-color: #21573F;
+
+    --light-gray-color: #d6d6d6;
+
+    --light-green-color-alpha: #BFD6CC80;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0;
+	font-family: Anuphan, sans-serif;
+	height: 100%;
+}
+
+#__next {
+	height: 100%;
+	display: flex;
+	background: var(--background-color);
+	color: var(--gray-500);
+}
