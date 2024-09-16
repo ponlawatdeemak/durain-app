@@ -4,6 +4,7 @@ import { UserConfig, useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import nextI18NextConfig from '../../next-i18next.config.js'
 import PageContainer from '@/components/Layout/PageContainer'
+import { AnalyzeMain } from '@/components/pages/analyze'
 
 export const getServerSideProps: GetServerSideProps = async (context) => ({
 	props: {
@@ -20,7 +21,7 @@ const AnalyzePage = () => {
 
 	return (
 		<PageContainer>
-			<div>AnalyzePage</div>
+			<AnalyzeMain />
 		</PageContainer>
 	)
 }
