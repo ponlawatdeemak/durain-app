@@ -12,6 +12,8 @@ import Tooltip, { tooltipClasses } from '@mui/material/Tooltip'
 import useResponsive from '@/hook/responsive'
 import classNames from 'classnames'
 import Chart from './Chart'
+import { Language } from '@mui/icons-material'
+import { Languages } from '@/enum'
 
 const OverviewMain: React.FC = () => {
 	const { t, i18n } = useTranslation()
@@ -194,42 +196,56 @@ const OverviewMain: React.FC = () => {
 						<p className='text-center text-lg font-semibold'>
 							{selectedAdm?.[language] ?? t('overview:allProvinces')}
 						</p>
-						<div className={classNames('flex min-h-[250px]', isDesktop ? 'flex-grow' : '')}>
-							<Chart data={overviewData}></Chart>
-						</div>
-						<hr className={classNames('w-full', isDesktop ? 'mb-4' : 'my-4')} />
-						<div className='mb-2 flex w-full text-sm font-medium text-[#5C5C5C]'>
-							<div className={classNames('flex w-1/2 flex-row items-center', isDesktop ? '' : 'ml-5')}>
-								<Box marginRight={1} width='10px' />
-								{t('overview:age')}
+						<div
+							className={classNames(
+								'box-border w-full',
+								isDesktop
+									? 'overflow-y-auto overflow-x-hidden [&&::-webkit-scrollbar-thumb]:rounded [&&::-webkit-scrollbar-thumb]:bg-[#2F7A59] [&::-webkit-scrollbar-track]:rounded [&::-webkit-scrollbar-track]:bg-[#EAF2EE] [&::-webkit-scrollbar]:w-[5px]' +
+											(language === Languages.TH
+												? ' max-h-[calc(100vh-650px)]'
+												: ' max-h-[calc(100vh-680px)]')
+									: '',
+							)}
+						>
+							<div className={classNames('flex min-h-[250px]', isDesktop ? 'flex-grow' : '')}>
+								<Chart data={overviewData}></Chart>
 							</div>
-							<div className='flex w-1/2 justify-center'>
-								{t('overview:area')} ({t(`overview:${areaUnit}`)})
-							</div>
-						</div>
-						{overviewData?.overall.ageClass.map((item, index, array) => (
-							<React.Fragment key={index}>
-								<div className='flex w-full text-sm font-medium'>
-									<div
-										className={classNames(
-											'flex w-1/2 flex-row items-center',
-											isDesktop ? '' : 'ml-5',
-										)}
-									>
-										<Box
-											marginRight={1}
-											height='10px'
-											width='10px'
-											borderRadius='50%'
-											bgcolor={item.color}
-										/>
-										{item.name[language]}
-									</div>
-									<div className='flex w-1/2 justify-center'>{item.area[areaUnit]}</div>
+							<hr className={classNames('w-full', isDesktop ? 'mb-4' : 'my-4')} />
+							<div className='mb-2 flex w-full text-sm font-medium text-[#5C5C5C]'>
+								<div
+									className={classNames('flex w-1/2 flex-row items-center', isDesktop ? '' : 'ml-5')}
+								>
+									<Box marginRight={1} width='10px' />
+									{t('overview:age')}
 								</div>
-								{index === array.length - 1 ? null : <hr className='my-1 w-full border-dashed' />}
-							</React.Fragment>
-						))}
+								<div className='flex w-1/2 justify-center'>
+									{t('overview:area')} ({t(`overview:${areaUnit}`)})
+								</div>
+							</div>
+							{overviewData?.overall.ageClass.map((item, index, array) => (
+								<React.Fragment key={index}>
+									<div className='flex w-full text-sm font-medium'>
+										<div
+											className={classNames(
+												'flex w-1/2 flex-row items-center',
+												isDesktop ? '' : 'ml-5',
+											)}
+										>
+											<Box
+												marginRight={1}
+												height='10px'
+												width='10px'
+												borderRadius='50%'
+												bgcolor={item.color}
+											/>
+											{item.name[language]}
+										</div>
+										<div className='flex w-1/2 justify-center'>{item.area[areaUnit]}</div>
+									</div>
+									{index === array.length - 1 ? null : <hr className='my-1 w-full border-dashed' />}
+								</React.Fragment>
+							))}
+						</div>
 					</div>
 				</div>
 			</div>

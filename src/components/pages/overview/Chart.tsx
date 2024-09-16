@@ -85,7 +85,7 @@ const Chart: React.FC<OverviewBarTableProps> = ({ data }) => {
 					mode: 'fit' as const,
 					top: 20,
 					bottom: 10,
-					right: isDesktop ? 25 : language === Languages.TH ? 25 : 45,
+					right: isDesktop ? 10 : language === Languages.TH ? 25 : 45,
 					left: language === Languages.TH ? 20 : 40,
 				},
 				resize: {
@@ -120,8 +120,8 @@ const Chart: React.FC<OverviewBarTableProps> = ({ data }) => {
 				`[&_.domain]:hidden [&_.value]:text-center`,
 				isDesktop
 					? language === 'en'
-						? `[&_.bb-axis-x-label]:translate-x-[-254px]`
-						: `[&_.bb-axis-x-label]:translate-x-[-269px]`
+						? `[&_.bb-axis-x-label]:translate-x-[-216px]`
+						: `[&_.bb-axis-x-label]:translate-x-[-237px]`
 					: `[&_.bb-axis-x-label]:translate-y-[5px]`,
 			)}
 		></div>
