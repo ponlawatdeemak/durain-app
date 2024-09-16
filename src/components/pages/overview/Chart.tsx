@@ -25,7 +25,7 @@ const Chart: React.FC<OverviewBarTableProps> = ({ data }) => {
                     <p>${data.overall.ageClass[index].area[areaUnit]}</p>
                 </div>`
 		},
-		[data, areaUnit],
+		[data, areaUnit, t],
 	)
 
 	useEffect(() => {
@@ -56,7 +56,7 @@ const Chart: React.FC<OverviewBarTableProps> = ({ data }) => {
 					},
 					y: {
 						max: 100,
-						padding: 0,
+						padding: { top: 4 },
 						label: {
 							text: `% ${t('overview:plantationArea')}`,
 							position: 'inner-top',
@@ -101,7 +101,7 @@ const Chart: React.FC<OverviewBarTableProps> = ({ data }) => {
 				},
 			})
 		}
-	}, [data, generateTooltips, language, isDesktop])
+	}, [data, generateTooltips, language, isDesktop, t])
 
 	return (
 		<div
@@ -110,7 +110,7 @@ const Chart: React.FC<OverviewBarTableProps> = ({ data }) => {
 				`bb`,
 				`[&_.bb-main]:font-[anuphan,sans-serif]`,
 				`[&_.bb-axis>.tick>line]:hidden`,
-				`[&_.bb-axis-x-label]:translate-y-[-13px] [&_.bb-axis-x-label]:text-[10px] [&_.bb-axis-x-label]:font-normal`,
+				`[&_.bb-axis-x-label]:translate-y-[-12px] [&_.bb-axis-x-label]:text-[10px] [&_.bb-axis-x-label]:font-normal`,
 				`[&_.bb-axis-x]:text-sm [&_.bb-axis-x]:font-medium`,
 				`[&_.bb-axis-y-label]:translate-x-[26px] [&_.bb-axis-y-label]:translate-y-[-22px]`,
 				`[&_.bb-axis-y>.tick]:text-[10px] [&_.bb-axis-y>.tick]:opacity-35`,
@@ -122,10 +122,7 @@ const Chart: React.FC<OverviewBarTableProps> = ({ data }) => {
 					? language === 'en'
 						? `[&_.bb-axis-x-label]:translate-x-[-254px]`
 						: `[&_.bb-axis-x-label]:translate-x-[-269px]`
-					: `[&_.bb-axis-x-label]:translate-y-[0px]`,
-				// : language === 'en'
-				// 	? `[&_.bb-axis-x-label]:translate-x-[-227px]`
-				// 	: `[&_.bb-axis-x-label]:translate-x-[-263px]`,
+					: `[&_.bb-axis-x-label]:translate-y-[5px]`,
 			)}
 		></div>
 	)

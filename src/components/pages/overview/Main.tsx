@@ -64,16 +64,6 @@ const OverviewMain: React.FC = () => {
 
 	useEffect(() => {
 		service.overview
-			.overviewSummary({ year: year, admCode: admCode === 0 ? undefined : admCode })
-			.then((res) => {
-				console.log('overview : ', res.data)
-				setOverviewData(res.data)
-			})
-			.catch((error) => console.log(error))
-	}, [year, admCode])
-
-	useEffect(() => {
-		service.overview
 			.availabilityDurian()
 			.then((res) => {
 				setAvailabilityData(res.data)
@@ -82,20 +72,30 @@ const OverviewMain: React.FC = () => {
 				}
 			})
 			.catch((error) => console.log(error))
+		setAdmCode(0)
 	}, [year])
 
 	useEffect(() => {
-		if (availableAdm && !availableAdm.find((item) => item.admCode === admCode)) {
-			setAdmCode(0)
-		}
-	}, [year, admCode, availableAdm])
+		service.overview
+			.overviewSummary({ year: year, admCode: admCode === 0 ? undefined : admCode })
+			.then((res) => {
+				console.log('overview : ', res.data)
+				setOverviewData(res.data)
+			})
+			.catch((error) => console.log(error))
+	}, [year, admCode])
 
 	return (
-		<div className={classNames('flex w-full flex-1 flex-col', isDesktop ? 'h-full p-6' : 'box-border p-4')}>
+		<div
+			className={classNames(
+				'flex w-full flex-1 flex-col',
+				isDesktop ? 'h-full p-[32px] pt-[24px]' : 'box-border p-4',
+			)}
+		>
 			<div
 				className={classNames(
 					'flex w-full flex-row items-center gap-2',
-					isDesktop ? 'mb-3' : 'mb-4 justify-center',
+					isDesktop ? 'pb-[16px]' : 'justify-center pb-4',
 				)}
 			>
 				<div className={classNames('[&>svg]:fill-primary')}>
@@ -103,10 +103,15 @@ const OverviewMain: React.FC = () => {
 				</div>
 				<p className='text-primary text-2xl font-semibold'>{t('overview:overviewOfDurianPlantation')}</p>
 			</div>
-			<div className={classNames('flex h-full w-full gap-4', isDesktop ? 'flex-row' : 'flex-col-reverse')}>
-				<div className={classNames('flex bg-red-100', isDesktop ? 'h-full flex-grow' : 'h-[500px]')}></div>
-				<div className={classNames('flex flex-col gap-6', isDesktop ? 'h-full w-[350px]' : 'w-full')}>
-					<div className='flex w-full flex-col items-center justify-center gap-3 rounded bg-white p-4 shadow'>
+			<div className={classNames('flex h-full w-full gap-[24px]', isDesktop ? 'flex-row' : 'flex-col-reverse')}>
+				<div
+					className={classNames(
+						'flex rounded-[8px] bg-green-100',
+						isDesktop ? 'h-full flex-grow' : 'h-[500px]',
+					)}
+				></div>
+				<div className={classNames('flex flex-col gap-[24px]', isDesktop ? 'h-full w-[350px]' : 'w-full')}>
+					<div className='flex w-full flex-col items-center justify-center gap-[16px] rounded-[8px] bg-white p-[24px] shadow'>
 						<p className='text-xl font-semibold'>{t('overview:durianPlantationData')}</p>
 						<div className='flex w-full flex-row gap-3'>
 							<Select
@@ -140,16 +145,16 @@ const OverviewMain: React.FC = () => {
 							</Select>
 						</div>
 					</div>
-					<div className='flex w-full flex-row items-center justify-center rounded bg-white p-4 shadow'>
+					<div className='flex w-full flex-row items-center justify-center rounded-[8px] bg-white px-[16px] py-[24px] shadow'>
 						<div className='flex h-full items-center justify-center'>
 							<OverviewYearDataIcon />
 						</div>
-						<div className='flex h-full w-[100%] flex-col items-end gap-1'>
+						<div className='flex h-full w-[100%] flex-col items-end'>
 							<div className='flex items-center text-right text-sm font-medium'>
 								{t('overview:durianPlantationData')} {t('overview:year')}{' '}
-								{selectedYearObj?.yearName[language]}{' '}
+								{selectedYearObj?.yearName[language]}
 								<StyledTooltip
-									className='ml-1 hover:text-[#D5E2DC]'
+									className='ml-1 hover:text-[#9FC2B3]'
 									title={
 										<div className='flex flex-row items-center gap-2'>
 											<p className='text-xs'>
@@ -163,13 +168,13 @@ const OverviewMain: React.FC = () => {
 										</div>
 									}
 								>
-									<InfoIcon fontSize='small' className='text-secondary' />
+									<InfoIcon fontSize='small' className='text-[#FFE25D]' />
 								</StyledTooltip>
 							</div>
-							<p className='text-[22px] font-semibold'>
+							<p className='pt-[8px] text-[22px] font-semibold'>
 								{selectedAdm?.[language] ?? t('overview:allProvinces')}
 							</p>
-							<div className='flex h-full w-full flex-col items-end'>
+							<div className='flex h-full w-full flex-col items-end pt-[4px]'>
 								<p className='text-base font-medium'>{t(`overview:${areaUnit}`)}</p>
 								<p className='text-top text-primary text-[36px] font-bold leading-7'>
 									{overviewData?.overall.area[areaUnit] ?? '-'}
@@ -179,8 +184,8 @@ const OverviewMain: React.FC = () => {
 					</div>
 					<div
 						className={classNames(
-							'flex w-full flex-col items-center rounded bg-white shadow',
-							isDesktop ? 'flex-grow p-4' : 'p-0 py-4',
+							'flex w-full flex-col items-center rounded-[8px] bg-white shadow',
+							isDesktop ? 'flex-grow p-[24px]' : 'p-0 py-4',
 						)}
 					>
 						<p className='text-center text-lg font-semibold'>
@@ -189,10 +194,10 @@ const OverviewMain: React.FC = () => {
 						<p className='text-center text-lg font-semibold'>
 							{selectedAdm?.[language] ?? t('overview:allProvinces')}
 						</p>
-						<div className={classNames('flex', isDesktop ? 'flex-grow' : '')}>
+						<div className={classNames('flex min-h-[250px]', isDesktop ? 'flex-grow' : '')}>
 							<Chart data={overviewData}></Chart>
 						</div>
-						<hr className={classNames('w-full', isDesktop ? 'mb-2' : 'my-4')} />
+						<hr className={classNames('w-full', isDesktop ? 'mb-4' : 'my-4')} />
 						<div className='mb-2 flex w-full text-sm font-medium text-[#5C5C5C]'>
 							<div className={classNames('flex w-1/2 flex-row items-center', isDesktop ? '' : 'ml-5')}>
 								<Box marginRight={1} width='10px' />
