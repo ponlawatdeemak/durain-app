@@ -82,6 +82,16 @@
 	--font-size-24: 24px;
 	--font-size-30: 30px;
 	--font-size-36: 36px;
+
+    /* Other Color */
+
+    --light-green-color: #2F7A59;
+    --light-green-color1: #BFD6CC;
+    --dark-green-color: #21573F;
+
+    --light-gray-color: #d6d6d6;
+
+    --light-green-color-alpha: #BFD6CC80;
 }
 
 html,

@@ -280,7 +280,7 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 									>
 										{importFile.name}
 									</Button> */}
-									<Box className='border-gray flex flex-row items-center rounded border-solid !bg-[#D6D6D6] p-1'>
+									<Box className='border-gray !bg-gray flex flex-row items-center rounded border-solid p-1'>
 										<Typography className='p-[4px] !text-sm !font-medium'>
 											{importFile.name}
 										</Typography>
@@ -314,8 +314,8 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 										/>
 									</Button>
 									{importError?.length > 0 && (
-										<Box className='border-error flex flex-col rounded-lg border-solid bg-white p-4'>
-											<div className='text-error flex flex-row items-center gap-1'>
+										<Box className='flex flex-col rounded-lg border-solid border-error bg-white p-4'>
+											<div className='flex flex-row items-center gap-1 text-error'>
 												<Icon path={mdiCloseCircleOutline} size={1} />
 												<Typography>{t('fileDataError', { ns: 'um' })}</Typography>
 											</div>

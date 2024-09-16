@@ -245,8 +245,6 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 				}
 				if (userDialogMode === UserDialogMode.UserEdit) {
 					// put method edit existing user
-					console.log('userEdit')
-					console.log('image :: ', values.image)
 					try {
 						const payload: PutProfileUMDtoIn = {
 							id: values.id,
@@ -472,7 +470,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 				fullWidth
 				scroll='paper'
 				className={classNames(
-					'[&_.MuiPaper-root]:h-[728px] [&_.MuiPaper-root]:max-w-[80vw] 2xl:[&_.MuiPaper-root]:max-w-[938px]',
+					'[&_.MuiPaper-root]:h-[728px] [&_.MuiPaper-root]:max-w-[900px] 2xl:[&_.MuiPaper-root]:max-w-[948px]',
 					{
 						'': !isDesktop,
 					},
@@ -499,7 +497,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 						<div className='flex h-full flex-col gap-[16px] lg:gap-[18px] lg:px-[16px] lg:py-[10px]'>
 							<div>
 								<Button
-									className='flex !w-[106px] gap-[4px] !rounded-xl !border-[#D6D6D6] bg-white py-[4px] pl-[6px] pr-[8px] text-sm !font-medium !text-black [&_.MuiButton-startIcon]:m-0'
+									className='!border-gray flex !w-[106px] gap-[4px] !rounded-xl bg-white py-[4px] pl-[6px] pr-[8px] text-sm !font-medium !text-black [&_.MuiButton-startIcon]:m-0'
 									onClick={handleBackResetPassword}
 									variant='outlined'
 									// disabled={busy}
@@ -560,12 +558,11 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 						/>
 					) : (
 						<>
-							<div className='flex grow !flex-row-reverse items-center justify-between gap-3 max-lg:block lg:flex-row'>
+							<div className='flex grow !flex-row-reverse items-center justify-between max-lg:block lg:flex-row lg:gap-[32px] xl:gap-[48px] 2xl:gap-[64px]'>
 								<ProfileForm
 									formik={formik}
 									loading={isPostProfileUMPending || isPutProfileUMPending || isUserDataLoading}
 									isFormUM={true}
-									// isEditFormUM={isEdit}
 									isDisabledProfile={userId === session?.user.id}
 									userDialogmode={userDialogMode}
 									userData={
@@ -587,7 +584,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 									control={
 										<div className='pointer-events-auto'>
 											<IOSSwitch
-												className='m-0 mr-2 [&_.Mui-checked+.MuiSwitch-track]:!bg-[#2F7A59]'
+												className='[&_.Mui-checked+.MuiSwitch-track]:!bg-green-light m-0 mr-2'
 												checked={formik.values.flagStatus === 'A' ? true : false}
 												onChange={(event) => {
 													formik.setFieldValue('flagStatus', event.target.checked ? 'A' : 'C')
@@ -609,12 +606,12 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 					>
 						{session?.user.id !== userId && isEdit && userDialogMode !== UserDialogMode.UserProfile && (
 							<Button
-								className='h-[40px] w-[150px] !border-[#D6D6D6] bg-white text-sm !text-[#D13438]'
+								className='!border-gray h-[40px] w-[150px] bg-white text-sm !text-error'
 								variant='outlined'
 								onClick={() => {
 									setIsConfirmDeleteOpen(true)
 								}}
-								startIcon={<Icon path={mdiTrashCanOutline} size={1} color={'#D13438'} />}
+								startIcon={<Icon path={mdiTrashCanOutline} size={1} color={'var(--error-color-1)'} />}
 								disabled={isPostProfileUMPending || isPutProfileUMPending || isUserDataLoading}
 							>
 								{t('deleteUser', { ns: 'um' })}

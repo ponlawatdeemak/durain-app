@@ -13,11 +13,12 @@ import { useTranslation } from 'next-i18next'
 import classNames from 'classnames'
 import { UserDialogMode } from '../UserDialog'
 import useResponsive from '@/hook/responsive'
-import { ContactIcon, EmailIcon } from '@/components/svg/MenuIcon'
+import { ContactIcon, EmailIcon, LockIcon } from '@/components/svg/MenuIcon'
 import { GetProfileDtoOut, GetUmDtoOut } from '@/api/um/dto-out.dto'
 import { Language } from '@mui/icons-material'
 import { ResponseLanguage } from '@/api/interface'
 // import { Languages } from '@/config/app.config'
+import clsx from 'clsx'
 
 export interface ProfileFormProps {
 	formik: FormikProps<any>
@@ -104,7 +105,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 						<Box className='max-w-full'>
 							<Typography className='max-w-full !overflow-hidden !text-ellipsis !whitespace-nowrap'>
 								<span className='inline-flex items-center'>
-									<div className='[&>svg]:fill-[#0C5D52]'>
+									<div className='[&>svg]:fill-dark1'>
 										<EmailIcon width={26} height={24} />
 									</div>
 								</span>
@@ -113,7 +114,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 							</Typography>
 							<Typography className='max-w-full !overflow-hidden !text-ellipsis !whitespace-nowrap'>
 								<Box className='inline-flex items-center'>
-									<div className='[&>svg]:fill-[#0C5D52]'>
+									<div className='[&>svg]:fill-dark1'>
 										<ContactIcon width={26} height={24} />
 									</div>
 									&nbsp;&nbsp;&nbsp;
@@ -263,12 +264,17 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 							})}
 						>
 							<Button
-								className='h-[40px] w-[150px] !border-[#2F7A59] bg-white text-sm !text-[#2F7A59] lg:w-[240px]'
+								className={clsx(
+									'!border-green-light !text-green-light h-[40px] w-[150px] bg-white text-sm',
+									{
+										'w-[178px]': isDesktop,
+									},
+								)}
 								variant='outlined'
 								onClick={handleClickResetPassword}
 								startIcon={
-									<div className='[&>svg]:fill-[#2F7A59]'>
-										<ContactIcon width={26} height={24} />
+									<div className='[&>svg]:fill-green-dark1'>
+										<LockIcon width={24} height={24} />
 									</div>
 								}
 								// disabled={isPostProfileUMPending || isPutProfileUMPending || isUserDataLoading}

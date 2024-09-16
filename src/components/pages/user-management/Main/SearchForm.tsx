@@ -46,7 +46,7 @@ const UserManagementSearchForm: React.FC<UserManagementSearchFormProps> = ({
 
 	return (
 		<>
-			<Paper className='flex items-center gap-[6px] !bg-[#BFD6CC80] pl-[6px]'>
+			<Paper className='!bg-green-alpha flex items-center gap-[6px] pl-[6px]'>
 				<Box className='w-full'>
 					<form
 						onSubmit={(event) => {

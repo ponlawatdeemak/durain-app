@@ -473,14 +473,14 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 							>
 								<Typography className='m-4 flex items-center font-medium'>
 									{t('selecting', { ns: 'um' })}{' '}
-									<span className='text-primary inline-block font-bold'>
+									<span className='inline-block font-bold text-primary'>
 										&nbsp;{selected.length}&nbsp;
 									</span>{' '}
 									{t('names', { ns: 'um' })}
 								</Typography>
 								<Stack direction='row' spacing={1} className='flex items-center'>
 									<Button
-										className='flex !h-[30px] shrink-0 gap-[8px] !border-[#D6D6D6] !bg-white py-[8px] pl-[12px] pr-[16px] text-sm font-medium !text-[#202020] [&_.MuiButton-startIcon]:m-0'
+										className='!border-gray flex !h-[30px] shrink-0 gap-[8px] !bg-white py-[8px] pl-[12px] pr-[16px] text-sm font-medium !text-[#202020] [&_.MuiButton-startIcon]:m-0'
 										variant='outlined'
 										color='primary'
 										startIcon={
@@ -493,7 +493,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 										{isDesktop && t('enableUser', { ns: 'um' })}
 									</Button>
 									<Button
-										className='flex !h-[30px] shrink-0 gap-[8px] !border-[#D6D6D6] !bg-white py-[8px] pl-[12px] pr-[16px] text-sm font-medium !text-[#202020] [&_.MuiButton-startIcon]:m-0'
+										className='!border-gray flex !h-[30px] shrink-0 gap-[8px] !bg-white py-[8px] pl-[12px] pr-[16px] text-sm font-medium !text-[#202020] [&_.MuiButton-startIcon]:m-0'
 										variant='outlined'
 										color='primary'
 										startIcon={
@@ -506,10 +506,12 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 										{isDesktop && t('disableUser', { ns: 'um' })}
 									</Button>
 									<Button
-										className='flex !h-[30px] shrink-0 gap-[8px] !border-[#D6D6D6] !bg-white py-[8px] pl-[12px] pr-[16px] text-sm font-medium !text-[#D13438] [&_.MuiButton-startIcon]:m-0'
+										className='!border-gray flex !h-[30px] shrink-0 gap-[8px] !bg-white py-[8px] pl-[12px] pr-[16px] text-sm font-medium !text-error [&_.MuiButton-startIcon]:m-0'
 										variant='outlined'
 										color='primary'
-										startIcon={<Icon path={mdiTrashCanOutline} size={1} color='#D13438' />}
+										startIcon={
+											<Icon path={mdiTrashCanOutline} size={1} color='var(--error-color-1)' />
+										}
 										onClick={() => {
 											setIsConfirmDeleteManyOpen(true)
 										}}
@@ -608,7 +610,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 												<Box className='flex items-center'>
 													{
 														<Avatar
-															className='bg-primary mr-[4px] h-[24px] w-[24px]'
+															className='mr-[4px] h-[24px] w-[24px] bg-primary'
 															src={row.image}
 														/>
 													}{' '}
@@ -631,10 +633,10 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 											<TableCell>
 												{
 													<div
-														className={`flex items-center justify-center rounded ${row.flagStatus === 'A' ? '!bg-[#BFD6CC]' : '!bg-[#f2d8de]'} h-[25px] w-[72px]`}
+														className={`flex items-center justify-center rounded ${row.flagStatus === 'A' ? '!bg-green-light1' : '!bg-green-light1'} h-[25px] w-[72px]`}
 													>
 														<Typography
-															className={`p-0.5 ${row.flagStatus === 'A' ? 'text-[#21573F]' : 'text-[#D13438]'} !text-xs !font-medium`}
+															className={`p-0.5 ${row.flagStatus === 'A' ? 'text-green-dark' : 'text-error'} !text-xs !font-medium`}
 														>
 															{
 																row.flagStatusName[
@@ -674,7 +676,9 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 																path={mdiTrashCanOutline}
 																size={1}
 																color={
-																	session?.user.id === row.id ? '#c2c5cc' : '#D13438'
+																	session?.user.id === row.id
+																		? '#c2c5cc'
+																		: 'var(--error-color-1)'
 																}
 															/>
 														</IconButton>

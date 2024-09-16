@@ -30,10 +30,10 @@ export const UserManagementMain = () => {
 			className={`flex flex-col ${isDesktop ? 'pl-[32px] pr-[32px] pt-[16px]' : 'pl-[0px] pr-[0px] pt-[12px]'} ${isDesktop ? 'w-[calc(100vw-90px)]' : 'w-[calc(100vw-50px)]'} self-center`}
 		>
 			<Box className='flex flex-row items-center gap-[16px] pb-[16px]'>
-				<div className='[&>svg]:fill-[#0C5D52]'>
+				<div className='[&>svg]:fill-green-dark'>
 					<UserManagementIcon width={24} height={24} />
 				</div>
-				<Typography className='!text-2xl !font-medium text-[#21573F]'>
+				<Typography className='text-green-dark !text-2xl !font-medium'>
 					{t('userManagement', { ns: 'um' })}
 				</Typography>
 			</Box>
