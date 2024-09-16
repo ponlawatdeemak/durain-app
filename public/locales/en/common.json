@@ -52,5 +52,26 @@
 	"resetPassword": "Reset Password",
 	"password": "Password",
 	"passwordNew": "New Password",
-	"passwordConfirm": "Confirm Password"
+	"passwordConfirm": "Confirm Password",
+
+	"warning": {
+		"inputEmail": "Please enter your email.",
+		"inputPassword": "Please enter your password.",
+		"inputNewPassword": "Please enter a new password.",
+		"inputConfirmPassword": "Please enter your confirm password.",
+		"inputVerificationCode": "Please enter the verification code.",
+		"invalidPasswordMatch": "Password must be the same.",
+		"invalidEmailFormat": "Invalid email format.",
+		"minPasswordCharacters": "Password must be at least 8 characters.",
+		"minPasswordNumber": "Password must contain at least 1 number.",
+		"minPasswordLowercaseLetter": "Password must contain at least 1 lowercase letter.",
+		"minPasswordUppercaseLetter": "Password must contain at least 1 uppercase letter.",
+		"minPasswordSymbol": "Password must contain at least 1 special symbol.",
+		"inputFirstName": "Please enter your first name.",
+		"inputLastName": "Please enter your last name.",
+		"inputProvince": "Please select your province.",
+		"inputDistrict": "Please select your district.",
+		"inputOrgCode": "Please select your Department",
+		"inputRole": "Please select your Role"
+	}
 }

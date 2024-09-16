@@ -49,5 +49,13 @@
 		"fileSizeLimitExceed": "ขนาดไฟล์ต้องไม่เกิน 15 MB (csv หรือ xlsx)"
 	},
 	"userManagement": "การจัดการผู้ใช้งาน",
-	"profileManagement": "จัดการข้อมูลส่วนตัว"
+	"profileManagement": "จัดการข้อมูลส่วนตัว",
+
+	"auth": {
+		"headerResetPasswordSuccess": "รีเซ็ตรหัสผ่านใหม่สำเร็จ",
+		"subHeaderResetPasswordSuccess": "โปรดใช้รหัสผ่านที่ตั้งขึ้นใหม่นี้ในการเข้าใช้งานระบบในครั้งต่อไป",
+		"headerResetPasswordUnsuccess": "รีเซ็ตรหัสผ่านใหม่ไม่สำเร็จ",
+		"subHeaderResetPasswordUnsuccess": "กรุณาตรวจเช็คความถูกต้องใหม่อีกครั้ง",
+		"returnProfile": "กลับไปยังหน้าข้อมูลส่วนตัว"
+	}
 }
