@@ -379,10 +379,10 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 					</Box>
 				</DialogContent>
 				{importFile && (
-					<DialogActions className={'flex justify-end p-4'}>
+					<DialogActions className={'flex justify-end !p-[24px]'}>
 						<div className={'flex justify-end space-x-2'}>
 							<Button
-								className='!border-gray h-[40px] !w-[71px] !bg-white text-sm !text-black'
+								className='!border-gray h-[40px] !w-[76px] !bg-white !text-sm !text-black'
 								variant='outlined'
 								onClick={(event) => {
 									handleCloseImport(event, 'cancelClick')
@@ -398,7 +398,7 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 								startIcon={<CircularProgress size={1} />}
 								variant='contained'
 								color='primary'
-								className='h-[40px] !w-[71px] text-sm [&_.MuiButton-startIcon]:m-0 [&_.MuiButtonBase-root]:w-[100px]'
+								className='h-[40px] !w-[76px] !text-sm [&_.MuiButton-startIcon]:m-0 [&_.MuiButtonBase-root]:w-[100px]'
 								onClick={() => {
 									setIsOpenConfirmModal(true)
 								}}

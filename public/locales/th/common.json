@@ -72,5 +72,10 @@
 		"inputDistrict": "กรุณาเลือกอำเภอ",
 		"inputOrgCode": "กรุณาเลือกหน่วยงาน",
 		"inputRole": "กรุณาเลือกบทบาท"
+	},
+
+	"alert": {
+		"confirmEditPassword": "ยืนยันการแก้รหัสผ่าน",
+		"confirmChangePassword": "ต้องการยืนยันการแก้รหัสผ่านของผู้ใช้งานนี้ใช่หรือไม่"
 	}
 }

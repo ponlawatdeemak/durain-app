@@ -73,5 +73,10 @@
 		"inputDistrict": "Please select your district.",
 		"inputOrgCode": "Please select your Department",
 		"inputRole": "Please select your Role"
+	},
+
+	"alert": {
+		"confirmEditPassword": "Confirm password change?",
+		"confirmChangePassword": "Do you want change user password?"
 	}
 }
