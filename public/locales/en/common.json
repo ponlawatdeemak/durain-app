@@ -46,7 +46,7 @@
 
 	"common": {
 		"uploadImg": "Upload Image",
-		"conditionImg": "File size does not exceed 3 MB (jpg or png)"
+		"conditionImg": "File size at least 1 MB (jpg or png)"
 	},
 
 	"resetPassword": "Reset Password",
