@@ -353,7 +353,7 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 									role={undefined}
 									variant='outlined'
 									tabIndex={-1}
-									className='border-gray flex h-[32px] gap-[4px] bg-white py-[6px] pl-[8px] pr-[10px] text-base text-black [&_.MuiButton-startIcon]:m-0'
+									className='!border-gray flex h-[32px] !w-[254px] gap-[4px] !bg-white py-[6px] pl-[8px] pr-[10px] text-base !text-black [&_.MuiButton-startIcon]:m-0'
 									onClick={() => {
 										handleDownloadTemplate('csv')
 									}}
@@ -366,7 +366,7 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 									role={undefined}
 									variant='outlined'
 									tabIndex={-1}
-									className='border-gray flex h-[32px] gap-[4px] bg-white py-[6px] pl-[8px] pr-[10px] text-base text-black [&_.MuiButton-startIcon]:m-0'
+									className='!border-gray flex h-[32px] !w-[254px] gap-[4px] !bg-white py-[6px] pl-[8px] pr-[10px] text-base !text-black [&_.MuiButton-startIcon]:m-0'
 									onClick={() => {
 										handleDownloadTemplate('xlsx')
 									}}
@@ -382,7 +382,7 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 					<DialogActions className={'flex justify-end p-4'}>
 						<div className={'flex justify-end space-x-2'}>
 							<Button
-								className='h-[40px] w-[71px] bg-white text-sm text-black'
+								className='!border-gray h-[40px] !w-[71px] !bg-white text-sm !text-black'
 								variant='outlined'
 								onClick={(event) => {
 									handleCloseImport(event, 'cancelClick')
@@ -398,7 +398,7 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 								startIcon={<CircularProgress size={1} />}
 								variant='contained'
 								color='primary'
-								className='h-[40px] w-[71px] text-sm [&_.MuiButton-startIcon]:m-0 [&_.MuiButtonBase-root]:w-[100px]'
+								className='h-[40px] !w-[71px] text-sm [&_.MuiButton-startIcon]:m-0 [&_.MuiButtonBase-root]:w-[100px]'
 								onClick={() => {
 									setIsOpenConfirmModal(true)
 								}}

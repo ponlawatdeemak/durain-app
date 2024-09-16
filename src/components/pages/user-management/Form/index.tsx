@@ -624,7 +624,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 							})}
 						>
 							<Button
-								className='h-[40px] w-[71px] bg-white text-sm text-black'
+								className='!border-gray h-[40px] !w-[71px] !bg-white text-sm !text-black'
 								variant='outlined'
 								onClick={handleOnClose}
 								disabled={isPostProfileUMPending || isPutProfileUMPending || isUserDataLoading}
@@ -632,7 +632,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 								{t('cancel')}
 							</Button>
 							<Button
-								className='h-[40px] w-[71px] px-[16px] py-[8px] text-base text-sm font-semibold'
+								className='h-[40px] !w-[71px] px-[16px] py-[8px] text-base text-sm font-semibold'
 								variant='contained'
 								onClick={handleSubmitUser}
 								color='primary'

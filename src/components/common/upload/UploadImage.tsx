@@ -80,15 +80,19 @@ const UploadImage: React.FC<UploadImageProps> = ({
 						onError={handleImageError}
 					/>
 				) : (
-					<Avatar className='h-[120px] w-[120px] bg-success-light'>
-						<Icon path={defaultImage} size={'90px'} className='text-primary' />
+					<Avatar className='h-[120px] w-[120px] !bg-[#F0F2FA]'>
+						<Icon path={defaultImage} size={'90px'} className='text-[#2F7A59]' />
 					</Avatar>
 				)}
 
 				{image && (
 					<div className='absolute box-border flex h-[120px] w-[120px] items-center justify-center rounded-[60px] bg-black opacity-0 transition hover:opacity-70'>
 						<div onClick={handleDeleteClick}>
-							<Icon path={mdiDeleteOutline} size={1} className='cursor-pointer text-white' />
+							<Icon
+								path={mdiDeleteOutline}
+								size={1}
+								className='!color-[#2F7A59] cursor-pointer text-white'
+							/>
 						</div>
 					</div>
 				)}
@@ -114,7 +118,9 @@ const UploadImage: React.FC<UploadImageProps> = ({
 					/>
 				</Button>
 			</div>
-			<p className='m-0 w-[216px] text-center text-sm text-[#7A7A7A]'>{t('common.conditionImg')}</p>
+			<p className='m-0 w-[216px] text-center !text-sm !font-medium !text-[#7A7A7A]'>
+				{t('common.conditionImg')}
+			</p>
 			{typeof errorMessage === 'string' && <FormHelperText error>{errorMessage}</FormHelperText>}
 		</div>
 	)
