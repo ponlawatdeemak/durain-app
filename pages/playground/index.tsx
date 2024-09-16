@@ -160,12 +160,53 @@ const PlaygroundPage = () => {
 				}
 			},
 		})
+		const layerBoundary = tileLayer.boundaryYear(2024)
+		const layer2 = new MVTLayer({
+			id: 'muii-test2-layer',
+			name: 'province',
+			loadOptions: {
+				fetch: {
+					headers: {
+						'content-type': 'application/json',
+						Authorization: `Bearer ${MOCK_TOKEN}`,
+					},
+				},
+			},
+			data: layerBoundary,
+			filled: true,
+			lineWidthUnits: 'pixels',
+			pickable: true,
+			getFillColor() {
+				return [226, 226, 226, 100]
+			},
+			onClick: (info) => {
+				if (info.object) {
+					const mock = {
+						name: 'ทดสอบ',
+						math: Math.random(),
+					}
+					showMapInfoWindow({
+						positon: {
+							x: info.x,
+							y: info.y,
+						},
+						children: <MapInfoWindowContent data={mock} />,
+					})
+				}
+			},
+		})
 		return [
 			{
 				id: 'muii-test-layer',
 				label: 'muii-test-layer',
 				color: '#000000',
 				layer,
+			},
+			{
+				id: 'muii-test2-layer',
+				label: 'muii-test2-layer',
+				color: '#000000',
+				layer: layer2,
 			},
 		]
 	}

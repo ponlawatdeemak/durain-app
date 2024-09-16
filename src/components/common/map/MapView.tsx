@@ -1,6 +1,6 @@
 'use client'
 import classNames from 'classnames'
-import { BaseMap, BasemapType, MapType, MapInfoWindow, MapLegend, MapLayer } from './interface/map'
+import { BaseMap, BasemapType, MapType, MapInfoWindow, MapLayer } from './interface/map'
 import MapGoogle from './MapGoogle'
 import MapLibre from './MapLibre'
 import MapTools from './MapTools'
@@ -41,15 +41,6 @@ export default function MapView({ className = '', initialLayer }: MapViewProps) 
 	const { mapType, mapInfoWindow, hideMapInfoWindow } = useMap()
 	const { setLayers } = useLayerStore()
 
-	const legends =
-		initialLayer?.map((item) => {
-			return {
-				id: item.id,
-				color: item.color,
-				label: item.label,
-			}
-		}) || []
-
 	useEffect(() => {
 		console.log('Hello MapView')
 		if (initialLayer && initialLayer.length) {
@@ -60,7 +51,7 @@ export default function MapView({ className = '', initialLayer }: MapViewProps) 
 
 	return (
 		<div className={classNames('relative flex flex-1 overflow-hidden', className)}>
-			<MapTools basemapList={basemapList} layerList={initialLayer} legends={legends}></MapTools>
+			<MapTools basemapList={basemapList} layerList={initialLayer}></MapTools>
 			{mapType === MapType.Libre ? <MapLibre /> : <MapGoogle />}
 			{mapInfoWindow && (
 				<InfoWindow positon={mapInfoWindow.positon} onClose={hideMapInfoWindow}>

@@ -7,21 +7,28 @@ import { BaseMap, MapLayer, MapLegend } from './interface/map'
 import { useMap } from './context/map'
 import useLayerStore from './store/map'
 import { layerIdConfig } from '@/config/app.config'
-import { MVTLayer } from '@deck.gl/geo-layers'
 import { Layer } from '@deck.gl/core'
 
 export interface MapToolsProps {
 	basemapList?: BaseMap[]
 	layerList?: MapLayer[]
-	legends?: MapLegend[]
 }
 
-const MapTools: React.FC<MapToolsProps> = ({ basemapList = [], layerList, legends }) => {
+const MapTools: React.FC<MapToolsProps> = ({ basemapList = [], layerList }) => {
 	const { t } = useTranslation()
 	const { viewState, basemap, getLocation, setViewState, setBasemap } = useMap()
 	const [anchorBasemap, setAnchorBasemap] = useState<HTMLButtonElement | null>(null)
 	const [anchorLegend, setAnchorLegend] = useState<HTMLButtonElement | null>(null)
 	const { layers, getLayer, getLayers, setLayers, removeLayer } = useLayerStore()
+
+	const legends: MapLegend[] | null =
+		layerList?.map((item) => {
+			return {
+				id: item.id,
+				color: item.color,
+				label: item.label,
+			}
+		}) || null
 
 	const currentLocationIsActive = useMemo(() => {
 		return !!getLayer(layerIdConfig.toolCurrentLocation)
