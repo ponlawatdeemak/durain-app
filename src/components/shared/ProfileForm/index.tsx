@@ -147,11 +147,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 							label={t('username')}
 							formik={formik}
 							required
-							disabled={
-								loading ||
-								userDialogmode === UserDialogMode.UserEdit ||
-								userDialogmode === UserDialogMode.UserProfile
-							}
+							disabled={loading}
 						/>
 						<FormInput
 							className='w-full text-sm font-medium lg:w-[240px]'
@@ -211,7 +207,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 							label={t('belongDistrict', { ns: 'um' })}
 							formik={formik}
 							disabled={isDistricDataLoading || loading || !formik.values.responsibleProvinceCode}
-							required={isFormUM}
+							required={false}
 						/>
 					</div>
 					<div
@@ -231,8 +227,13 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 							name='orgCode'
 							label={t('org')}
 							formik={formik}
-							disabled={isDisabledProfile || loading}
-							required={isFormUM}
+							disabled={
+								isDisabledProfile ||
+								loading ||
+								userDialogmode === UserDialogMode.UserProfile ||
+								userDialogmode === UserDialogMode.UserEdit
+							}
+							required={userDialogmode === UserDialogMode.UserAdd ? true : false}
 						/>
 						<AutocompleteInput
 							className='w-full text-sm font-medium lg:w-[240px]'
@@ -246,8 +247,13 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 							name='role'
 							label={t('role')}
 							formik={formik}
-							disabled={isDisabledProfile || loading}
-							required={isFormUM}
+							disabled={
+								isDisabledProfile ||
+								loading ||
+								userDialogmode === UserDialogMode.UserProfile ||
+								userDialogmode === UserDialogMode.UserEdit
+							}
+							required={userDialogmode === UserDialogMode.UserAdd ? true : false}
 						/>
 					</div>
 					{userDialogmode === UserDialogMode.UserProfile && (

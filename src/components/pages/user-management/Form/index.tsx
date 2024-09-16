@@ -105,6 +105,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 
 	const handleSubmitUser = async (event: FormEvent) => {
 		event.preventDefault()
+		console.log('handleSubmit')
 		formik.validateForm().then((errors) => {
 			if (Object.keys(errors).length === 0) {
 				console.log('no err')
@@ -114,7 +115,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 				formik.handleSubmit()
 			}
 		})
-		isEdit ? setIsConfirmEditOpen(true) : setIsConfirmAddOpen(true)
+		// isEdit ? setIsConfirmEditOpen(true) : setIsConfirmAddOpen(true)
 	}
 
 	const validationSchema = yup.object({
@@ -445,7 +446,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 		onSubmit,
 	})
 
-	const passwordFormik = useFormik<any>({
+	const passwordFormik = useFormik<PasswordFormValues>({
 		enableReinitialize: true,
 		initialValues: defaultPasswordValues,
 		validationSchema: passwordValidationSchema,
@@ -564,7 +565,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 									formik={formik}
 									loading={isPostProfileUMPending || isPutProfileUMPending || isUserDataLoading}
 									isFormUM={true}
-									isEditFormUM={isEdit}
+									// isEditFormUM={isEdit}
 									isDisabledProfile={userId === session?.user.id}
 									userDialogmode={userDialogMode}
 									userData={
