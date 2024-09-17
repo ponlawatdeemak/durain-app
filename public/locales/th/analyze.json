@@ -1,0 +1,15 @@
+{
+    "durianPlantationArea": "พื้นที่ปลูกทุเรียน",
+    "selectDurianPlantationData": "เลือกข้อมูลพื้นที่ปลูกทุเรียน",
+    "amount": "จำนวน",
+    "historicalDurianPlantation": "พื้นที่ปลูกทุเรียนรายปีย้อนหลัง",
+    "viewDurianPlantationBy": "เลือกดูข้อมูลพื้นที่ปลูกทุเรียนตาม",
+    "ageOfDurian": "อายุต้นทุเรียน",
+    "changes": "การเปลี่ยนแปลง",
+    "durianPlantationByAge": "พื้นที่ปลูกทุเรียนตามอายุ",
+    "durianPlantationAllAreas": "ข้อมูลพื้นที่ปลูกทุเรียนทุกพื้นที่",
+    "changesIn": "ที่เปลี่ยนแปลง",
+    "comparisonYear": "ปีที่เปรียบเทียบ",
+    "with": "กับ",
+    "areaChanges": "พื้นที่เปลี่ยนแปลง"
+}

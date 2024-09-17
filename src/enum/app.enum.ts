@@ -4,6 +4,12 @@ export enum AreaUnit {
 	Hectare = 'hectare',
 }
 
+export enum AreaUnitText {
+	rai = 'unitRai',
+	sqkm = 'unitSqkm',
+	hectare = 'unitHectare',
+}
+
 export enum Languages {
 	EN = 'en',
 	TH = 'th',
