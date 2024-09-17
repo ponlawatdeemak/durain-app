@@ -80,7 +80,12 @@
 		"confirmEditPassword": "Confirm password change?",
 		"confirmChangePassword": "Do you want change user password?"
 	},
-
 	"pleaseEnter": "Please enter",
-	"notEnter": "Not enter"
+	"notEnter": "Not enter",
+	"year": "Year",
+	"age": "Age",
+	"area": "Area",
+	"areaUnit": "Area Unit",
+	"durianPlantationData": "Durian Plantation Data",
+	"plantationArea": "Plantation Area"
 }

@@ -79,7 +79,12 @@
 		"confirmEditPassword": "ยืนยันการแก้รหัสผ่าน",
 		"confirmChangePassword": "ต้องการยืนยันการแก้รหัสผ่านของผู้ใช้งานนี้ใช่หรือไม่"
 	},
-
 	"pleaseEnter": "โปรดระบุ",
-	"notEnter": "ไม่ระบุ"
+	"notEnter": "ไม่ระบุ",
+	"year": "ปี",
+	"age": "อายุ",
+	"area": "พื้นที่",
+	"areaUnit": "หน่วยพื้นที่",
+	"durianPlantationData": "ข้อมูลพื้นที่ปลูกทุเรียน",
+	"plantationArea": "พื้นที่ปลูก"
 }
