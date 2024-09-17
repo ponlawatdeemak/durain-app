@@ -20,5 +20,13 @@
 	"languagesTh": "ภาษาไทย",
 	"languagesEn": "English",
 
-    "year": "Year"
+    "province": "Province",
+    "district": "District",
+
+    "year": "Year",
+    "age": "Age",
+    "area": "Area",
+    "areaUnit": "Area Unit",
+    "durianPlantationData": "Durian Plantation Data",
+    "plantationArea": "Plantation Area"
 }
