@@ -92,7 +92,7 @@ const CompareFilter: React.FC<CompareFilterProps> = ({ orderBy }) => {
 			})}
 		>
 			<Box className='flex flex-col items-center gap-4 py-2 sm:flex-row sm:px-6'>
-				<span className='text-base font-medium text-[#333333]'>ปีที่เปรียบเทียบ</span>
+				<span className='text-base font-medium text-[#333333]'>{t('analyze:comparisonYear')}</span>
 				<Box className='flex items-center gap-4'>
 					<Box className='w-[130px]'>
 						<FormControl fullWidth>
@@ -121,7 +121,7 @@ const CompareFilter: React.FC<CompareFilterProps> = ({ orderBy }) => {
 							</Select>
 						</FormControl>
 					</Box>
-					<span className='text-base font-medium text-[#333333]'>กับ</span>
+					<span className='text-base font-medium text-[#333333]'>{t('analyze:with')}</span>
 					<Box className='w-[130px]'>
 						<FormControl fullWidth>
 							<Select
@@ -155,29 +155,29 @@ const CompareFilter: React.FC<CompareFilterProps> = ({ orderBy }) => {
 				<Box className='shadow-[0_3px_8px_0_rgba(212, 220, 230, 1)] flex w-full flex-col gap-6 rounded-lg border border-solid border-[#E9ECEE] bg-white px-4 py-6'>
 					<Box className='flex flex-col gap-4'>
 						<Typography className='!text-lg !font-medium !text-[#333333]'>
-							{`ข้อมูลพื้นที่ปลูกทุเรียนทุกพื้นที่`}
+							{t('analyze:durianPlantationAllAreas')}
 						</Typography>
 						<CompareTable compareOverviewData={compareProvinceData?.data} />
 					</Box>
-					<span className='text-[10px] font-medium text-[#333333]'>{`หน่วยพื้นที่ : ${t(AreaUnitText[areaUnit])}`}</span>
+					<span className='text-[10px] font-medium text-[#333333]'>{`${t('areaUnit')} : ${t(AreaUnitText[areaUnit])}`}</span>
 				</Box>
 				<Box className='shadow-[0_3px_8px_0_rgba(212, 220, 230, 1)] flex w-full flex-col gap-6 rounded-lg border border-solid border-[#E9ECEE] bg-white px-4 py-6'>
 					<Box className='flex flex-col gap-4'>
 						<Typography className='!text-lg !font-medium !text-[#333333]'>
-							{`ข้อมูลพื้นที่ปลูกทุเรียนจังหวัด${compareProvinceData?.data?.adms.find((province) => Number(province.admCode) === queryParams.provinceId)?.admName[language] || ''}ที่เปลี่ยนแปลง`}
+							{`${language === 'en' ? `${t('analyze:changesIn')} ` : ' '}${t('durianPlantationData')}${language === 'th' ? t('province') : ' '}${compareProvinceData?.data?.adms.find((province) => Number(province.admCode) === queryParams.provinceId)?.admName[language] || ''}${language === 'en' ? ` ${t('province')}` : ''}${language === 'th' ? t('analyze:changesIn') : ''}`}
 						</Typography>
 						<CompareTable compareOverviewData={compareDistrictData?.data} />
 					</Box>
-					<span className='text-[10px] font-medium text-[#333333]'>{`หน่วยพื้นที่ : ${t(AreaUnitText[areaUnit])}`}</span>
+					<span className='text-[10px] font-medium text-[#333333]'>{`${t('areaUnit')} : ${t(AreaUnitText[areaUnit])}`}</span>
 				</Box>
 				<Box className='shadow-[0_3px_8px_0_rgba(212, 220, 230, 1)] flex w-full flex-col gap-6 rounded-lg border border-solid border-[#E9ECEE] bg-white px-4 py-6'>
 					<Box className='flex flex-col gap-4'>
 						<Typography className='!text-lg !font-medium !text-[#333333]'>
-							{`ข้อมูลพื้นที่ปลูกทุเรียนอำเภอ${compareDistrictData?.data?.adms.find((district) => Number(district.admCode) === queryParams.districtId)?.admName[language] || ''}ที่เปลี่ยนแปลง`}
+							{`${language === 'en' ? `${t('analyze:changesIn')} ` : ' '}${t('durianPlantationData')}${language === 'th' ? t('district') : ' '}${compareDistrictData?.data?.adms.find((district) => Number(district.admCode) === queryParams.districtId)?.admName[language] || ''}${language === 'en' ? ` ${t('district')}` : ''}${language === 'th' ? t('analyze:changesIn') : ''}`}
 						</Typography>
 						<CompareTable compareOverviewData={compareSubDistrictData?.data} />
 					</Box>
-					<span className='text-[10px] font-medium text-[#333333]'>{`หน่วยพื้นที่ : ${t(AreaUnitText[areaUnit])}`}</span>
+					<span className='text-[10px] font-medium text-[#333333]'>{`${t('areaUnit')} : ${t(AreaUnitText[areaUnit])}`}</span>
 				</Box>
 			</Box>
 		</Paper>

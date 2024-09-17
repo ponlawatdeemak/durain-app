@@ -41,19 +41,19 @@ const CompareTable: React.FC<CompareTableProps> = ({ compareOverviewData }) => {
 				<TableHead>
 					<TableRow className='!flex items-center overflow-hidden rounded !bg-[#F0F2F4]'>
 						<TableCell className='w-[27%] min-w-[130px] !border-0 !bg-transparent !pr-2 !text-sm !text-[#333333]'>
-							พื้นที่
+							{t('area')}
 						</TableCell>
 						<TableCell
 							align='center'
 							className='w-[27%] min-w-[100px] !border-0 !bg-transparent !px-2 !text-sm !text-[#333333]'
 						>
-							{`พื้นที่ปลูก (${compareOverviewData?.year1[language].substring(2, 4)})`}
+							{`${t('plantationArea')} (${compareOverviewData?.year1[language].substring(2, 4)})`}
 						</TableCell>
 						<TableCell
 							align='center'
 							className='flex min-w-[220px] grow !border-0 !bg-transparent !px-2 !text-sm !text-[#333333]'
 						>
-							{`พื้นที่เปลี่ยนแปลง (${compareOverviewData?.year1[language].substring(2, 4)}/${compareOverviewData?.year2[language].substring(2, 4)})`}
+							{`${t('analyze:areaChanges')} (${compareOverviewData?.year1[language].substring(2, 4)}/${compareOverviewData?.year2[language].substring(2, 4)})`}
 						</TableCell>
 					</TableRow>
 				</TableHead>

@@ -4,9 +4,14 @@ import SummaryFilter from '../Filter/SummaryFilter'
 import CompareFilter from '../Filter/CompareFilter'
 import { ExpandMore } from '@mui/icons-material'
 import useSearchAnalyze from '../Main/context'
+import { useTranslation } from 'next-i18next'
+import { ResponseLanguage } from '@/api/interface'
 
 const FilterDetail = () => {
 	const { queryParams, setQueryParams } = useSearchAnalyze()
+	const { t, i18n } = useTranslation(['common'])
+	const language = i18n.language as keyof ResponseLanguage
+
 	const [orderBy, setOrderBy] = useState('age')
 
 	useEffect(() => {
@@ -20,9 +25,11 @@ const FilterDetail = () => {
 	return (
 		<div className='flex flex-col gap-4'>
 			<Box className='flex items-start justify-between max-sm:flex-col max-sm:gap-4'>
-				<Typography className='!text-2xl !font-medium !text-[#2F7A59]'>พื้นที่ปลูกทุเรียน</Typography>
+				<Typography className='!text-2xl !font-medium !text-[#2F7A59]'>
+					{t('analyze:durianPlantationArea')}
+				</Typography>
 				<Box className='flex items-center gap-4'>
-					<span className='text-sm font-medium text-[#333333]'>เลือกดูข้อมูลพื้นที่ปลูกทุเรียนตาม :</span>
+					<span className='text-sm font-medium text-[#333333]'>{`${t('analyze:viewDurianPlantationBy')} :`}</span>
 					<Box className='w-[170px]'>
 						<FormControl fullWidth>
 							<Select
@@ -39,8 +46,8 @@ const FilterDetail = () => {
 								value={orderBy}
 								onChange={handleOrderByChange}
 							>
-								<MenuItem value='age'>อายุต้นทุเรียน</MenuItem>
-								<MenuItem value='changes'>การเปลี่ยนแปลง</MenuItem>
+								<MenuItem value='age'>{t('analyze:ageOfDurian')}</MenuItem>
+								<MenuItem value='changes'>{t('analyze:changes')}</MenuItem>
 							</Select>
 						</FormControl>
 					</Box>

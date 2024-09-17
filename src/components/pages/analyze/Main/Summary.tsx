@@ -52,12 +52,12 @@ const AnalyzeSummary = () => {
 			<Box className='flex items-start justify-between max-sm:flex-col max-sm:gap-4'>
 				<Box className='flex items-center gap-4 [&_svg]:!w-6 [&_svg]:fill-[#0C5D52]'>
 					<AnalyzeIcon />
-					<Typography className='!text-2xl !font-medium text-[#0C5D52]'>
-						วิเคราะห์พื้นที่ปลูกทุเรียน
-					</Typography>
+					<Typography className='!text-2xl !font-medium text-[#0C5D52]'>{t('menuAnalyze')}</Typography>
 				</Box>
 				<Box className='flex items-center gap-4 max-sm:w-full max-sm:justify-between'>
-					<span className='text-sm font-medium text-[#333333]'>เลือกข้อมูลพื้นที่ปลูกทุเรียน</span>
+					<span className='text-sm font-medium text-[#333333]'>
+						{t('analyze:selectDurianPlantationData')}
+					</span>
 					<Box className='w-[90px]'>
 						<FormControl fullWidth>
 							<Select
@@ -102,12 +102,12 @@ const AnalyzeSummary = () => {
 								/>
 							</Box>
 							<Box className='flex w-full shrink-0 flex-col items-center gap-4 lg:w-[360px]'>
-								<span className='text-lg font-medium text-[#333333]'>{`พื้นที่ปลูกทุเรียน ${t('year')} ${durianAvailabilityData?.data?.find((data) => data.year === year)?.yearName[language] || ''}`}</span>
+								<span className='text-lg font-medium text-[#333333]'>{`${t('analyze:durianPlantationArea')} ${t('year')} ${durianAvailabilityData?.data?.find((data) => data.year === year)?.yearName[language] || ''}`}</span>
 								<span className='text-3xl font-medium text-[#333333]'>{`${summaryOverviewData?.data?.overall.area[areaUnit] || ''} ${t(AreaUnitText[areaUnit])}`}</span>
 								<Box className='flex w-full items-center text-sm font-medium text-[#5C5C5C]'>
-									<span className='w-full pl-4'>อายุ</span>
-									<span className='w-full text-center'>จำนวน%</span>
-									<span className='w-full text-right'>พื้นที่</span>
+									<span className='w-full pl-4'>{t('age')}</span>
+									<span className='w-full text-center'>{`${t('analyze:amount')}%`}</span>
+									<span className='w-full text-right'>{t('area')}</span>
 								</Box>
 								<Box className='flex w-full flex-col gap-1'>
 									{summaryOverviewData?.data?.overall.ageClass.map((item, index) => {
@@ -133,12 +133,12 @@ const AnalyzeSummary = () => {
 								</Box>
 							</Box>
 						</Box>
-						<span className='text-[10px] font-medium text-[#333333]'>{`หน่วยพื้นที่ : ${t(AreaUnitText[areaUnit])}`}</span>
+						<span className='text-[10px] font-medium text-[#333333]'>{`${t('areaUnit')} : ${t(AreaUnitText[areaUnit])}`}</span>
 					</Box>
 				</Paper>
 				<Paper className='shadow-[0_3px_8px_0_rgba(212, 220, 230, 1)] flex h-[368px] flex-auto flex-col gap-2 !rounded-lg border border-solid border-[#E9ECEE] px-8 py-6 max-xl:w-full xl:min-w-[385px]'>
 					<Typography className='text-center !text-lg !font-medium !text-[#333333]'>
-						พื้นที่ปลูกรายปีย้อนหลัง
+						{t('analyze:historicalDurianPlantation')}
 					</Typography>
 					<Box className='flex h-full w-full flex-col items-center justify-between'>
 						<HistoryChart historyOverviewData={historyOverviewData?.data} />

@@ -40,7 +40,7 @@ const SummaryTable: React.FC<SummaryTableProps> = ({ summaryOverviewData }) => {
 				<TableHead>
 					<TableRow className='!flex items-center overflow-hidden rounded !bg-[#F0F2F4]'>
 						<TableCell className='flex min-w-[130px] grow !border-0 !bg-transparent !pr-2 !text-base !text-[#333333]'>
-							พื้นที่
+							{t('area')}
 						</TableCell>
 						{summaryOverviewData?.overall.ageClass.map((item) => {
 							return (
