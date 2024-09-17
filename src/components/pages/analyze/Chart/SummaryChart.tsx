@@ -22,9 +22,10 @@ interface SummaryChartColorType {
 
 interface SummaryChartProps {
 	summaryOverviewData: GetSummaryOverviewDtoOut | undefined
+	year: string | undefined
 }
 
-const SummaryChart: React.FC<SummaryChartProps> = ({ summaryOverviewData }) => {
+const SummaryChart: React.FC<SummaryChartProps> = ({ summaryOverviewData, year }) => {
 	const { areaUnit } = useAreaUnit()
 	const { queryParams, setQueryParams } = useSearchAnalyze()
 	const { t, i18n } = useTranslation(['common'])
@@ -121,8 +122,8 @@ const SummaryChart: React.FC<SummaryChartProps> = ({ summaryOverviewData }) => {
 		<>
 			<div className='absolute flex w-[204px] flex-col items-center gap-2 [&_svg]:!h-[42px] [&_svg]:!w-[48px] [&_svg]:fill-[#F1A90B]'>
 				<OverviewIcon />
-				<span className='text-xl font-medium text-[#0C5D52]'>พื้นที่ปลูกทุเรียน ปี 2567</span>
-				<span className='text-center text-2xl font-medium text-[#333333]'>115,000,000 ตารางวา</span>
+				<span className='text-center text-xl font-medium text-[#0C5D52]'>{`พื้นที่ปลูกทุเรียน ${t('year')} ${year || ''}`}</span>
+				<span className='text-center text-2xl font-medium text-[#333333]'>{`${summaryOverviewData?.overall.area[areaUnit] || ''} ${t(AreaUnitText[areaUnit])}`}</span>
 			</div>
 			<BillboardJS bb={bb} options={donutOption} ref={summaryDonutChart} className={'z-10 h-[275px] w-[275px]'} />
 		</>
