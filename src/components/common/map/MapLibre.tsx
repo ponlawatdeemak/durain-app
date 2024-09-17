@@ -1,46 +1,35 @@
-'use client'
 import 'maplibre-gl/dist/maplibre-gl.css'
-import React, { forwardRef, useImperativeHandle, useRef, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { Map, useControl } from 'react-map-gl/maplibre'
 import { MapboxOverlay } from '@deck.gl/mapbox'
 import useLayerStore from './store/map'
-import { MapInterface } from './interface/map'
+import { BasemapType } from './interface/map'
+import { useMap } from './context/map'
+import { BASEMAP } from '@deck.gl/carto'
 
 const DeckGLOverlay = () => {
 	const layers = useLayerStore((state) => state.layers)
 	const setOverlay = useLayerStore((state) => state.setOverlay)
 	const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay({}))
 	useEffect(() => {
-		overlay.setProps({ layers })
+		if (overlay instanceof MapboxOverlay) {
+			overlay.setProps({ layers })
+		}
 	}, [layers, overlay])
 	useEffect(() => {
-		setOverlay(overlay)
+		if (overlay instanceof MapboxOverlay) {
+			setOverlay(overlay)
+		}
+		return () => {
+			overlay.finalize()
+		}
 	}, [overlay, setOverlay])
 	return null
 }
 
-interface MapLibreProps extends MapInterface {
-	mapStyle?: string
-}
-
-export interface MapLibreRef {
-	setExtent: (bounds: number[][]) => void
-}
-
-function MapLibre(
-	{ layers, mapStyle, viewState, onViewStateChange, ...props }: MapLibreProps,
-	ref: React.Ref<MapLibreRef>,
-) {
-	const mapRef = useRef<any>(null)
+export default function MapLibre() {
 	const overlay = useLayerStore((state) => state.overlay)
-
-	useImperativeHandle(ref, () => ({
-		setExtent: (bounds: number[][]) => {
-			if (mapRef.current) {
-				mapRef.current.fitBounds(bounds)
-			}
-		},
-	}))
+	const { viewState, basemap, setViewState, setMapLibreInstance, mapType } = useMap()
 
 	useEffect(() => {
 		return () => {
@@ -50,17 +39,14 @@ function MapLibre(
 
 	return (
 		<Map
-			{...props}
 			initialViewState={viewState}
-			mapStyle={mapStyle}
+			mapStyle={basemap === BasemapType.CartoLight ? BASEMAP.VOYAGER : BASEMAP.DARK_MATTER}
 			preserveDrawingBuffer={true}
 			zoom={viewState?.zoom}
-			onMove={(e) => onViewStateChange?.(e.viewState)}
-			ref={mapRef}
+			onMove={(e) => setViewState?.(e.viewState)}
+			ref={(ref) => setMapLibreInstance(ref?.getMap() || null)}
 		>
 			<DeckGLOverlay />
 		</Map>
 	)
 }
-
-export default forwardRef(MapLibre)

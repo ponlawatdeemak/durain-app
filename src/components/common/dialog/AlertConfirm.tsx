@@ -1,5 +1,3 @@
-'use client'
-
 import {
 	Button,
 	Dialog,
@@ -13,7 +11,7 @@ import {
 import React from 'react'
 import { mdiClose } from '@mdi/js'
 import Icon from '@mdi/react'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'next-i18next'
 
 export interface AlertConfirmProps {
 	open: boolean
@@ -42,7 +40,7 @@ const AlertConfirm: React.FC<AlertConfirmProps> = ({
 	onClose,
 	onConfirm,
 }) => {
-	const { t } = useTranslation(['default'])
+	const { t } = useTranslation(['common'])
 
 	return (
 		<Dialog open={open} onClose={onClose} className='[&_.MuiDialog-paper]:w-[560px]'>
@@ -59,12 +57,12 @@ const AlertConfirm: React.FC<AlertConfirmProps> = ({
 				{subContent && <DialogContentText>{subContent}</DialogContentText>}
 			</DialogContent>
 			{mode === 'DialogConfirm' ? (
-				<DialogActions className='border-[0px] border-t-[1px] border-solid border-transparent border-t-gray p-[24px] pt-[15px]'>
+				<DialogActions className='border-t-gray border-[0px] border-t-[1px] border-solid border-transparent p-[24px] pt-[15px]'>
 					<Button
 						onClick={onClose}
 						variant='outlined'
 						size='large'
-						className='h-[40px] border-gray px-[15px] text-base font-semibold text-black'
+						className='!border-gray h-[40px] px-[15px] text-base font-semibold !text-black'
 					>
 						{cancelTitle || t('cancel')}
 					</Button>
@@ -78,7 +76,7 @@ const AlertConfirm: React.FC<AlertConfirmProps> = ({
 					</Button>
 				</DialogActions>
 			) : (
-				<DialogActions className='border-[0px] border-t-[1px] border-solid border-transparent border-t-gray p-[24px] pt-[15px]'>
+				<DialogActions className='border-t-gray border-[0px] border-t-[1px] border-solid border-transparent p-[24px] pt-[15px]'>
 					<Button
 						onClick={onConfirm}
 						variant='contained'

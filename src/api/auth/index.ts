@@ -4,7 +4,7 @@ import { LoginGuestDtoOut, RefreshTokenDtoOut } from './dto-out.dto'
 import axios from 'axios'
 import OpenidConfiguration from '@/models/OpenidConfiguration'
 import https from 'https'
-import { RefreshTokenDtoIn } from './dto-in.dto'
+import { ChangePasswordDtoIn, RefreshTokenDtoIn } from './dto-in.dto'
 
 const auth = {
 	loginGuest: async (): Promise<ResponseDto<LoginGuestDtoOut>> => await api.post('/auth/login/guest', {}),
@@ -27,6 +27,8 @@ const auth = {
 		const payload = `grant_type=refresh_token&client_id=${process.env.COGNITO_CLIENT_ID}&refresh_token=${refreshToken}`
 		return await axios.post(cognitoWellKnown.token_endpoint, payload, config)
 	},
+	changePassword: async (payload: ChangePasswordDtoIn): Promise<ResponseDto<ChangePasswordDtoIn>> =>
+		(await api.put('/auth/change-password', payload))?.data,
 }
 
 export default auth

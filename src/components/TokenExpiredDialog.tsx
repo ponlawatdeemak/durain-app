@@ -1,7 +1,6 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material'
 import { signOut } from 'next-auth/react'
 import React, { useCallback } from 'react'
-// import { useTranslation } from 'react-i18next'
 
 interface TokenExpiredDialogProps {}
 
@@ -22,7 +21,7 @@ const TokenExpiredDialog: React.FC<TokenExpiredDialogProps> = () => {
 	// 		</DialogActions>
 	// 	</Dialog>
 	// )
-    return <></>
+	return <></>
 }
 
 export default TokenExpiredDialog
