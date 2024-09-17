@@ -74,7 +74,6 @@ const OverviewMain: React.FC = () => {
 				}
 			})
 			.catch((error) => console.log(error))
-		setAdmCode(0)
 	}, [year])
 
 	useEffect(() => {
@@ -122,7 +121,10 @@ const OverviewMain: React.FC = () => {
 								className='w-5/12'
 								value={year || ''}
 								disabled={!year}
-								onChange={(e) => setYear(Number(e.target.value))}
+								onChange={(e) => {
+									setYear(Number(e.target.value))
+									setAdmCode(0)
+								}}
 							>
 								{availabilityData?.map((item: any, index) => (
 									<MenuItem key={index} value={item.year} className=''>
