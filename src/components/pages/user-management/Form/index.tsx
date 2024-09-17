@@ -100,6 +100,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 		severity: 'success',
 		message: '',
 	})
+	const [isBusy, setIsBusy] = useState<boolean>(false)
 	const { data: session, update } = useSession()
 	const { isDesktop } = useResponsive()
 	const queryClient = useQueryClient()
@@ -201,6 +202,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 		data,
 		error,
 		mutateAsync: mutateUpdateProfile,
+		isPending: isPutProfilePending,
 	} = useMutation({
 		mutationFn: async (payload: PutProfileDtoIn) => {
 			await service.um.putProfile(payload)
@@ -385,13 +387,19 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 		[mutatePostProfileUM, mutatePutProfileUM, t, isEdit, session?.user.id, setIsSearch, setOpen, update],
 	)
 
-	const handleOnClose = useCallback(() => {
-		formik.resetForm()
-		passwordFormik.resetForm()
-		setIsResetPasswordOpen(false)
-		setResetPasswordStatus(null)
-		onClose()
-	}, [onClose])
+	const handleOnClose = useCallback(
+		(event: any, reason: string) => {
+			if (reason === 'backdropClick' && isBusy) {
+				return
+			}
+			formik.resetForm()
+			passwordFormik.resetForm()
+			setIsResetPasswordOpen(false)
+			setResetPasswordStatus(null)
+			onClose()
+		},
+		[onClose],
+	)
 
 	const handleValidatePassword = useCallback(() => {
 		passwordFormik.validateForm().then(async (errors) => {
@@ -465,6 +473,28 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 		setIsConfirmResetPasswordOpen(false)
 		passwordFormik.resetForm()
 	}
+
+	useEffect(() => {
+		if (
+			isUserDataLoading ||
+			isUserProfileLoading ||
+			isPutProfileUMPending ||
+			isPostProfileUMPending ||
+			isPutProfilePending ||
+			isChangePasswordPending
+		) {
+			setIsBusy(true)
+		} else {
+			setIsBusy(false)
+		}
+	}, [
+		isUserDataLoading,
+		isUserProfileLoading,
+		isPutProfileUMPending,
+		isPostProfileUMPending,
+		isPutProfilePending,
+		isChangePasswordPending,
+	])
 	return (
 		<div className='flex flex-col'>
 			<Dialog
@@ -502,10 +532,10 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 						<div className='flex h-full flex-col gap-[16px] lg:gap-[18px] lg:px-[16px] lg:py-[10px]'>
 							<div>
 								<Button
-									className='!border-gray flex !w-[106px] gap-[4px] !rounded-xl bg-white py-[4px] pl-[6px] pr-[8px] text-sm !font-medium !text-black [&_.MuiButton-startIcon]:m-0'
+									className='flex !w-[106px] gap-[4px] !rounded-xl !border-gray bg-white py-[4px] pl-[6px] pr-[8px] text-sm !font-medium !text-black [&_.MuiButton-startIcon]:m-0'
 									onClick={handleBackResetPassword}
 									variant='outlined'
-									// disabled={busy}
+									disabled={isBusy}
 									startIcon={<Icon path={mdiArrowLeft} size={'18px'} className='text-black' />}
 								>
 									{t('back')}
@@ -519,7 +549,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 									className='flex flex-col gap-[16px] lg:gap-[18px]'
 									formik={passwordFormik}
 									changePassword={true}
-									// loading={busy}
+									loading={isBusy}
 								/>
 								<div className='flex max-lg:justify-center'>
 									<Button
@@ -529,15 +559,15 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 											handleValidatePassword()
 										}}
 										color='primary'
-										// disabled={busy}
-										// startIcon={
-										// 	busy ? (
-										// 		<CircularProgress
-										// 			className='[&_.MuiCircularProgress-circle]:text-[#00000042]'
-										// 			size={16}
-										// 		/>
-										// 	) : null
-										// }
+										disabled={isBusy}
+										startIcon={
+											isBusy ? (
+												<CircularProgress
+													className='[&_.MuiCircularProgress-circle]:text-[#00000042]'
+													size={16}
+												/>
+											) : null
+										}
 									>
 										{t('confirm')}
 									</Button>
@@ -582,7 +612,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 									control={
 										<div className='pointer-events-auto'>
 											<IOSSwitch
-												className='[&_.Mui-checked+.MuiSwitch-track]:!bg-green-light m-0 mr-2'
+												className='m-0 mr-2 [&_.Mui-checked+.MuiSwitch-track]:!bg-green-light'
 												checked={formik.values.flagStatus === 'A' ? true : false}
 												onChange={(event) => {
 													formik.setFieldValue('flagStatus', event.target.checked ? 'A' : 'C')
@@ -604,7 +634,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 					>
 						{session?.user.id !== userId && isEdit && userDialogMode !== UserDialogMode.UserProfile && (
 							<Button
-								className='!border-gray h-[40px] w-[150px] bg-white text-sm !text-error'
+								className='h-[40px] w-[150px] !border-gray bg-white text-sm !text-error'
 								variant='outlined'
 								onClick={() => {
 									setIsConfirmDeleteOpen(true)
@@ -622,9 +652,11 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 							})}
 						>
 							<Button
-								className='!border-gray h-[40px] !w-[71px] !bg-white text-sm !text-black'
+								className='h-[40px] !w-[71px] !border-gray !bg-white text-sm !text-black'
 								variant='outlined'
-								onClick={handleOnClose}
+								onClick={(e) => {
+									handleOnClose(e, '')
+								}}
 								disabled={isPostProfileUMPending || isPutProfileUMPending || isUserDataLoading}
 							>
 								{t('cancel')}
