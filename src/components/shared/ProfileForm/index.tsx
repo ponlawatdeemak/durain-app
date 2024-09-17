@@ -148,7 +148,13 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 							label={t('username')}
 							formik={formik}
 							required
-							disabled={loading}
+							disabled={
+								loading ||
+								isEditFormUM ||
+								userDialogmode === UserDialogMode.UserEdit ||
+								userDialogmode === UserDialogMode.UserProfile
+							}
+							placeholder={t('pleaseEnter')}
 						/>
 						<FormInput
 							className='w-full text-sm font-medium lg:w-[240px]'
@@ -156,7 +162,14 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 							label={t('email')}
 							formik={formik}
 							required
-							disabled={isDisabledProfile || loading || isEditFormUM}
+							disabled={
+								isDisabledProfile ||
+								loading ||
+								isEditFormUM ||
+								userDialogmode === UserDialogMode.UserEdit ||
+								userDialogmode === UserDialogMode.UserProfile
+							}
+							placeholder={t('pleaseEnter')}
 						/>
 					</div>
 					<div className='flex gap-[12px] max-lg:flex-col'>
@@ -167,6 +180,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 							formik={formik}
 							required
 							disabled={loading}
+							placeholder={t('pleaseEnter')}
 						/>
 						<FormInput
 							className='w-full text-sm font-medium lg:w-[240px]'
@@ -175,6 +189,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 							formik={formik}
 							required
 							disabled={loading}
+							placeholder={t('pleaseEnter')}
 						/>
 					</div>
 				</Box>
@@ -194,6 +209,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 							formik={formik}
 							disabled={isProvinceDataLoading || loading}
 							required
+							placeholder={t('pleaseEnter')}
 						/>
 						<AutocompleteInput
 							className='w-full text-sm font-medium lg:w-[240px]'
@@ -209,6 +225,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 							formik={formik}
 							disabled={isDistricDataLoading || loading || !formik.values.responsibleProvinceCode}
 							required={false}
+							placeholder={t('notEnter')}
 						/>
 					</div>
 					<div
@@ -235,6 +252,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 								userDialogmode === UserDialogMode.UserEdit
 							}
 							required={userDialogmode === UserDialogMode.UserAdd ? true : false}
+							placeholder={userDialogmode === UserDialogMode.UserAdd ? t('pleaseEnter') : t('notEnter')}
 						/>
 						<AutocompleteInput
 							className='w-full text-sm font-medium lg:w-[240px]'
@@ -255,6 +273,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 								userDialogmode === UserDialogMode.UserEdit
 							}
 							required={userDialogmode === UserDialogMode.UserAdd ? true : false}
+							placeholder={userDialogmode === UserDialogMode.UserAdd ? t('pleaseEnter') : t('notEnter')}
 						/>
 					</div>
 					{userDialogmode === UserDialogMode.UserProfile && (

@@ -581,7 +581,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 									<TableCell />
 								</TableRow>
 							</TableHead>
-							<TableBody className='overflow-y max-h-[40px] min-h-[40px]'>
+							<TableBody className='overflow-y max-h-[40px] min-h-[40px] [&_.MuiTableCell-root]:!font-medium'>
 								{tableData.map((row, index) => {
 									const isItemSelected = isSelected(row.id)
 									const labelId = `enhanced-table-checkbox-${index}`
