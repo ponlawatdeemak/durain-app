@@ -14,6 +14,12 @@ import classNames from 'classnames'
 import Chart from './Chart'
 import { Language } from '@mui/icons-material'
 import { Languages } from '@/enum'
+import MapView from '@/components/common/map/MapView'
+import { MVTLayer } from '@deck.gl/geo-layers'
+import { tileLayer } from '@/config/app.config'
+import { MapLayer } from '@/components/common/map/interface/map.jsx'
+import { useMap } from '@/components/common/map/context/map'
+import useLayerStore from '@/components/common/map/store/map'
 
 const OverviewMain: React.FC = () => {
 	const { t, i18n } = useTranslation()
@@ -24,6 +30,8 @@ const OverviewMain: React.FC = () => {
 	const [admCode, setAdmCode] = useState(0)
 	const [availabilityData, setAvailabilityData] = useState<availabilityDurianDtoOut[]>()
 	const [overviewData, setOverviewData] = useState<OverviewSummaryDtoOut>()
+	const { setExtent, showMapInfoWindow } = useMap()
+	const { setLayers, addLayer, getLayer, removeLayer } = useLayerStore()
 
 	const availableAdm = useMemo(() => {
 		return availabilityData?.find((item: availabilityDurianDtoOut) => item.year === year)?.availableAdm
@@ -64,6 +72,106 @@ const OverviewMain: React.FC = () => {
 		},
 	}))
 
+	const TEST_LAYER_ID = 'test-layer'
+	const MOCK_TOKEN =
+		'eyJraWQiOiI1Vzl6NmhXZmVNQjRhTXlUcGVNV01relk5UEJrakR1YjZsN1lLUTlVdmpnPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiIyOTVhNDU5Yy05MGExLTcwMzgtNzA2NC00ZGFmYzFlY2QwYjYiLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuYXAtc291dGhlYXN0LTEuYW1hem9uYXdzLmNvbVwvYXAtc291dGhlYXN0LTFfSUdMb3Fub2tNIiwiY2xpZW50X2lkIjoiNHA0MzBwMmRhbGEzYWxqbWloa2s3OWg4MmciLCJvcmlnaW5fanRpIjoiY2Q3Y2M5MzYtZTIwZC00ZThkLTk2ZjUtYmFhOGVhZGRiNTFiIiwiZXZlbnRfaWQiOiI0MTExMjg3My00ZDNhLTRlZDgtYmY3ZC05ZDdhYzY4MzZhNTkiLCJ0b2tlbl91c2UiOiJhY2Nlc3MiLCJzY29wZSI6ImF3cy5jb2duaXRvLnNpZ25pbi51c2VyLmFkbWluIiwiYXV0aF90aW1lIjoxNzI2NDAxMTUwLCJleHAiOjE3MjY0ODc1NTAsImlhdCI6MTcyNjQwMTE1MCwianRpIjoiOWM1YWFiOTgtNDU4Yy00ZGE4LWI5NzgtYzJjYmIyYzhkYjMyIiwidXNlcm5hbWUiOiIyOTVhNDU5Yy05MGExLTcwMzgtNzA2NC00ZGFmYzFlY2QwYjYifQ.DIIqgrU6J6dCp1sD7ibvl7YwoT_8WOMQlMKmZcZs4di9uK-dB5R_Z48NyQN0JUgWaeriHM1b9O1t0GOdt89cEDLnwgMb293CUiOTjCF8B00WTVm71Sy6e2h6rhzpyc5A4qNhSPxdPH1Utx3jYvrauOorri1O8VpVKxHPrsixY08fC6tx201uIgrbcfpl2MyTx1dFF1dlTDly6nKnxNqHJQndP1zxsPsBlFCm2fb-4DIEbgVpOUpPxaeqytYF-2keq1-fDjfTtQSTzgwBluiQxLYJT1jCmDQpzu6ZOFk4Z2qWEKazgwr84FVPqC3qXmxymz7H93Yi2AYMD7wg5cA2Ew'
+
+	const MapInfoWindowContent: React.FC<{ data: { name: string; math: number } }> = ({ data }) => {
+		return (
+			<div className={`m-4 flex flex-col`}>
+				<div>name : {data.name}</div>
+				<div>math : {data.math}</div>
+			</div>
+		)
+	}
+
+	const getInitialLayer = (): MapLayer[] => {
+		const layerProvince = tileLayer.province
+		const layer = new MVTLayer({
+			id: 'muii-test-layer',
+			name: 'province',
+			loadOptions: {
+				fetch: {
+					headers: {
+						'content-type': 'application/json',
+						Authorization: `Bearer ${MOCK_TOKEN}`,
+					},
+				},
+			},
+			data: layerProvince,
+			filled: true,
+			lineWidthUnits: 'pixels',
+			pickable: true,
+			getFillColor() {
+				return [226, 226, 226, 100]
+			},
+			onClick: (info) => {
+				if (info.object) {
+					const mock = {
+						name: 'ทดสอบ',
+						math: Math.random(),
+					}
+					showMapInfoWindow({
+						positon: {
+							x: info.x,
+							y: info.y,
+						},
+						children: <MapInfoWindowContent data={mock} />,
+					})
+				}
+			},
+		})
+		const layerBoundary = tileLayer.boundaryYear(2024)
+		const layer2 = new MVTLayer({
+			id: 'muii-test2-layer',
+			name: 'province',
+			loadOptions: {
+				fetch: {
+					headers: {
+						'content-type': 'application/json',
+						Authorization: `Bearer ${MOCK_TOKEN}`,
+					},
+				},
+			},
+			data: layerBoundary,
+			filled: true,
+			lineWidthUnits: 'pixels',
+			pickable: true,
+			getFillColor() {
+				return [226, 226, 226, 100]
+			},
+			onClick: (info) => {
+				if (info.object) {
+					const mock = {
+						name: 'ทดสอบ',
+						math: Math.random(),
+					}
+					showMapInfoWindow({
+						positon: {
+							x: info.x,
+							y: info.y,
+						},
+						children: <MapInfoWindowContent data={mock} />,
+					})
+				}
+			},
+		})
+		return [
+			{
+				id: 'muii-test-layer',
+				label: 'muii-test-layer',
+				color: '#000000',
+				layer,
+			},
+			{
+				id: 'muii-test2-layer',
+				label: 'muii-test2-layer',
+				color: '#000000',
+				layer: layer2,
+			},
+		]
+	}
+
 	useEffect(() => {
 		service.overview
 			.availabilityDurian()
@@ -102,7 +210,7 @@ const OverviewMain: React.FC = () => {
 				<div className={classNames('[&>svg]:fill-primary')}>
 					<OverviewIcon />
 				</div>
-				<p className='text-primary text-2xl font-semibold'>{t('overview:overviewOfDurianPlantation')}</p>
+				<p className='text-2xl font-semibold text-primary'>{t('overview:overviewOfDurianPlantation')}</p>
 			</div>
 			<div className={classNames('flex h-full w-full gap-[24px]', isDesktop ? 'flex-row' : 'flex-col-reverse')}>
 				<div
@@ -110,7 +218,9 @@ const OverviewMain: React.FC = () => {
 						'flex rounded-[8px] bg-green-100',
 						isDesktop ? 'h-full flex-grow' : 'h-[500px]',
 					)}
-				></div>
+				>
+					<MapView initialLayer={getInitialLayer()} />
+				</div>
 				<div className={classNames('flex flex-col gap-[24px]', isDesktop ? 'h-full w-[350px]' : 'w-full')}>
 					<div className='flex w-full flex-col items-center justify-center gap-[16px] rounded-[8px] bg-white p-[24px] shadow'>
 						<p className='text-xl font-semibold'>{t('overview:durianPlantationData')}</p>
@@ -180,7 +290,7 @@ const OverviewMain: React.FC = () => {
 							</p>
 							<div className='flex h-full w-full flex-col items-end pt-[4px]'>
 								<p className='text-base font-medium'>{t(`overview:${areaUnit}`)}</p>
-								<p className='text-top text-primary text-[36px] font-bold leading-7'>
+								<p className='text-top text-[36px] font-bold leading-7 text-primary'>
 									{overviewData?.overall.area[areaUnit] ?? '-'}
 								</p>
 							</div>
