@@ -4,12 +4,16 @@ export interface AnalyzeParamsType {
 	year?: number
 	yearStart?: number
 	yearEnd?: number
+	provinceId?: number
+	districtId?: number
 }
 
 const initialParams = {
 	year: undefined,
 	yearStart: undefined,
 	yearEnd: undefined,
+	provinceId: undefined,
+	districtId: undefined,
 }
 
 interface SearchAnalyzeContextType {
