@@ -486,12 +486,12 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 	}
 
 	useEffect(() => {
-		console.log('isUserDataLoading :: ', isUserDataLoading)
-		console.log('isUserProfileLoading :: ', isUserProfileLoading)
-		console.log('isPutProfileUMPending :: ', isPutProfileUMPending)
-		console.log('isPostProfileUMPending :: ', isPostProfileUMPending)
-		console.log('isPutProfilePending :: ', isPutProfilePending)
-		console.log('isChangePasswordPending :: ', isChangePasswordPending)
+		// console.log('isUserDataLoading :: ', isUserDataLoading)
+		// console.log('isUserProfileLoading :: ', isUserProfileLoading)
+		// console.log('isPutProfileUMPending :: ', isPutProfileUMPending)
+		// console.log('isPostProfileUMPending :: ', isPostProfileUMPending)
+		// console.log('isPutProfilePending :: ', isPutProfilePending)
+		// console.log('isChangePasswordPending :: ', isChangePasswordPending)
 
 		if (
 			isUserDataLoading ||
