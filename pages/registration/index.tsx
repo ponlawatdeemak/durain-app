@@ -4,12 +4,13 @@ import { UserConfig, useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import nextI18NextConfig from '../../next-i18next.config.js'
 import PageContainer from '@/components/Layout/PageContainer'
+import RegistrationMain from '@/components/pages/registration/Main'
 
 export const getServerSideProps: GetServerSideProps = async (context) => ({
 	props: {
 		...(await serverSideTranslations(
 			context.locale ?? DEFAULT_LOCALE,
-			['common', 'um'],
+			['common', 'registration'],
 			nextI18NextConfig as UserConfig,
 		)),
 	},
@@ -20,7 +21,7 @@ const RegistrationPage = () => {
 
 	return (
 		<PageContainer>
-			<div>RegistrationPage</div>
+			<RegistrationMain />
 		</PageContainer>
 	)
 }
