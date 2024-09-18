@@ -291,7 +291,7 @@ const OverviewMain: React.FC = () => {
 							<div className='flex h-full w-full flex-col items-end pt-[4px]'>
 								<p className='text-base font-medium'>{t(`overview:${areaUnit}`)}</p>
 								<p className='text-top text-[36px] font-bold leading-7 text-primary'>
-									{overviewData?.overall.area[areaUnit] ?? '-'}
+									{overviewData?.overall.area?.[areaUnit] ?? '-'}
 								</p>
 							</div>
 						</div>
@@ -334,7 +334,7 @@ const OverviewMain: React.FC = () => {
 									{t('overview:area')} ({t(`overview:${areaUnit}`)})
 								</div>
 							</div>
-							{overviewData?.overall.ageClass.map((item, index, array) => (
+							{overviewData?.overall.ageClass?.map((item, index, array) => (
 								<React.Fragment key={index}>
 									<div className='flex w-full text-sm font-medium'>
 										<div
