@@ -45,7 +45,7 @@
 	"next": "ถัดไป",
 	"common": {
 		"uploadImg": "อัปโหลดรูปภาพ",
-		"conditionImg": "ขนาดไฟล์อย่างน้อย 1 MB (jpg หรือ png)"
+		"conditionImg": "ขนาดไฟล์ไม่เกิน 3 MB (jpg หรือ png)"
 	},
 
 	"resetPassword": "รีเซ็ตรหัสผ่าน",
