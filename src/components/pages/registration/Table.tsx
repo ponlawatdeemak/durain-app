@@ -17,7 +17,7 @@ export default function RegistrationTable({
 	handleRowClick,
 }: {
 	data?: overviewRegisteredDtoOut
-	handleRowClick: (rowAdmCode: number) => void
+	handleRowClick: (rowAdmCode: number, admName: ResponseLanguage) => void
 }) {
 	const { t, i18n } = useTranslation()
 	const language = i18n.language as keyof ResponseLanguage
@@ -46,11 +46,11 @@ export default function RegistrationTable({
 							hover
 							tabIndex={-1}
 							key={row.admCode}
-							onClick={() => handleRowClick(row.admCode)}
+							onClick={() => handleRowClick(row.admCode, row.admName)}
 						>
-							<TableCell>{row.admName[language]}</TableCell>
-							<TableCell align='right'>{row.registeredArea[areaUnit]}</TableCell>
-							<TableCell align='right'>{row.nonRegisteredArea[areaUnit]}</TableCell>
+							<TableCell>{row.admName[language] ?? '-'}</TableCell>
+							<TableCell align='right'>{row.registeredArea[areaUnit] ?? '-'}</TableCell>
+							<TableCell align='right'>{row.nonRegisteredArea[areaUnit] ?? '-'}</TableCell>
 						</TableRow>
 					))}
 				</TableBody>
