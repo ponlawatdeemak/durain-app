@@ -44,6 +44,7 @@ import { ResponseDto } from '@/api/interface'
 import { ChangePasswordDtoIn } from '@/api/auth/dto-in.dto'
 import { GetProfileDtoOut } from '@/api/um/dto-out.dto'
 import PasswordResetContent from './PasswordResetContent'
+import LoadingButton from '@mui/lab/LoadingButton'
 
 export interface UserManagementProps {
 	open: boolean
@@ -348,7 +349,17 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 					}
 					try {
 						await mutateUpdateProfile(profileData)
+						setAlertInfo({
+							open: true,
+							severity: 'success',
+							message: t('profileUpdateSuccess', { ns: 'um' }),
+						})
 					} catch (error) {
+						setAlertInfo({
+							open: true,
+							severity: 'error',
+							message: t('profileUpdateFail', { ns: 'um' }),
+						})
 						throw new Error('Profile update failed')
 					}
 
@@ -475,6 +486,13 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 	}
 
 	useEffect(() => {
+		console.log('isUserDataLoading :: ', isUserDataLoading)
+		console.log('isUserProfileLoading :: ', isUserProfileLoading)
+		console.log('isPutProfileUMPending :: ', isPutProfileUMPending)
+		console.log('isPostProfileUMPending :: ', isPostProfileUMPending)
+		console.log('isPutProfilePending :: ', isPutProfilePending)
+		console.log('isChangePasswordPending :: ', isChangePasswordPending)
+
 		if (
 			isUserDataLoading ||
 			isUserProfileLoading ||
@@ -589,7 +607,13 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 							<div className='flex grow !flex-row-reverse items-center justify-between max-lg:block lg:flex-row lg:gap-[32px] xl:gap-[48px] 2xl:gap-[64px]'>
 								<ProfileForm
 									formik={formik}
-									loading={isPostProfileUMPending || isPutProfileUMPending || isUserDataLoading}
+									loading={
+										isUserDataLoading ||
+										isUserProfileLoading ||
+										isPutProfileUMPending ||
+										isPostProfileUMPending ||
+										isPutProfilePending
+									}
 									isFormUM={true}
 									isDisabledProfile={userId === session?.user.id}
 									userDialogmode={userDialogMode}
@@ -652,12 +676,23 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 							})}
 						>
 							<Button
-								className='h-[40px] !w-[71px] !border-gray !bg-white text-sm !text-black'
+								className={clsx('h-[40px] !w-[71px] !border-gray !bg-white text-sm !text-black', {
+									'!text-gray':
+										isPostProfileUMPending ||
+										isPutProfileUMPending ||
+										isUserDataLoading ||
+										isPutProfilePending,
+								})}
 								variant='outlined'
 								onClick={(e) => {
 									handleOnClose(e, '')
 								}}
-								disabled={isPostProfileUMPending || isPutProfileUMPending || isUserDataLoading}
+								disabled={
+									isPostProfileUMPending ||
+									isPutProfileUMPending ||
+									isUserDataLoading ||
+									isPutProfilePending
+								}
 							>
 								{t('cancel')}
 							</Button>
@@ -666,7 +701,12 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 								variant='contained'
 								onClick={handleSubmitUser}
 								color='primary'
-								disabled={isPostProfileUMPending || isPutProfileUMPending || isUserDataLoading}
+								disabled={
+									isPostProfileUMPending ||
+									isPutProfileUMPending ||
+									isUserDataLoading ||
+									isPutProfilePending
+								}
 								startIcon={
 									isPostProfileUMPending || isPutProfileUMPending || isUserDataLoading ? (
 										<CircularProgress
@@ -678,18 +718,6 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 							>
 								{t('save', { ns: 'um' })}
 							</Button>
-							{/* <LoadingButton
-							fullWidth
-							loading={isPostProfileUMPending || isPutProfileUMPending || isUserDataLoading}
-							loadingPosition='start'
-							startIcon={<CircularProgress size={0} />}
-							variant='contained'
-							// type='submit'
-							onClick={handleSubmitUser}
-							className='h-[40px] w-[71px] text-sm [&_.MuiButton-startIcon]:m-0 [&_.MuiButtonBase-root]:w-[71px]'
-						>
-							<span>{t('save', { ns: 'um' })}</span>
-						</LoadingButton> */}
 						</div>
 					</DialogActions>
 				)}
