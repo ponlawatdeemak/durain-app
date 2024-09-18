@@ -30,6 +30,7 @@ const RegistrationMain: React.FC = () => {
 	const [admCode, setAdmCode] = useState(0)
 	const [tableAdmCode, setTableAdmCode] = useState(0)
 	const [showBack, setShowBack] = useState(false)
+	const [district, setDistrict] = useState<ResponseLanguage>()
 
 	const {
 		data: availabilityData,
@@ -87,6 +88,13 @@ const RegistrationMain: React.FC = () => {
 		return selectedYearObj?.availableAdm.find((item: any) => item.admCode === admCode)?.admName
 	}, [selectedYearObj?.availableAdm, admCode])
 
+	const selectedTableAdm = useMemo(() => {
+		if (tableInnerData) {
+			return registeredData?.adms.find((item: any) => item.admCode === tableAdmCode)?.admName
+		}
+		return selectedYearObj?.availableAdm.find((item: any) => item.admCode === tableAdmCode)?.admName
+	}, [selectedYearObj, tableAdmCode, registeredData, tableInnerData])
+
 	const StyledTooltip = styled(
 		({ className, title, children, ...props }: { className?: any; title: any; children: any }) => (
 			<Tooltip
@@ -114,8 +122,9 @@ const RegistrationMain: React.FC = () => {
 		},
 	}))
 
-	const handleRowClick = (rowAdmCode: number) => {
+	const handleRowClick = (rowAdmCode: number, rowAdmName: ResponseLanguage) => {
 		if (String(rowAdmCode).length <= 4) {
+			setDistrict(rowAdmName)
 			setTableAdmCode(rowAdmCode)
 			setShowBack(true)
 		} else {
@@ -229,7 +238,7 @@ const RegistrationMain: React.FC = () => {
 								<OverviewIcon />
 							</div>
 							<p className='text-[36px] font-bold leading-none'>
-								{registeredData?.overall.totalArea[areaUnit] ?? '-'}
+								{registeredData?.overall.totalArea?.[areaUnit] ?? '-'}
 							</p>
 						</div>
 						<hr className={classNames('my-[16px] w-full')} />
@@ -246,7 +255,7 @@ const RegistrationMain: React.FC = () => {
 								</div>
 								<p className='pt-[8px] text-base font-medium'>{t(`registration:${areaUnit}`)}</p>
 								<p className='text-[24px] font-medium leading-none text-[#2F7A59]'>
-									{registeredData?.overall.nonRegisteredArea[areaUnit] ?? '-'}
+									{registeredData?.overall.nonRegisteredArea?.[areaUnit] ?? '-'}
 								</p>
 							</div>
 							<hr className={classNames('ml-[24px] mr-[16px] h-full border-l-[1px] border-t-0')} />
@@ -262,7 +271,7 @@ const RegistrationMain: React.FC = () => {
 								</div>
 								<p className='pt-[8px] text-base font-medium'>{t(`registration:${areaUnit}`)}</p>
 								<p className='text-[24px] font-medium leading-none text-[#EF5A56]'>
-									{registeredData?.overall.registeredArea[areaUnit] ?? '-'}
+									{registeredData?.overall.registeredArea?.[areaUnit] ?? '-'}
 								</p>
 							</div>
 						</div>
@@ -280,7 +289,23 @@ const RegistrationMain: React.FC = () => {
 								</IconButton>
 							</div>
 							<div className='flex w-full justify-center text-center'>
-								{t('registration:provincialRegistrationData')}
+								{admCode === 0 && tableAdmCode === 0
+									? t('registration:provincialRegistrationData')
+									: tableAdmCode === 0
+										? language === Languages.TH
+											? `${t('registration:registrationData')}จ.${selectedAdm?.[language] ?? ''}`
+											: `${selectedAdm?.[language] ?? ''} Province ${t('registration:registrationData')}`
+										: admCode === 0
+											? String(tableAdmCode).length === 4
+												? language === Languages.TH
+													? `${t('registration:registrationData')}อ.${district?.[language] ?? ''}`
+													: `${district?.[language] ?? ''} District ${t('registration:registrationData')}`
+												: language === Languages.TH
+													? `${t('registration:registrationData')}จ.${selectedTableAdm?.[language] ?? ''}`
+													: `${selectedTableAdm?.[language] ?? ''} Province ${t('registration:registrationData')}`
+											: language === Languages.TH
+												? `${t('registration:registrationData')}อ.${selectedTableAdm?.[language] ?? ''}`
+												: `${selectedTableAdm?.[language] ?? ''} District ${t('registration:registrationData')}`}
 							</div>
 						</p>
 						<div
