@@ -36,7 +36,7 @@ const Chart: React.FC<OverviewBarTableProps> = ({ data }) => {
 					columns: [['data'].concat(data?.overall?.ageClass?.map((item: any) => item.percent))],
 					type: bar(),
 					color: function (_: string, d: any) {
-						return data.overall.ageClass[d.index].color
+						return data.overall.ageClass?.[d.index].color
 					},
 				},
 				bar: {
@@ -46,7 +46,7 @@ const Chart: React.FC<OverviewBarTableProps> = ({ data }) => {
 					x: {
 						tick: {
 							format: function (index: number) {
-								return data.overall.ageClass[index].name[language]
+								return data.overall.ageClass?.[index].name[language]
 							},
 						},
 						label: {
