@@ -103,7 +103,7 @@ const AnalyzeSummary = () => {
 							</Box>
 							<Box className='flex w-full shrink-0 flex-col items-center gap-4 lg:w-[360px]'>
 								<span className='text-lg font-medium text-[#333333]'>{`${t('analyze:durianPlantationArea')} ${t('year')} ${durianAvailabilityData?.data?.find((data) => data.year === year)?.yearName[language] || ''}`}</span>
-								<span className='text-3xl font-medium text-[#333333]'>{`${summaryOverviewData?.data?.overall.area[areaUnit] || ''} ${t(AreaUnitText[areaUnit])}`}</span>
+								<span className='text-3xl font-medium text-[#333333]'>{`${summaryOverviewData?.data?.overall?.area?.[areaUnit] || ''} ${t(AreaUnitText[areaUnit])}`}</span>
 								<Box className='flex w-full items-center text-sm font-medium text-[#5C5C5C]'>
 									<span className='w-full pl-4'>{t('age')}</span>
 									<span className='w-full text-center'>{`${t('analyze:amount')}%`}</span>

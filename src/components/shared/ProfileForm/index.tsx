@@ -284,7 +284,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 						>
 							<Button
 								className={clsx(
-									'!border-green-light !text-green-light h-[40px] w-[150px] bg-white text-sm',
+									'h-[40px] w-[150px] !border-green-light bg-white text-sm !text-green-light',
 									{
 										'w-[178px]': isDesktop,
 									},
@@ -296,7 +296,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 										<LockIcon width={24} height={24} />
 									</div>
 								}
-								// disabled={isPostProfileUMPending || isPutProfileUMPending || isUserDataLoading}
+								disabled={loading}
 							>
 								{t('resetPassword')}
 							</Button>
