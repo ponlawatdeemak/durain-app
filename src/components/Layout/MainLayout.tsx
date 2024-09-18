@@ -6,11 +6,11 @@ interface MainLayoutProps extends PropsWithChildren {}
 
 export default function MainLayout({ children }: MainLayoutProps) {
 	return (
-		<div className='flex flex-1 flex-col'>
+		<div className='flex h-full w-full flex-col'>
 			<AppBar />
-			<div className='flex flex-1 flex-row'>
+			<div className='flex flex-1 flex-row overflow-hidden'>
 				<SideBar />
-				<div className='flex flex-1 flex-row'>{children}</div>
+				{children}
 			</div>
 		</div>
 	)
