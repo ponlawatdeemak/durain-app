@@ -29,11 +29,11 @@ const Chart: React.FC<OverviewBarTableProps> = ({ data }) => {
 	)
 
 	useEffect(() => {
-		if (data) {
+		if (data && data?.overall?.ageClass?.length > 0) {
 			bb.generate({
 				bindto: '#chart',
 				data: {
-					columns: [['data'].concat(data.overall.ageClass.map((item: any) => item.percent))],
+					columns: [['data'].concat(data?.overall?.ageClass?.map((item: any) => item.percent))],
 					type: bar(),
 					color: function (_: string, d: any) {
 						return data.overall.ageClass[d.index].color
