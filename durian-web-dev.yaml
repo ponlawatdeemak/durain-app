@@ -27,6 +27,19 @@ spec:
           value: "https://durian-dev.thaicom.io"
         - name: NEXTAUTH_SECRET
           value: "TI4j8FMO44Jlo60VLjAa8L335ndcsKkMT1WgkbkZS6Y="
+
+        - name: NEXT_PUBLIC_API_HOSTNAME
+          value: "https://durian-api-dev.thaicom.io"
+        - name: NEXT_PUBLIC_API_KEY
+          value: "ng4Uz54h41PJvflDhDSz5qELkqp7hj8H"
+        - name: NEXT_PUBLIC_API_HOSTNAME_DATA
+          value: "https://durian.api-data.promptplook.co"
+        - name: NEXT_PUBLIC_API_KEY_DATA
+          value: "rlTCvmHRKh8RcVAnkiWf75t7pjEhTA823zj4zvTB"
+        - name: NEXT_PUBLIC_API_HOSTNAME_TILE
+          value: "https://durian.tileserver.promptplook.co"
+        - name: NEXT_PUBLIC_API_KEY_TILE
+          value: "7qvd7mjul8vqkjr5njijqg5ub5"
         - name: COGNITO_CLIENT_ID
           value: "7qvd7mjul8vqkjr5njijqg5ub5"
         - name: COGNITO_CLIENT_SECRET
