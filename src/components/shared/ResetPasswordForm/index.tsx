@@ -25,10 +25,22 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
 		<div className={className}>
 			{resetPassword && <FormInput name='email' label={t('email')} disabled={isEmail} formik={formik} />}
 			{changePassword && (
-				<PasswordInput name='currentPassword' label={t('password')} formik={formik} disabled={loading} />
+				<PasswordInput
+					name='currentPassword'
+					label={t('password')}
+					formik={formik}
+					disabled={loading}
+					required
+				/>
 			)}
-			<PasswordInput name='password' label={t('passwordNew')} formik={formik} disabled={loading} />
-			<PasswordInput name='confirmPassword' label={t('passwordConfirm')} formik={formik} disabled={loading} />
+			<PasswordInput name='password' label={t('passwordNew')} formik={formik} disabled={loading} required />
+			<PasswordInput
+				name='confirmPassword'
+				label={t('passwordConfirm')}
+				formik={formik}
+				disabled={loading}
+				required
+			/>
 			{resetPassword && (
 				<FormInput
 					name='confirmationCode'

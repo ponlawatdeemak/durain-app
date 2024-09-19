@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { GetSearchUMDtoIn } from '@/api/um/dto-in.dto'
 import { SortType } from '@/enum'
 import UserManagementSearchForm from './SearchForm'
@@ -25,6 +25,11 @@ export const UserManagementMain = () => {
 	const [isSearch, setIsSearch] = useState<boolean>(false)
 	const [page, setPage] = useState<number>(1)
 	const { isDesktop } = useResponsive()
+
+	// useEffect(() => {
+	// 	console.log('isSearch :: ', isSearch)
+	// }, [isSearch])
+
 	return (
 		<div
 			className={`flex flex-col ${isDesktop ? 'pl-[32px] pr-[32px] pt-[16px]' : 'pl-[0px] pr-[0px] pt-[12px]'} ${isDesktop ? 'w-[calc(100vw-90px)]' : 'w-[calc(100vw-50px)]'} self-center`}
@@ -33,7 +38,7 @@ export const UserManagementMain = () => {
 				<div className='[&>svg]:fill-green-dark'>
 					<UserManagementIcon width={24} height={24} />
 				</div>
-				<Typography className='text-green-dark !text-2xl !font-medium'>
+				<Typography className='!text-2xl !font-medium text-green-dark'>
 					{t('userManagement', { ns: 'um' })}
 				</Typography>
 			</Box>

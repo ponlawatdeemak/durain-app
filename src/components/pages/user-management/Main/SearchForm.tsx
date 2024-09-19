@@ -5,7 +5,7 @@ import { FormMain } from '../Form'
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
 import GroupAddOutlinedIcon from '@mui/icons-material/GroupAddOutlined'
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt'
-import React, { ChangeEvent, FormEvent, useState } from 'react'
+import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react'
 import { GetSearchUMDtoIn } from '@/api/um/dto-in.dto'
 import { useTranslation } from 'next-i18next'
 import useResponsive from '@/hook/responsive'
@@ -28,8 +28,12 @@ const UserManagementSearchForm: React.FC<UserManagementSearchFormProps> = ({
 	const [openImport, setOpenImport] = useState<boolean>(false)
 	const { t, i18n } = useTranslation(['common', 'um'])
 	const { isDesktop } = useResponsive()
+
 	const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
 		// setSearchString(event.target.value)
+		// console.log('handleSearchChange')
+		// event.stopPropagation()
+		// event.preventDefault()
 		setSearchParams((prevSearch) => ({
 			...prevSearch,
 			offset: 0,
@@ -40,13 +44,14 @@ const UserManagementSearchForm: React.FC<UserManagementSearchFormProps> = ({
 	}
 
 	const handleOnBlur = (event: React.FocusEvent<HTMLInputElement> | React.FormEvent<Element>) => {
+		// console.log('handleOnBlur')
 		event.preventDefault()
 		setIsSearch(true)
 	}
 
 	return (
 		<>
-			<Paper className='!bg-green-alpha flex items-center gap-[6px] pl-[6px]'>
+			<Paper className='flex items-center gap-[6px] !bg-green-alpha pl-[6px]'>
 				<Box className='w-full'>
 					<form
 						onSubmit={(event) => {
@@ -68,6 +73,7 @@ const UserManagementSearchForm: React.FC<UserManagementSearchFormProps> = ({
 								onChange={handleSearchChange}
 								onBlur={handleOnBlur}
 								disableUnderline={true}
+								inputProps={{ maxLength: 100 }}
 							/>
 						</FormControl>
 					</form>

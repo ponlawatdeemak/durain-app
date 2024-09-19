@@ -36,7 +36,14 @@ const SettingDialog: React.FC<SettingDialogProps> = ({ ...props }) => {
 	}
 
 	return (
-		<Dialog open={open} onClose={onClose}>
+		<Dialog
+			open={open}
+			onClose={(event, reason) => {
+				if (reason !== 'backdropClick') {
+					onClose()
+				}
+			}}
+		>
 			<DialogTitle className='flex items-center'>
 				<SettingsIcon color='primary' />
 				<Typography className='!ml-1 flex-1 !text-lg !font-semibold' color='primary'>
