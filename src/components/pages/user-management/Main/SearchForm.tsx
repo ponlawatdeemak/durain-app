@@ -73,6 +73,7 @@ const UserManagementSearchForm: React.FC<UserManagementSearchFormProps> = ({
 								onChange={handleSearchChange}
 								onBlur={handleOnBlur}
 								disableUnderline={true}
+								inputProps={{ maxLength: 100 }}
 							/>
 						</FormControl>
 					</form>
