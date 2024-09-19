@@ -23,7 +23,7 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
 	const { t } = useTranslation(['common', 'appbar'])
 	return (
 		<div className={className}>
-			{!resetPassword && <FormInput name='email' label={t('email')} disabled={isEmail} formik={formik} />}
+			{resetPassword && <FormInput name='email' label={t('email')} disabled={isEmail} formik={formik} />}
 			{changePassword && (
 				<PasswordInput
 					name='currentPassword'
@@ -41,7 +41,7 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
 				disabled={loading}
 				required
 			/>
-			{!resetPassword && (
+			{resetPassword && (
 				<FormInput
 					name='confirmationCode'
 					label={t('auth.verificationCode', { ns: 'appbar' })}
