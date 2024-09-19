@@ -403,11 +403,11 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 			if (reason === 'backdropClick' || isBusy) {
 				return
 			}
-			formik.resetForm()
+			onClose()
 			passwordFormik.resetForm()
 			setIsResetPasswordOpen(false)
 			setResetPasswordStatus(null)
-			onClose()
+			formik.resetForm()
 		},
 		[onClose],
 	)
@@ -708,7 +708,10 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 									isPutProfilePending
 								}
 								startIcon={
-									isPostProfileUMPending || isPutProfileUMPending || isUserDataLoading ? (
+									isPostProfileUMPending ||
+									isPutProfileUMPending ||
+									isUserDataLoading ||
+									isPutProfilePending ? (
 										<CircularProgress
 											className='[&_.MuiCircularProgress-circle]:text-[#00000042]'
 											size={16}

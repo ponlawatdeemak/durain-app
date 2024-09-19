@@ -288,7 +288,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 						>
 							<Button
 								className={clsx(
-									'h-[40px] w-[150px] !border-green-light bg-white text-sm !text-green-light',
+									'h-[40px] w-[150px] border-green-light bg-white text-sm text-green-light',
 									{
 										'w-[178px]': isDesktop,
 									},
@@ -296,7 +296,11 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 								variant='outlined'
 								onClick={handleClickResetPassword}
 								startIcon={
-									<div className='[&>svg]:fill-green-dark1'>
+									<div
+										className={clsx('[&>svg]:fill-green-dark1', {
+											'[&>svg]:fill-gray': loading,
+										})}
+									>
 										<LockIcon width={24} height={24} />
 									</div>
 								}

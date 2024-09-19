@@ -280,7 +280,7 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 									>
 										{importFile.name}
 									</Button> */}
-									<Box className='border-gray !bg-gray flex flex-row items-center rounded border-solid p-1'>
+									<Box className='flex flex-row items-center rounded border-solid border-gray !bg-gray p-1'>
 										<Typography className='p-[4px] !text-sm !font-medium'>
 											{importFile.name}
 										</Typography>
@@ -301,7 +301,7 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 										role={undefined}
 										variant='contained'
 										tabIndex={-1}
-										className='border-gray flex h-[32px] gap-[4px] py-[6px] pl-[8px] pr-[10px] text-base text-black text-white [&_.MuiButton-startIcon]:m-0'
+										className='flex h-[32px] gap-[4px] border-gray py-[6px] pl-[8px] pr-[10px] text-base text-black text-white [&_.MuiButton-startIcon]:m-0'
 										startIcon={<Icon path={mdiTrayArrowUp} size={1} />}
 									>
 										{t('uploadFile', { ns: 'um' })}
@@ -319,7 +319,7 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 												<Icon path={mdiCloseCircleOutline} size={1} />
 												<Typography>{t('fileDataError', { ns: 'um' })}</Typography>
 											</div>
-											<div className='divide-gray divide-x-0 divide-y divide-solid pt-3'>
+											<div className='divide-x-0 divide-y divide-solid divide-gray pt-3'>
 												{importError.map((error) => {
 													if (error.success === false) {
 														return (
@@ -344,7 +344,7 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 							)}
 						</Box>
 						{!importFile && (
-							<Box className='border-gray flex w-[90%] flex-col items-center justify-center gap-2 border-x-0 border-y-0 border-t border-solid p-4'>
+							<Box className='flex w-[90%] flex-col items-center justify-center gap-2 border-x-0 border-y-0 border-t border-solid border-gray p-4'>
 								<Typography className='text-base font-medium'>
 									{t('userDocExample', { ns: 'um' })}
 								</Typography>
@@ -353,7 +353,7 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 									role={undefined}
 									variant='outlined'
 									tabIndex={-1}
-									className='!border-gray flex h-[32px] !w-[254px] gap-[4px] !bg-white py-[6px] pl-[8px] pr-[10px] text-base !text-black [&_.MuiButton-startIcon]:m-0'
+									className='flex h-[32px] !w-[254px] gap-[4px] !border-gray !bg-white py-[6px] pl-[8px] pr-[10px] text-base !text-black [&_.MuiButton-startIcon]:m-0'
 									onClick={() => {
 										handleDownloadTemplate('csv')
 									}}
@@ -366,7 +366,7 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 									role={undefined}
 									variant='outlined'
 									tabIndex={-1}
-									className='!border-gray flex h-[32px] !w-[254px] gap-[4px] !bg-white py-[6px] pl-[8px] pr-[10px] text-base !text-black [&_.MuiButton-startIcon]:m-0'
+									className='flex h-[32px] !w-[254px] gap-[4px] !border-gray !bg-white py-[6px] pl-[8px] pr-[10px] text-base !text-black [&_.MuiButton-startIcon]:m-0'
 									onClick={() => {
 										handleDownloadTemplate('xlsx')
 									}}
@@ -382,7 +382,7 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 					<DialogActions className={'flex justify-end !p-[24px]'}>
 						<div className={'flex justify-end space-x-2'}>
 							<Button
-								className='!border-gray h-[40px] !w-[76px] !bg-white !text-sm !text-black'
+								className='h-[40px] !w-[76px] !border-gray !bg-white !text-sm !text-black'
 								variant='outlined'
 								onClick={(event) => {
 									handleCloseImport(event, 'cancelClick')
@@ -398,7 +398,7 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 								startIcon={<CircularProgress size={1} />}
 								variant='contained'
 								color='primary'
-								className='h-[40px] !w-[76px] !text-sm [&_.MuiButton-startIcon]:m-0 [&_.MuiButtonBase-root]:w-[100px]'
+								className={`h-[40px] !w-[76px] !text-sm [&_.MuiButton-startIcon]:m-0 [&_.MuiButtonBase-root]:w-[100px] ${isLoading && '[&_.MuiLoadingButton-loadingIndicator]:ml-[14px]'}`}
 								onClick={() => {
 									setIsOpenConfirmModal(true)
 								}}
