@@ -32,6 +32,7 @@
 	"userDocExample": "User Document Example",
 	"downloadTemplate": "Download Template",
 	"successImport": "User import successfully",
+	"noItem": "No user found",
 	"alert": {
 		"deleteUserProfile": "Delete user",
 		"enableUserProfile": "Enable User",
