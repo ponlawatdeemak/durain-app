@@ -291,7 +291,9 @@ const OverviewMain: React.FC = () => {
 							<div className='flex h-full w-full flex-col items-end pt-[4px]'>
 								<p className='text-base font-medium'>{t(`overview:${areaUnit}`)}</p>
 								<p className='text-top text-[36px] font-bold leading-7 text-primary'>
-									{overviewData?.overall?.area?.[areaUnit] ?? '-'}
+									{overviewData?.overall?.area
+										? Math.round(overviewData?.overall?.area?.[areaUnit]).toLocaleString()
+										: '-'}
 								</p>
 							</div>
 						</div>
@@ -352,7 +354,9 @@ const OverviewMain: React.FC = () => {
 											/>
 											{item.name[language]}
 										</div>
-										<div className='flex w-1/2 justify-center'>{item.area[areaUnit]}</div>
+										<div className='flex w-1/2 justify-center'>
+											{Math.round(item.area[areaUnit]).toLocaleString()}
+										</div>
 									</div>
 									{index === array.length - 1 ? null : <hr className='my-1 w-full border-dashed' />}
 								</React.Fragment>

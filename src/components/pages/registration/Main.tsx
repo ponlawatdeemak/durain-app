@@ -238,7 +238,9 @@ const RegistrationMain: React.FC = () => {
 								<OverviewIcon />
 							</div>
 							<p className='text-[36px] font-bold leading-none'>
-								{registeredData?.overall.totalArea?.[areaUnit] ?? '-'}
+								{registeredData?.overall.totalArea
+									? Math.round(registeredData?.overall.totalArea?.[areaUnit]).toLocaleString()
+									: '-'}
 							</p>
 						</div>
 						<hr className={classNames('my-[16px] w-full')} />
@@ -255,7 +257,11 @@ const RegistrationMain: React.FC = () => {
 								</div>
 								<p className='pt-[8px] text-base font-medium'>{t(`registration:${areaUnit}`)}</p>
 								<p className='text-[24px] font-medium leading-none text-[#2F7A59]'>
-									{registeredData?.overall.nonRegisteredArea?.[areaUnit] ?? '-'}
+									{registeredData?.overall.nonRegisteredArea
+										? Math.round(
+												registeredData?.overall.nonRegisteredArea?.[areaUnit],
+											).toLocaleString()
+										: '-'}
 								</p>
 							</div>
 							<hr className={classNames('ml-[24px] mr-[16px] h-full border-l-[1px] border-t-0')} />
@@ -271,7 +277,11 @@ const RegistrationMain: React.FC = () => {
 								</div>
 								<p className='pt-[8px] text-base font-medium'>{t(`registration:${areaUnit}`)}</p>
 								<p className='text-[24px] font-medium leading-none text-[#EF5A56]'>
-									{registeredData?.overall.registeredArea?.[areaUnit] ?? '-'}
+									{registeredData?.overall.registeredArea
+										? Math.round(
+												registeredData?.overall.registeredArea?.[areaUnit],
+											).toLocaleString()
+										: '-'}
 								</p>
 							</div>
 						</div>

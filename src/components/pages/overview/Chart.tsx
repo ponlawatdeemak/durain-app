@@ -22,7 +22,7 @@ const Chart: React.FC<OverviewBarTableProps> = ({ data }) => {
 		(index: number, color: string) => {
 			return `<div class="bb-tooltip" style="background-color:${color}">
                     <p>${t('overview:area')} (${t(`overview:${areaUnit}`)})<p/>
-                    <p>${data.overall.ageClass[index].area[areaUnit]}</p>
+                    <p>${Math.round(data.overall.ageClass[index].area[areaUnit]).toLocaleString()}</p>
                 </div>`
 		},
 		[data, areaUnit, t],

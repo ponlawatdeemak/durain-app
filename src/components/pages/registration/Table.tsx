@@ -54,10 +54,10 @@ export default function RegistrationTable({
 								{row.admName[language] ?? '-'}
 							</TableCell>
 							<TableCell sx={{ borderWidth: '1px 0px' }} align='right'>
-								{row.registeredArea[areaUnit] ?? '-'}
+								{Math.round(row.registeredArea[areaUnit]).toLocaleString() ?? '-'}
 							</TableCell>
 							<TableCell className='rounded-r-[4px] border-r-[1px] border-t-[1px]' align='right'>
-								{row.nonRegisteredArea[areaUnit] ?? '-'}
+								{Math.round(row.nonRegisteredArea[areaUnit]).toLocaleString() ?? '-'}
 							</TableCell>
 						</TableRow>
 					))}
