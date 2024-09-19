@@ -625,7 +625,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 												tabIndex={-1}
 												key={row.id}
 												selected={isItemSelected}
-												sx={{ cursor: 'pointer' }}
+												sx={{ cursor: 'pointer', height: '78px' }}
 											>
 												<TableCell padding='checkbox'>
 													<Checkbox
@@ -733,7 +733,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 											// 	// height: (dense ? 33 : 53) * emptyRows,
 											// 	height: total === 0 ? '100%' : 168 * emptyRows, //total height is around 396px at dev screen height when total === 0
 											// }}
-											className={clsx(`h-[${168 * emptyRows}px]`, {
+											className={clsx(`h-[${33 * emptyRows}px]`, {
 												'h-[calc(100vh-404px)]': total === 0,
 											})}
 										>
