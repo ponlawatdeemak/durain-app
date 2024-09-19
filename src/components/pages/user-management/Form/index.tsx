@@ -169,7 +169,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 		queryFn: async () => {
 			if (userDialogMode === UserDialogMode.UserProfile) {
 				const res = await service.um.getProfile()
-				console.log('ProfileRes :: ', res)
+				// console.log('ProfileRes :: ', res)
 				return res
 			}
 		},
@@ -400,17 +400,26 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 
 	const handleOnClose = useCallback(
 		(event: any, reason: string) => {
-			if (reason === 'backdropClick' && isBusy) {
+			if (reason === 'backdropClick' || isBusy) {
 				return
 			}
-			formik.resetForm()
+			setOpen(false)
+			// setTimeout(() => {
 			passwordFormik.resetForm()
 			setIsResetPasswordOpen(false)
 			setResetPasswordStatus(null)
-			onClose()
+			// formik.resetForm()
+			// }, 200)
 		},
 		[onClose],
 	)
+
+	useEffect(() => {
+		if (open) {
+			// queryClient.invalidateQueries({ queryKey: ['getUM', userId] })
+			formik.resetForm()
+		}
+	}, [open])
 
 	const handleValidatePassword = useCallback(() => {
 		passwordFormik.validateForm().then(async (errors) => {
@@ -528,6 +537,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 						'': !isDesktop,
 					},
 				)}
+				// transitionDuration={0}
 			>
 				<DialogTitle
 					className={clsx('', {
@@ -708,7 +718,10 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 									isPutProfilePending
 								}
 								startIcon={
-									isPostProfileUMPending || isPutProfileUMPending || isUserDataLoading ? (
+									isPostProfileUMPending ||
+									isPutProfileUMPending ||
+									isUserDataLoading ||
+									isPutProfilePending ? (
 										<CircularProgress
 											className='[&_.MuiCircularProgress-circle]:text-[#00000042]'
 											size={16}

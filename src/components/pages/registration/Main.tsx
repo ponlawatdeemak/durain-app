@@ -89,7 +89,7 @@ const RegistrationMain: React.FC = () => {
 	}, [selectedYearObj?.availableAdm, admCode])
 
 	const selectedTableAdm = useMemo(() => {
-		if (tableInnerData) {
+		if (registeredData) {
 			return registeredData?.adms.find((item: any) => item.admCode === tableAdmCode)?.admName
 		}
 		return selectedYearObj?.availableAdm.find((item: any) => item.admCode === tableAdmCode)?.admName
@@ -238,7 +238,9 @@ const RegistrationMain: React.FC = () => {
 								<OverviewIcon />
 							</div>
 							<p className='text-[36px] font-bold leading-none'>
-								{registeredData?.overall.totalArea?.[areaUnit] ?? '-'}
+								{registeredData?.overall.totalArea
+									? Math.round(registeredData?.overall.totalArea?.[areaUnit]).toLocaleString()
+									: '-'}
 							</p>
 						</div>
 						<hr className={classNames('my-[16px] w-full')} />
@@ -255,7 +257,11 @@ const RegistrationMain: React.FC = () => {
 								</div>
 								<p className='pt-[8px] text-base font-medium'>{t(`registration:${areaUnit}`)}</p>
 								<p className='text-[24px] font-medium leading-none text-[#2F7A59]'>
-									{registeredData?.overall.nonRegisteredArea?.[areaUnit] ?? '-'}
+									{registeredData?.overall.nonRegisteredArea
+										? Math.round(
+												registeredData?.overall.nonRegisteredArea?.[areaUnit],
+											).toLocaleString()
+										: '-'}
 								</p>
 							</div>
 							<hr className={classNames('ml-[24px] mr-[16px] h-full border-l-[1px] border-t-0')} />
@@ -271,7 +277,11 @@ const RegistrationMain: React.FC = () => {
 								</div>
 								<p className='pt-[8px] text-base font-medium'>{t(`registration:${areaUnit}`)}</p>
 								<p className='text-[24px] font-medium leading-none text-[#EF5A56]'>
-									{registeredData?.overall.registeredArea?.[areaUnit] ?? '-'}
+									{registeredData?.overall.registeredArea
+										? Math.round(
+												registeredData?.overall.registeredArea?.[areaUnit],
+											).toLocaleString()
+										: '-'}
 								</p>
 							</div>
 						</div>
@@ -312,13 +322,6 @@ const RegistrationMain: React.FC = () => {
 							className={classNames(
 								'my-[16px] box-border flex w-full flex-grow',
 								isDesktop ? 'relative' : '',
-								// isDesktop
-								// 	? language === Languages.TH
-								// 		? 'max-h-[calc(100vh-762px)]'
-								// 		: areaUnit === AreaUnit.Rai
-								// 			? 'max-h-[calc(100vh-762px)]'
-								// 			: 'max-h-[calc(100vh-789px)]'
-								// 	: '',
 							)}
 						>
 							<RegistrationTable

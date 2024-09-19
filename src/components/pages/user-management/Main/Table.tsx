@@ -49,13 +49,14 @@ import { mdiAccountOff } from '@mdi/js'
 import { mdiAccountOffOutline } from '@mdi/js'
 import { FormMain } from '../Form'
 import { UserDialogMode } from '@/components/shared/UserDialog'
+import { mdiFolderOffOutline } from '@mdi/js' // no data bottom
 import clsx from 'clsx'
 
 interface Data {
 	id: string
 	firstName: string
 	email: string
-	organization: string
+	orgCode: string
 	responsibleProvinceName: string
 	responsibleDistrictName: string
 	role: string
@@ -119,7 +120,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 			minWidth: '220px',
 		},
 		{
-			id: 'organization',
+			id: 'orgCode',
 			numeric: false,
 			disablePadding: false,
 			label: t('org'),
@@ -179,14 +180,14 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 	// ModalAction
 
 	const { data: resData, isLoading: isTableDataLoading } = useQuery({
-		queryKey: ['umSearch', searchParams],
+		queryKey: ['umSearch'],
 		queryFn: () => {
 			const res = um.umSearch(searchParams)
 			// console.log('res :: ', res)
 			setIsSearch(false)
 			return res
 		},
-		enabled: isSearch,
+		enabled: isSearch && searchParams && JSON.stringify(searchParams).length !== 0,
 	})
 	const {
 		data: patchStatusData,
@@ -215,7 +216,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 	React.useEffect(() => {
 		if (resData) {
 			setTableData(resData.data || [])
-			setTotal(resData.total || 1)
+			setTotal(resData.total || 0)
 		}
 	}, [resData])
 
@@ -441,18 +442,23 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 				'pb-[8px] pt-[12px]': !isDesktop,
 			})}
 		>
-			<Paper className='relative flex flex-col gap-[8px] px-[24px] py-[16px]'>
+			<Paper className='relative flex flex-col gap-[8px] px-[24px] py-[16px] max-lg:h-[calc(100vh-202px)] max-lg:overflow-y-auto'>
 				<div className='flex items-baseline gap-[12px]'>
 					<Typography variant='body1' className='!font-semibold'>
 						{t('userList', { ns: 'um' })}
 					</Typography>
 					<Typography variant='body2' className='!font-medium !text-[#7A7A7A]'>
-						{t('showing', { ns: 'um' })} {(page - 1) * 10 + 1}-{Math.min(page * 10, total)}{' '}
-						{t('of', { ns: 'um' })} {total} {t('item', { ns: 'um' })}
+						{total !== 0 && (
+							<>
+								{t('showing', { ns: 'um' })} {(page - 1) * 10 + 1}-{Math.min(page * 10, total)}{' '}
+								{t('of', { ns: 'um' })} {total} {t('item', { ns: 'um' })}
+							</>
+						)}
 					</Typography>
 				</div>
 
-				<Box className='flex h-[calc(100vh-275px)] flex-col gap-[16px] lg:h-[calc(100vh-260px)]'>
+				<Box className='flex flex-col gap-[16px] lg:h-[calc(100vh-298px)]'>
+					{/* Table container */}
 					<TableContainer
 						className='flex flex-col overflow-y-auto'
 						sx={{ minHeight: '90%', flex: 1 }}
@@ -466,7 +472,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 								// 		? 'flex h-[48px] w-auto rounded-[2px] rounded-lg p-2'
 								// 		: 'flex h-[100px] w-auto flex-col rounded-[2px] rounded-lg p-2'
 								// }
-								className={clsx('sticky left-0 inline-flex gap-[8px] !bg-[#F2F2F2]', {
+								className={clsx('sticky left-0 top-0 z-[100] inline-flex gap-[8px] !bg-[#F2F2F2]', {
 									'flex h-[48px] w-auto rounded-[2px] rounded-lg p-2': isDesktop,
 									'flex h-[100px] w-auto flex-col rounded-[2px] rounded-lg p-2': !isDesktop,
 								})}
@@ -480,7 +486,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 								</Typography>
 								<Stack direction='row' spacing={1} className='flex items-center'>
 									<Button
-										className='!border-gray flex !h-[30px] shrink-0 gap-[8px] !bg-white py-[8px] pl-[12px] pr-[16px] text-sm font-medium !text-[#202020] [&_.MuiButton-startIcon]:m-0'
+										className='flex !h-[30px] shrink-0 gap-[8px] !border-gray !bg-white py-[8px] pl-[12px] pr-[16px] text-sm font-medium !text-[#202020] [&_.MuiButton-startIcon]:m-0'
 										variant='outlined'
 										color='primary'
 										startIcon={
@@ -493,7 +499,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 										{isDesktop && t('enableUser', { ns: 'um' })}
 									</Button>
 									<Button
-										className='!border-gray flex !h-[30px] shrink-0 gap-[8px] !bg-white py-[8px] pl-[12px] pr-[16px] text-sm font-medium !text-[#202020] [&_.MuiButton-startIcon]:m-0'
+										className='flex !h-[30px] shrink-0 gap-[8px] !border-gray !bg-white py-[8px] pl-[12px] pr-[16px] text-sm font-medium !text-[#202020] [&_.MuiButton-startIcon]:m-0'
 										variant='outlined'
 										color='primary'
 										startIcon={
@@ -506,7 +512,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 										{isDesktop && t('disableUser', { ns: 'um' })}
 									</Button>
 									<Button
-										className='!border-gray flex !h-[30px] shrink-0 gap-[8px] !bg-white py-[8px] pl-[12px] pr-[16px] text-sm font-medium !text-error [&_.MuiButton-startIcon]:m-0'
+										className='flex !h-[30px] shrink-0 gap-[8px] !border-gray !bg-white py-[8px] pl-[12px] pr-[16px] text-sm font-medium !text-error [&_.MuiButton-startIcon]:m-0'
 										variant='outlined'
 										color='primary'
 										startIcon={
@@ -521,226 +527,277 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 								</Stack>
 							</Box>
 						)}
-						<Table
-							aria-labelledby='tableTitle'
-							size={dense ? 'small' : 'medium'}
-							stickyHeader
-							aria-label='sticky table'
-							sx={{
-								// tableLayout: 'auto',
-								width: '100%',
-								height: '90%',
-							}}
-						>
-							<TableHead>
-								<TableRow>
-									<TableCell padding='checkbox'>
-										<Checkbox
-											color='primary'
-											indeterminate={
-												selected.length > 0 && selected.length < tableData.length - 1
-											}
-											checked={
-												selected.length ===
-												tableData.filter((n) => n.id !== session?.user.id).length
-											}
-											onChange={handleSelectAllClick}
-											inputProps={{
-												'aria-label': 'select all desserts',
-											}}
-										/>
-									</TableCell>
-									{headCells.map((headCell) => (
-										<TableCell
-											key={headCell.id}
-											// align={headCell.id === "status" ? 'center':'left'}
-											align={'left'}
-											padding={headCell.disablePadding ? 'none' : 'normal'}
-											sortDirection={orderBy === headCell.id ? order : false}
-											className={`text-sm font-semibold`}
-											sx={{
-												minWidth: headCell.minWidth,
-											}}
-										>
-											<TableSortLabel
-												active={orderBy === headCell.id}
-												direction={orderBy === headCell.id ? order : SortType.ASC}
-												onClick={createSortHandler(headCell.id)}
-											>
-												{headCell.label}
-												{orderBy === headCell.id ? (
-													<Box component='span' sx={visuallyHidden}>
-														{order === SortType.DESC
-															? 'sorted descending'
-															: 'sorted ascending'}
-													</Box>
-												) : null}
-											</TableSortLabel>
-										</TableCell>
-									))}
-									<TableCell />
-								</TableRow>
-							</TableHead>
-							<TableBody className='overflow-y max-h-[40px] min-h-[40px] [&_.MuiTableCell-root]:!font-medium'>
-								{tableData.map((row, index) => {
-									const isItemSelected = isSelected(row.id)
-									const labelId = `enhanced-table-checkbox-${index}`
-									return (
-										<TableRow
-											hover
-											onClick={(event) => handleClick(event, row.id)}
-											role='checkbox'
-											aria-checked={isItemSelected}
-											tabIndex={-1}
-											key={row.id}
-											selected={isItemSelected}
-											sx={{ cursor: 'pointer' }}
-										>
-											<TableCell padding='checkbox'>
-												<Checkbox
-													color='primary'
-													checked={isItemSelected}
-													inputProps={{
-														'aria-labelledby': labelId,
-													}}
-													disabled={session?.user.id === row.id}
-												/>
-											</TableCell>
-											<TableCell component='th' id={labelId} scope='row' padding='none'>
-												<Box className='flex items-center'>
-													{
-														<Avatar
-															className='mr-[4px] h-[24px] w-[24px] bg-primary'
-															src={row.image}
-														/>
-													}{' '}
-													{row.firstName} {row.lastName}
-												</Box>
-											</TableCell>
-											<TableCell>{row.email}</TableCell>
-											<TableCell>
-												{row.orgName[i18n.language as keyof ResponseLanguage]}
-											</TableCell>
-											<TableCell>
-												{row.roleName[i18n.language as keyof ResponseLanguage]}
-											</TableCell>
-											<TableCell>
-												{row.responsibleProvinceName[i18n.language as keyof ResponseLanguage]}
-											</TableCell>
-											<TableCell>
-												{row.responsibleDistrictName[i18n.language as keyof ResponseLanguage]}
-											</TableCell>
-											<TableCell>
-												{
-													<div
-														className={`flex items-center justify-center rounded ${row.flagStatus === 'A' ? '!bg-green-light1' : '!bg-green-light1'} h-[25px] w-[72px]`}
-													>
-														<Typography
-															className={`p-0.5 ${row.flagStatus === 'A' ? 'text-green-dark' : 'text-error'} !text-xs !font-medium`}
-														>
-															{
-																row.flagStatusName[
-																	i18n.language as keyof ResponseLanguage
-																]
-															}
-														</Typography>
-													</div>
-												}
-											</TableCell>
-											<TableCell>
-												<Box>
-													<Stack direction='row' spacing={1}>
-														<IconButton
-															onClick={(e) => {
-																e.stopPropagation()
-																setCurrentEditId(row.id)
-																setIsEditOpen(true)
-															}}
-														>
-															<Icon
-																path={mdiPencilOutline}
-																size={1}
-																color='var(--black-color)'
-															/>
-														</IconButton>
-														<IconButton
-															onClick={(e) => {
-																// stop event propagation to prevent row select
-																e.stopPropagation()
-																setCurrentDeleteId(row.id)
-																setIsConfirmDeleteOneOpen(true)
-															}}
-															disabled={session?.user.id === row.id}
-														>
-															<Icon
-																path={mdiTrashCanOutline}
-																size={1}
-																color={
-																	session?.user.id === row.id
-																		? '#c2c5cc'
-																		: 'var(--error-color-1)'
-																}
-															/>
-														</IconButton>
-													</Stack>
-												</Box>
-											</TableCell>
-										</TableRow>
-									)
-								})}
-								{emptyRows > 0 && (
+						{total === 0 ? (
+							<Box className='flex grow flex-col items-center justify-center'>
+								<Box className='flex flex-col items-center'>
+									<Icon path={mdiFolderOffOutline} size={6} color='var(--light-gray-color)' />
+									<Typography variant='body1' className='!font-semibold text-gray'>
+										{t('noItem', { ns: 'um' })}
+									</Typography>
+								</Box>
+							</Box>
+						) : (
+							<Table
+								aria-labelledby='tableTitle'
+								size={dense ? 'small' : 'medium'}
+								stickyHeader
+								aria-label='sticky table'
+								sx={{
+									// tableLayout: 'auto',
+									width: '100%',
+									height: '90%',
+									position: 'relative',
+								}}
+							>
+								<TableHead>
 									<TableRow
-										style={{
-											// height: (dense ? 33 : 53) * emptyRows,
-											height: 168 * emptyRows,
-										}}
+										// sx={{
+										// 	position: 'sticky',
+										// 	top: selected.length > 0 ? (isDesktop ? '46px' : '78px') : 0,
+										// 	zIndex: 9998,
+										// }}
+										className={clsx('sticky z-[100]', {
+											'top-[46px]': selected.length > 0 && isDesktop,
+											'top-[78px]': selected.length > 0 && !isDesktop,
+										})}
+										//change this value according to height of selection control box
 									>
-										<TableCell colSpan={10} />
+										<TableCell padding='checkbox'>
+											<Checkbox
+												color='primary'
+												indeterminate={
+													selected.length > 0 && selected.length < tableData.length - 1
+												}
+												checked={
+													total === 0
+														? false
+														: selected.length ===
+															tableData.filter((n) => n.id !== session?.user.id).length
+												}
+												disabled={total === 0}
+												onChange={handleSelectAllClick}
+												inputProps={{
+													'aria-label': 'select all desserts',
+												}}
+											/>
+										</TableCell>
+										{headCells.map((headCell) => (
+											<TableCell
+												key={headCell.id}
+												// align={headCell.id === "status" ? 'center':'left'}
+												align={'left'}
+												padding={headCell.disablePadding ? 'none' : 'normal'}
+												sortDirection={orderBy === headCell.id ? order : false}
+												className={`text-sm font-semibold`}
+												sx={{
+													minWidth: headCell.minWidth,
+												}}
+											>
+												<TableSortLabel
+													active={orderBy === headCell.id}
+													direction={orderBy === headCell.id ? order : SortType.ASC}
+													onClick={createSortHandler(headCell.id)}
+												>
+													{headCell.label}
+													{orderBy === headCell.id ? (
+														<Box component='span' sx={visuallyHidden}>
+															{order === SortType.DESC
+																? 'sorted descending'
+																: 'sorted ascending'}
+														</Box>
+													) : null}
+												</TableSortLabel>
+											</TableCell>
+										))}
+										<TableCell />
 									</TableRow>
-								)}
-							</TableBody>
-						</Table>
+								</TableHead>
+								<TableBody className='overflow-y max-h-[40px] min-h-[40px] [&_.MuiTableCell-root]:!font-medium'>
+									{tableData.map((row, index) => {
+										const isItemSelected = isSelected(row.id)
+										const labelId = `enhanced-table-checkbox-${index}`
+										return (
+											<TableRow
+												hover
+												onClick={(event) => handleClick(event, row.id)}
+												role='checkbox'
+												aria-checked={isItemSelected}
+												tabIndex={-1}
+												key={row.id}
+												selected={isItemSelected}
+												sx={{ cursor: 'pointer', height: '78px' }}
+											>
+												<TableCell padding='checkbox'>
+													<Checkbox
+														color='primary'
+														checked={isItemSelected}
+														inputProps={{
+															'aria-labelledby': labelId,
+														}}
+														disabled={session?.user.id === row.id}
+													/>
+												</TableCell>
+												<TableCell component='th' id={labelId} scope='row' padding='none'>
+													<Box className='flex items-center'>
+														{
+															<Avatar
+																className='mr-[4px] h-[24px] w-[24px] bg-primary'
+																src={row.image}
+															/>
+														}{' '}
+														{row.firstName} {row.lastName}
+													</Box>
+												</TableCell>
+												<TableCell>{row.email}</TableCell>
+												<TableCell>
+													{row.orgName[i18n.language as keyof ResponseLanguage]}
+												</TableCell>
+												<TableCell>
+													{row.roleName[i18n.language as keyof ResponseLanguage]}
+												</TableCell>
+												<TableCell>
+													{
+														row.responsibleProvinceName[
+															i18n.language as keyof ResponseLanguage
+														]
+													}
+												</TableCell>
+												<TableCell>
+													{
+														row.responsibleDistrictName[
+															i18n.language as keyof ResponseLanguage
+														]
+													}
+												</TableCell>
+												<TableCell>
+													{
+														<div
+															className={`flex items-center justify-center rounded ${row.flagStatus === 'A' ? '!bg-green-light1' : '!bg-green-light1'} h-[25px] w-[72px]`}
+														>
+															<Typography
+																className={`p-0.5 ${row.flagStatus === 'A' ? 'text-green-dark' : 'text-error'} !text-xs !font-medium`}
+															>
+																{
+																	row.flagStatusName[
+																		i18n.language as keyof ResponseLanguage
+																	]
+																}
+															</Typography>
+														</div>
+													}
+												</TableCell>
+												<TableCell>
+													<Box>
+														<Stack direction='row' spacing={1}>
+															<IconButton
+																onClick={(e) => {
+																	e.stopPropagation()
+																	setCurrentEditId(row.id)
+																	setIsEditOpen(true)
+																}}
+															>
+																<Icon
+																	path={mdiPencilOutline}
+																	size={1}
+																	color='var(--black-color)'
+																/>
+															</IconButton>
+															<IconButton
+																onClick={(e) => {
+																	// stop event propagation to prevent row select
+																	e.stopPropagation()
+																	setCurrentDeleteId(row.id)
+																	setIsConfirmDeleteOneOpen(true)
+																}}
+																disabled={session?.user.id === row.id}
+															>
+																<Icon
+																	path={mdiTrashCanOutline}
+																	size={1}
+																	color={
+																		session?.user.id === row.id
+																			? '#c2c5cc'
+																			: 'var(--error-color-1)'
+																	}
+																/>
+															</IconButton>
+														</Stack>
+													</Box>
+												</TableCell>
+											</TableRow>
+										)
+									})}
+									{emptyRows > 0 && (
+										<TableRow
+											// style={{
+											// 	// height: (dense ? 33 : 53) * emptyRows,
+											// 	height: total === 0 ? '100%' : 168 * emptyRows, //total height is around 396px at dev screen height when total === 0
+											// }}
+											className={clsx(`h-[${33 * emptyRows}px]`, {
+												'h-[calc(100vh-404px)]': total === 0,
+											})}
+										>
+											<TableCell colSpan={10} />
+										</TableRow>
+									)}
+								</TableBody>
+							</Table>
+						)}
 					</TableContainer>
+					{/* Pagination box */}
 					<Box className={'flex w-full items-center justify-between'}>
 						<Typography className='text-base font-normal'>
-							{t('page', { ns: 'um' })} {page} {t('of', { ns: 'um' })} {Math.ceil(total / 10)}
-						</Typography>
-						<Pagination
-							className={
-								isDesktop
-									? 'um-table-pagination [&_ul]:divide-gray [&_ul]:border-gray [&_ul]:divide-x [&_ul]:divide-y-0 [&_ul]:divide-solid [&_ul]:rounded [&_ul]:border [&_ul]:border-solid'
-									: 'mobile-um-table-pagination [&_ul]:divide-gray [&_ul]:border-gray [&_ul]:divide-x [&_ul]:divide-y-0 [&_ul]:divide-solid [&_ul]:rounded [&_ul]:border [&_ul]:border-solid'
-							}
-							count={Math.ceil(total / 10)}
-							variant='outlined'
-							shape='rounded'
-							siblingCount={isDesktop ? 1 : 0}
-							boundaryCount={isDesktop ? 1 : 0}
-							onChange={handlePagination}
-							page={page}
-							sx={{
-								gap: 0,
-							}}
-							renderItem={(item) => (
-								<PaginationItem
-									slots={{
-										previous: () => (
-											<>
-												<ArrowBackIcon className='h-[20px] w-[20px]' />
-												{isDesktop && t('previous')}
-											</>
-										),
-										next: () => (
-											<>
-												{isDesktop && t('next')}
-												<ArrowForwardIcon className='h-[20px] w-[20px]' />
-											</>
-										),
-									}}
-									{...item}
-								/>
+							{total !== 0 && (
+								<>
+									{t('page', { ns: 'um' })} {page} {t('of', { ns: 'um' })} {Math.ceil(total / 10)}
+								</>
 							)}
-						/>
+						</Typography>
+						{total !== 0 && (
+							<>
+								{/* w around 166px */}
+								<Pagination
+									className={
+										isDesktop
+											? 'um-table-pagination [&_ul]:divide-x [&_ul]:divide-y-0 [&_ul]:divide-solid [&_ul]:divide-gray [&_ul]:rounded [&_ul]:border [&_ul]:border-solid [&_ul]:border-gray'
+											: 'mobile-um-table-pagination [&_ul]:divide-x [&_ul]:divide-y-0 [&_ul]:divide-solid [&_ul]:divide-gray [&_ul]:rounded [&_ul]:border [&_ul]:border-solid [&_ul]:border-gray'
+									}
+									count={Math.ceil(total / 10)}
+									variant='outlined'
+									shape='rounded'
+									siblingCount={isDesktop ? 1 : 0}
+									boundaryCount={isDesktop ? 1 : 0}
+									onChange={handlePagination}
+									page={page}
+									sx={{
+										gap: 0,
+									}}
+									renderItem={(item) => (
+										<PaginationItem
+											slots={{
+												previous: () => (
+													<>
+														<ArrowBackIcon
+														// className='h-[20px] w-[20px]'
+														/>
+														{isDesktop && t('previous')}
+													</>
+												),
+												next: () => (
+													<>
+														{isDesktop && t('next')}
+														<ArrowForwardIcon
+														//  className='h-[20px] w-[20px]'
+														/>
+													</>
+												),
+											}}
+											{...item}
+										/>
+									)}
+								/>
+							</>
+						)}
 					</Box>
 				</Box>
 				{/* OverlayLoading */}
