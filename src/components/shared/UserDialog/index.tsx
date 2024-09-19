@@ -49,7 +49,14 @@ const UserDialog: React.FC<UserDialogProps> = ({
 	}, [mode])
 
 	return (
-		<Dialog open={open} onClose={onClose}>
+		<Dialog
+			open={open}
+			onClose={(event, reason) => {
+				if (reason !== 'backdropClick') {
+					onClose()
+				}
+			}}
+		>
 			<DialogTitle>{t('PROFILE')}</DialogTitle>
 			<DialogContent>
 				{mode === UserDialogMode.UserProfile && <DialogContentText>Profile Form</DialogContentText>}

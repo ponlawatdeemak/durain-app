@@ -400,7 +400,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 
 	const handleOnClose = useCallback(
 		(event: any, reason: string) => {
-			if (reason === 'backdropClick' && isBusy) {
+			if (reason === 'backdropClick' || isBusy) {
 				return
 			}
 			formik.resetForm()
