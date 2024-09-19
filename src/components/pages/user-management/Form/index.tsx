@@ -403,14 +403,23 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 			if (reason === 'backdropClick' || isBusy) {
 				return
 			}
-			onClose()
+			setOpen(false)
+			// setTimeout(() => {
 			passwordFormik.resetForm()
 			setIsResetPasswordOpen(false)
 			setResetPasswordStatus(null)
-			formik.resetForm()
+			// formik.resetForm()
+			// }, 200)
 		},
 		[onClose],
 	)
+
+	useEffect(() => {
+		if (open) {
+			// queryClient.invalidateQueries({ queryKey: ['getUM', userId] })
+			formik.resetForm()
+		}
+	}, [open])
 
 	const handleValidatePassword = useCallback(() => {
 		passwordFormik.validateForm().then(async (errors) => {
@@ -528,6 +537,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 						'': !isDesktop,
 					},
 				)}
+				// transitionDuration={0}
 			>
 				<DialogTitle
 					className={clsx('', {
