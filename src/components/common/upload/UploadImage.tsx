@@ -88,7 +88,7 @@ const UploadImage: React.FC<UploadImageProps> = ({
 				)}
 
 				{image && (
-					<div className='absolute box-border flex h-[120px] w-[120px] items-center justify-center rounded-[60px] bg-black opacity-0 transition hover:opacity-70'>
+					<div className='absolute box-border flex h-[168px] w-[168px] items-center justify-center rounded-[60px] bg-black opacity-0 transition hover:opacity-70'>
 						<div onClick={handleDeleteClick}>
 							<Icon
 								path={mdiDeleteOutline}
@@ -106,7 +106,7 @@ const UploadImage: React.FC<UploadImageProps> = ({
 					role={undefined}
 					variant='outlined'
 					tabIndex={-1}
-					className='border-gray flex h-[32px] gap-[4px] py-[6px] pl-[8px] pr-[10px] text-base text-black [&_.MuiButton-startIcon]:m-0'
+					className='flex h-[32px] gap-[4px] border-gray py-[6px] pl-[8px] pr-[10px] text-base text-black [&_.MuiButton-startIcon]:m-0'
 					startIcon={<PictureIcon />}
 					disabled={disabled}
 				>
