@@ -89,7 +89,7 @@ const RegistrationMain: React.FC = () => {
 	}, [selectedYearObj?.availableAdm, admCode])
 
 	const selectedTableAdm = useMemo(() => {
-		if (tableInnerData) {
+		if (registeredData) {
 			return registeredData?.adms.find((item: any) => item.admCode === tableAdmCode)?.admName
 		}
 		return selectedYearObj?.availableAdm.find((item: any) => item.admCode === tableAdmCode)?.admName
@@ -322,13 +322,6 @@ const RegistrationMain: React.FC = () => {
 							className={classNames(
 								'my-[16px] box-border flex w-full flex-grow',
 								isDesktop ? 'relative' : '',
-								// isDesktop
-								// 	? language === Languages.TH
-								// 		? 'max-h-[calc(100vh-762px)]'
-								// 		: areaUnit === AreaUnit.Rai
-								// 			? 'max-h-[calc(100vh-762px)]'
-								// 			: 'max-h-[calc(100vh-789px)]'
-								// 	: '',
 							)}
 						>
 							<RegistrationTable

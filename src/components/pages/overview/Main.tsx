@@ -332,7 +332,7 @@ const OverviewMain: React.FC = () => {
 									<Box marginRight={1} width='10px' />
 									{t('overview:age')}
 								</div>
-								<div className='flex w-1/2 justify-center'>
+								<div className='flex w-1/2 justify-center text-center'>
 									{t('overview:area')} ({t(`overview:${areaUnit}`)})
 								</div>
 							</div>
