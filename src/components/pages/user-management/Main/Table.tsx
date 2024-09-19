@@ -471,7 +471,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 								// 		? 'flex h-[48px] w-auto rounded-[2px] rounded-lg p-2'
 								// 		: 'flex h-[100px] w-auto flex-col rounded-[2px] rounded-lg p-2'
 								// }
-								className={clsx('sticky left-0 top-0 z-[9999] inline-flex gap-[8px] !bg-[#F2F2F2]', {
+								className={clsx('sticky left-0 top-0 z-[100] inline-flex gap-[8px] !bg-[#F2F2F2]', {
 									'flex h-[48px] w-auto rounded-[2px] rounded-lg p-2': isDesktop,
 									'flex h-[100px] w-auto flex-col rounded-[2px] rounded-lg p-2': !isDesktop,
 								})}
@@ -555,7 +555,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 										// 	top: selected.length > 0 ? (isDesktop ? '46px' : '78px') : 0,
 										// 	zIndex: 9998,
 										// }}
-										className={clsx('sticky z-[9999]', {
+										className={clsx('sticky z-[100]', {
 											'top-[46px]': selected.length > 0 && isDesktop,
 											'top-[78px]': selected.length > 0 && !isDesktop,
 										})}
