@@ -442,7 +442,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 				'pb-[8px] pt-[12px]': !isDesktop,
 			})}
 		>
-			<Paper className='relative flex flex-col gap-[8px] px-[24px] py-[16px]'>
+			<Paper className='relative flex flex-col gap-[8px] px-[24px] py-[16px] max-lg:h-[calc(100vh-202px)] max-lg:overflow-y-auto'>
 				<div className='flex items-baseline gap-[12px]'>
 					<Typography variant='body1' className='!font-semibold'>
 						{t('userList', { ns: 'um' })}
@@ -457,7 +457,8 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 					</Typography>
 				</div>
 
-				<Box className='flex h-[calc(100vh-278px)] flex-col gap-[16px] lg:h-[calc(100vh-298px)]'>
+				<Box className='flex flex-col gap-[16px] lg:h-[calc(100vh-298px)]'>
+					{/* Table container */}
 					<TableContainer
 						className='flex flex-col overflow-y-auto'
 						sx={{ minHeight: '90%', flex: 1 }}
@@ -743,6 +744,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 							</Table>
 						)}
 					</TableContainer>
+					{/* Pagination box */}
 					<Box className={'flex w-full items-center justify-between'}>
 						<Typography className='text-base font-normal'>
 							{total !== 0 && (
