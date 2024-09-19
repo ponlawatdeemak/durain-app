@@ -753,6 +753,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 						</Typography>
 						{total !== 0 && (
 							<>
+								{/* w around 166px */}
 								<Pagination
 									className={
 										isDesktop
@@ -774,14 +775,18 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 											slots={{
 												previous: () => (
 													<>
-														<ArrowBackIcon className='h-[20px] w-[20px]' />
+														<ArrowBackIcon
+														// className='h-[20px] w-[20px]'
+														/>
 														{isDesktop && t('previous')}
 													</>
 												),
 												next: () => (
 													<>
 														{isDesktop && t('next')}
-														<ArrowForwardIcon className='h-[20px] w-[20px]' />
+														<ArrowForwardIcon
+														//  className='h-[20px] w-[20px]'
+														/>
 													</>
 												),
 											}}
