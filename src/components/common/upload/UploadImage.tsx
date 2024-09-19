@@ -26,8 +26,8 @@ const UploadImage: React.FC<UploadImageProps> = ({
 	const { t } = useTranslation()
 	const maxImageSize = 3 * 1024 * 1024
 	const [image, setImage] = useState<string | null>(null)
-	const errorMessage = formik.touched[name] && formik.errors[name]
 	const { i18n, tReady, ...uploadProps } = props
+	const [showInvalidFile, setShowInvalidFile] = useState(false)
 
 	useEffect(() => {
 		const formikValue = formik.values[name]
@@ -50,9 +50,11 @@ const UploadImage: React.FC<UploadImageProps> = ({
 			if (validImageTypes.includes(imageType) && imageSize <= maxImageSize) {
 				formik.setFieldValue(name, selectedImage)
 				setImage(URL.createObjectURL(selectedImage))
+				setShowInvalidFile(false)
 			} else {
 				formik.setFieldValue(name, null)
 				setImage(null)
+				setShowInvalidFile(true)
 			}
 		} else {
 			formik.setFieldValue(name, null)
@@ -98,7 +100,7 @@ const UploadImage: React.FC<UploadImageProps> = ({
 				)}
 			</>
 
-			<div className='[&_.Mui-disabled]:border-[#0000001f] [&_.Mui-disabled]:bg-transparent [&_.Mui-disabled]:text-[#00000042] [&_.Mui-disabled_.MuiButton-startIcon>svg]:text-[#00000042]'>
+			<div className='flex flex-col items-center [&_.Mui-disabled]:border-[#0000001f] [&_.Mui-disabled]:bg-transparent [&_.Mui-disabled]:text-[#00000042] [&_.Mui-disabled_.MuiButton-startIcon>svg]:text-[#00000042]'>
 				<Button
 					component='label'
 					role={undefined}
@@ -117,11 +119,11 @@ const UploadImage: React.FC<UploadImageProps> = ({
 						{...uploadProps}
 					/>
 				</Button>
+				{showInvalidFile && <FormHelperText error>{t('um:invalidFileSelected')}</FormHelperText>}
 			</div>
 			<p className='m-0 w-[216px] text-center !text-sm !font-medium !text-[#7A7A7A]'>
 				{t('common.conditionImg')}
 			</p>
-			{typeof errorMessage === 'string' && <FormHelperText error>{errorMessage}</FormHelperText>}
 		</div>
 	)
 }
