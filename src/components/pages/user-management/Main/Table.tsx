@@ -56,7 +56,7 @@ interface Data {
 	id: string
 	firstName: string
 	email: string
-	organization: string
+	orgCode: string
 	responsibleProvinceName: string
 	responsibleDistrictName: string
 	role: string
@@ -120,7 +120,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 			minWidth: '220px',
 		},
 		{
-			id: 'organization',
+			id: 'orgCode',
 			numeric: false,
 			disablePadding: false,
 			label: t('org'),
