@@ -169,7 +169,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 		queryFn: async () => {
 			if (userDialogMode === UserDialogMode.UserProfile) {
 				const res = await service.um.getProfile()
-				console.log('ProfileRes :: ', res)
+				// console.log('ProfileRes :: ', res)
 				return res
 			}
 		},

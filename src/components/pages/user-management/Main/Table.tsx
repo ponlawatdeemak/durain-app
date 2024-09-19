@@ -179,14 +179,14 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 	// ModalAction
 
 	const { data: resData, isLoading: isTableDataLoading } = useQuery({
-		queryKey: ['umSearch', searchParams],
+		queryKey: ['umSearch'],
 		queryFn: () => {
 			const res = um.umSearch(searchParams)
 			// console.log('res :: ', res)
 			setIsSearch(false)
 			return res
 		},
-		enabled: isSearch,
+		enabled: isSearch && searchParams && JSON.stringify(searchParams).length !== 0,
 	})
 	const {
 		data: patchStatusData,
@@ -480,7 +480,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 								</Typography>
 								<Stack direction='row' spacing={1} className='flex items-center'>
 									<Button
-										className='!border-gray flex !h-[30px] shrink-0 gap-[8px] !bg-white py-[8px] pl-[12px] pr-[16px] text-sm font-medium !text-[#202020] [&_.MuiButton-startIcon]:m-0'
+										className='flex !h-[30px] shrink-0 gap-[8px] !border-gray !bg-white py-[8px] pl-[12px] pr-[16px] text-sm font-medium !text-[#202020] [&_.MuiButton-startIcon]:m-0'
 										variant='outlined'
 										color='primary'
 										startIcon={
@@ -493,7 +493,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 										{isDesktop && t('enableUser', { ns: 'um' })}
 									</Button>
 									<Button
-										className='!border-gray flex !h-[30px] shrink-0 gap-[8px] !bg-white py-[8px] pl-[12px] pr-[16px] text-sm font-medium !text-[#202020] [&_.MuiButton-startIcon]:m-0'
+										className='flex !h-[30px] shrink-0 gap-[8px] !border-gray !bg-white py-[8px] pl-[12px] pr-[16px] text-sm font-medium !text-[#202020] [&_.MuiButton-startIcon]:m-0'
 										variant='outlined'
 										color='primary'
 										startIcon={
@@ -506,7 +506,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 										{isDesktop && t('disableUser', { ns: 'um' })}
 									</Button>
 									<Button
-										className='!border-gray flex !h-[30px] shrink-0 gap-[8px] !bg-white py-[8px] pl-[12px] pr-[16px] text-sm font-medium !text-error [&_.MuiButton-startIcon]:m-0'
+										className='flex !h-[30px] shrink-0 gap-[8px] !border-gray !bg-white py-[8px] pl-[12px] pr-[16px] text-sm font-medium !text-error [&_.MuiButton-startIcon]:m-0'
 										variant='outlined'
 										color='primary'
 										startIcon={
@@ -708,8 +708,8 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 						<Pagination
 							className={
 								isDesktop
-									? 'um-table-pagination [&_ul]:divide-gray [&_ul]:border-gray [&_ul]:divide-x [&_ul]:divide-y-0 [&_ul]:divide-solid [&_ul]:rounded [&_ul]:border [&_ul]:border-solid'
-									: 'mobile-um-table-pagination [&_ul]:divide-gray [&_ul]:border-gray [&_ul]:divide-x [&_ul]:divide-y-0 [&_ul]:divide-solid [&_ul]:rounded [&_ul]:border [&_ul]:border-solid'
+									? 'um-table-pagination [&_ul]:divide-x [&_ul]:divide-y-0 [&_ul]:divide-solid [&_ul]:divide-gray [&_ul]:rounded [&_ul]:border [&_ul]:border-solid [&_ul]:border-gray'
+									: 'mobile-um-table-pagination [&_ul]:divide-x [&_ul]:divide-y-0 [&_ul]:divide-solid [&_ul]:divide-gray [&_ul]:rounded [&_ul]:border [&_ul]:border-solid [&_ul]:border-gray'
 							}
 							count={Math.ceil(total / 10)}
 							variant='outlined'
