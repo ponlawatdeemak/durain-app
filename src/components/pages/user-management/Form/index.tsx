@@ -580,6 +580,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 							</div>
 							<form
 								onSubmit={formik.handleSubmit}
+								noValidate
 								className='flex h-full flex-col gap-[28px] max-lg:justify-between lg:w-[306px]'
 							>
 								<ResetPasswordForm
