@@ -26,7 +26,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ user }) => {
 					onClick={() => setOpenUserDialog(true)}
 					className='flex cursor-pointer items-center gap-2 max-lg:flex-row-reverse max-lg:px-2 max-lg:py-1 lg:gap-4'
 				>
-					<Typography className='text-[#333333] max-lg:underline max-lg:decoration-1 max-lg:underline-offset-2'>
+					<Typography className='max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap text-[#333333] max-lg:underline max-lg:decoration-1 max-lg:underline-offset-2'>
 						{`${firstName}.${lastName.charAt(0)}`}
 					</Typography>
 					{user.image ? (
