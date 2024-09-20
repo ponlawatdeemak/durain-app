@@ -23,7 +23,7 @@ const SettingDialog: React.FC<SettingDialogProps> = ({ ...props }) => {
 
 	const handleLangChange = (locale: Languages) => {
 		if (locale) {
-			i18n.changeLanguage(Languages.EN)
+			i18n.changeLanguage(locale)
 			router.push(
 				{
 					pathname: router.pathname,
