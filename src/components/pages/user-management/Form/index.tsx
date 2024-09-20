@@ -474,6 +474,15 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 		validationSchema: validationSchema,
 		onSubmit,
 	})
+	useEffect(() => {
+		if (
+			!formik.values.responsibleProvinceCode ||
+			formik.values.responsibleProvinceCode.toString() !==
+				formik.values.responsibleDistrictCode?.toString().substring(0, 2)
+		) {
+			formik.setFieldValue('responsibleDistrictCode', null)
+		}
+	}, [formik.values.responsibleProvinceCode, formik.values.responsibleDistrictCode])
 
 	const passwordFormik = useFormik<PasswordFormValues>({
 		enableReinitialize: true,
