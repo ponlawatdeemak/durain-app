@@ -97,7 +97,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 				/>
 				{userDialogmode === UserDialogMode.UserProfile && (
 					<Box className='mb-[16px] flex flex-col items-center gap-[16px]'>
-						<Typography className='max-w-full !overflow-hidden !text-ellipsis !whitespace-nowrap !text-lg !font-medium'>
+						<Typography className='max-w-[230px] !overflow-hidden !text-ellipsis !whitespace-nowrap !text-lg !font-medium'>
 							{userData?.firstName}
 							&nbsp;
 							{userData?.lastName}
