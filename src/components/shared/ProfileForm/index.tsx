@@ -54,23 +54,11 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 		queryFn: () => service.lookup.get('provinces'),
 	})
 
-	const {
-		data: districtLookupData,
-		isLoading: isDistricDataLoading,
-		refetch: refetchDistricts,
-	} = useQuery({
-		queryKey: ['getDistrict'],
+	const { data: districtLookupData, isLoading: isDistricDataLoading } = useQuery({
+		queryKey: ['getDistrict', formik?.values.responsibleProvinceCode],
 		queryFn: () => service.lookup.get(`districts/${formik.values.responsibleProvinceCode}`),
 		enabled: !!formik.values.responsibleProvinceCode,
 	})
-
-	useEffect(() => {
-		if (formik.values.responsibleProvinceCode) {
-			refetchDistricts()
-		} else {
-			formik.setFieldValue('responsibleDistrictCode', null)
-		}
-	}, [formik.values.responsibleProvinceCode, refetchDistricts])
 
 	const { data: organizationLookupData, isLoading: isOrganizationDataLoading } = useQuery({
 		queryKey: ['getOrganization'],
