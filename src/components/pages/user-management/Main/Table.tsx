@@ -181,9 +181,9 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 
 	const { data: resData, isLoading: isTableDataLoading } = useQuery({
 		queryKey: ['umSearch'],
-		queryFn: () => {
-			const res = um.umSearch(searchParams)
-			// console.log('res :: ', res)
+		queryFn: async () => {
+			const res = await um.umSearch(searchParams)
+			//console.log('res :: ', res)
 			setIsSearch(false)
 			return res
 		},
@@ -728,19 +728,24 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 											</TableRow>
 										)
 									})}
-									{emptyRows > 0 && (
-										<TableRow
-											// style={{
-											// 	// height: (dense ? 33 : 53) * emptyRows,
-											// 	height: total === 0 ? '100%' : 168 * emptyRows, //total height is around 396px at dev screen height when total === 0
-											// }}
-											className={clsx(`h-[${33 * emptyRows}px]`, {
-												'h-[calc(100vh-404px)]': total === 0,
+									{/* {emptyRows > 0 && ( */}
+									<TableRow
+										// style={{
+										// 	// height: (dense ? 33 : 53) * emptyRows,
+										// 	height: total === 0 ? '100%' : 168 * emptyRows, //total height is around 396px at dev screen height when total === 0
+										// }}
+										className={clsx(`h-[${33 * emptyRows}px]`, {
+											'h-[calc(100vh-404px)]': total === 0,
+										})}
+									>
+										<TableCell
+											className={classNames('!p-0', {
+												'!border-0': emptyRows <= 0,
 											})}
-										>
-											<TableCell colSpan={10} />
-										</TableRow>
-									)}
+											colSpan={10}
+										/>
+									</TableRow>
+									{/* )} */}
 								</TableBody>
 							</Table>
 						)}
