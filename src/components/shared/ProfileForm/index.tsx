@@ -98,9 +98,9 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 				{(userDialogmode === UserDialogMode.UserProfile || userDialogmode === UserDialogMode.UserEdit) && (
 					<Box className='mb-[16px] flex flex-col items-center gap-[16px]'>
 						<Typography className='max-w-[230px] !overflow-hidden !text-ellipsis !whitespace-nowrap !text-lg !font-medium'>
-							{userData?.firstName}
+							{formik?.values.firstName}
 							&nbsp;
-							{userData?.lastName}
+							{formik?.values.lastName}
 						</Typography>
 						<Box className='max-w-full'>
 							<Typography className='max-w-full !overflow-hidden !text-ellipsis !whitespace-nowrap'>
@@ -110,7 +110,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 									</div>
 								</span>
 								&nbsp;&nbsp;&nbsp;
-								<span>{userData?.email}</span>
+								<span>{formik?.values.email}</span>
 							</Typography>
 							<Typography className='max-w-full !overflow-hidden !text-ellipsis !whitespace-nowrap'>
 								<Box className='inline-flex items-center'>
@@ -119,16 +119,19 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 									</div>
 									&nbsp;&nbsp;&nbsp;
 									<span className='inline-flex'>
-										{userData?.orgCode.toLocaleUpperCase()},&nbsp;
+										{userData?.orgCode.toLocaleUpperCase()}
+										{!!formik?.values.responsibleProvinceCode && ', '}
 										{
 											provinceLookupData?.data?.find(
-												(item) => item.code === parseInt(userData?.responsibleProvinceCode),
+												(item) =>
+													item.code === parseInt(formik?.values.responsibleProvinceCode),
 											)?.name[i18n.language as keyof ResponseLanguage]
 										}
-										,&nbsp;
+										{!!formik?.values.responsibleDistrictCode && ', '}
 										{
 											districtLookupData?.data?.find(
-												(item) => item.code === parseInt(userData?.responsibleDistrictCode),
+												(item) =>
+													item.code === parseInt(formik?.values.responsibleDistrictCode),
 											)?.name[i18n.language as keyof ResponseLanguage]
 										}
 									</span>
