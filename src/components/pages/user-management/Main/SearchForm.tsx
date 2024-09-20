@@ -14,12 +14,14 @@ import { UserDialogMode } from '@/components/shared/UserDialog'
 import clsx from 'clsx'
 
 export interface UserManagementSearchFormProps {
+	searchParams: GetSearchUMDtoIn
 	setSearchParams: React.Dispatch<React.SetStateAction<GetSearchUMDtoIn>>
 	setIsSearch: React.Dispatch<React.SetStateAction<boolean>>
 	setPage: React.Dispatch<React.SetStateAction<number>>
 }
 
 const UserManagementSearchForm: React.FC<UserManagementSearchFormProps> = ({
+	searchParams,
 	setSearchParams,
 	setIsSearch,
 	setPage,
@@ -28,6 +30,7 @@ const UserManagementSearchForm: React.FC<UserManagementSearchFormProps> = ({
 	const [openImport, setOpenImport] = useState<boolean>(false)
 	const { t, i18n } = useTranslation(['common', 'um'])
 	const { isDesktop } = useResponsive()
+	const [previousInput, setPreviousInput] = useState<string>('')
 
 	const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
 		// setSearchString(event.target.value)
@@ -40,25 +43,37 @@ const UserManagementSearchForm: React.FC<UserManagementSearchFormProps> = ({
 			keyword: event.target.value,
 			respLang: i18n.language,
 		}))
-		setPage(1)
+		//setPage(1)
 	}
 
-	const handleOnBlur = (event: React.FocusEvent<HTMLInputElement> | React.FormEvent<Element>) => {
-		// console.log('handleOnBlur')
+	const handleOnSubmint = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault()
 		setIsSearch(true)
+		setSearchParams((prevSearch) => ({
+			...prevSearch,
+			offset: 0,
+		}))
+		setPage(1)
+		setPreviousInput(searchParams.keyword)
+	}
+
+	const handleOnBlur = () => {
+		if (searchParams.keyword === previousInput) return
+
+		setIsSearch(true)
+		setSearchParams((prevSearch) => ({
+			...prevSearch,
+			offset: 0,
+		}))
+		setPage(1)
+		setPreviousInput(searchParams.keyword)
 	}
 
 	return (
 		<>
 			<Paper className='flex items-center gap-[6px] !bg-green-alpha pl-[6px]'>
 				<Box className='w-full'>
-					<form
-						onSubmit={(event) => {
-							handleOnBlur(event)
-						}}
-						className='flex w-full items-center'
-					>
+					<form onSubmit={handleOnSubmint} className='flex w-full items-center'>
 						<FormControl fullWidth variant='standard' className='h-[40px] rounded-[8px] bg-white'>
 							<Input
 								className='ml-[8px] mr-[6px] flex h-[40px] gap-[8px] pr-[6px] [&_.MuiInputAdornment-positionStart]:m-0'
