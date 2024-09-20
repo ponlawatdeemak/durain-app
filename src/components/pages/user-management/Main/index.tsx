@@ -42,7 +42,12 @@ export const UserManagementMain = () => {
 					{t('userManagement', { ns: 'um' })}
 				</Typography>
 			</Box>
-			<UserManagementSearchForm setSearchParams={setSearchParams} setIsSearch={setIsSearch} setPage={setPage} />
+			<UserManagementSearchForm
+				searchParams={searchParams}
+				setSearchParams={setSearchParams}
+				setIsSearch={setIsSearch}
+				setPage={setPage}
+			/>
 			<UserManagementTable
 				searchParams={searchParams}
 				setSearchParams={setSearchParams}
