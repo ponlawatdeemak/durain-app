@@ -189,6 +189,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 		},
 		enabled: isSearch && searchParams && JSON.stringify(searchParams).length !== 0,
 	})
+
 	const {
 		data: patchStatusData,
 		error: patchStatusError,
