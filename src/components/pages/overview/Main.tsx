@@ -30,7 +30,7 @@ const OverviewMain: React.FC = () => {
 	const [admCode, setAdmCode] = useState(0)
 	const [availabilityData, setAvailabilityData] = useState<availabilityDurianDtoOut[]>()
 	const [overviewData, setOverviewData] = useState<OverviewSummaryDtoOut>()
-	const { setExtent, showMapInfoWindow } = useMap()
+	const { setExtent, setMapInfoWindow } = useMap()
 	const { setLayers, addLayer, getLayer, removeLayer } = useLayerStore()
 
 	const availableAdm = useMemo(() => {
@@ -72,7 +72,6 @@ const OverviewMain: React.FC = () => {
 		},
 	}))
 
-	const TEST_LAYER_ID = 'test-layer'
 	const MOCK_TOKEN =
 		'eyJraWQiOiI1Vzl6NmhXZmVNQjRhTXlUcGVNV01relk5UEJrakR1YjZsN1lLUTlVdmpnPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJiOTFhYjU5Yy1mMGYxLTcwNWYtNTk0Yi04NWY1N2Q5NjVjYmIiLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuYXAtc291dGhlYXN0LTEuYW1hem9uYXdzLmNvbVwvYXAtc291dGhlYXN0LTFfSUdMb3Fub2tNIiwiY2xpZW50X2lkIjoiNHA0MzBwMmRhbGEzYWxqbWloa2s3OWg4MmciLCJvcmlnaW5fanRpIjoiNGJjNDJmZWItODY0ZC00NTFhLTg1OWYtYjkyOGM2NzZlZjFlIiwiZXZlbnRfaWQiOiIwNTQxZDM4MC0zNDdjLTQ4ZjctYWUzMS04MDI5MjM4NzE2NTAiLCJ0b2tlbl91c2UiOiJhY2Nlc3MiLCJzY29wZSI6ImF3cy5jb2duaXRvLnNpZ25pbi51c2VyLmFkbWluIiwiYXV0aF90aW1lIjoxNzI1MjYyOTQ5LCJleHAiOjE3MjY5OTE3MjEsImlhdCI6MTcyNjkwNTMyMSwianRpIjoiZDI1OWVlZjktMWIwNS00NjljLWIxMWEtNzgzYWM2OTdjOTczIiwidXNlcm5hbWUiOiJiOTFhYjU5Yy1mMGYxLTcwNWYtNTk0Yi04NWY1N2Q5NjVjYmIifQ.bSnPsgn5u_6k3ho4j9wnCj3QQ64twt82F_y_vHvdlhRIS0tNfzZzOQ7SaNDyAttZF3p1lLllo0Jsdg5TobPL1YsJnvXOaHqN4GWPG7Toi_P8dX0poO-9LdvRKp2m27a2PuSNnuyt90uZoz0tMrrsBMYYUQ8zsGv0jFvuo-VJegMFYt9ojZPCaNa7cO34zME8t7ge_XkcKga2ekcxTvzOCovn8V90HDaIGN0YQV6e0gLNfvbrYwG1g0Ja1xX0J9Ix3N2NOvD7g7myUJOxXl1Lzi9wHC2Qx0Xivc-RFHuaZKrHPykgPlpQWf86fkqRgG319Kss15uNjocuqVn0KBPc7g'
 
@@ -85,92 +84,72 @@ const OverviewMain: React.FC = () => {
 		)
 	}
 
-	const getInitialLayer = (): MapLayer[] => {
-		const layerProvince = tileLayer.province
-		const layer = new MVTLayer({
-			id: 'muii-test-layer',
-			name: 'province',
-			loadOptions: {
-				fetch: {
-					headers: {
-						'content-type': 'application/json',
-						Authorization: `Bearer ${MOCK_TOKEN}`,
-					},
-				},
-			},
-			data: layerProvince,
-			filled: true,
-			lineWidthUnits: 'pixels',
-			pickable: true,
-			getFillColor() {
-				return [226, 226, 226, 100]
-			},
-			onClick: (info) => {
-				if (info.object) {
-					const mock = {
-						name: 'ทดสอบ',
-						math: Math.random(),
-					}
-					showMapInfoWindow({
-						positon: {
-							x: info.x,
-							y: info.y,
-						},
-						children: <MapInfoWindowContent data={mock} />,
-					})
-				}
-			},
-		})
-		const layerBoundary = tileLayer.boundaryYear(2024)
-		const layer2 = new MVTLayer({
-			id: 'muii-test2-layer',
-			name: 'province',
-			loadOptions: {
-				fetch: {
-					headers: {
-						'content-type': 'application/json',
-						Authorization: `Bearer ${MOCK_TOKEN}`,
-					},
-				},
-			},
-			data: layerBoundary,
-			filled: true,
-			lineWidthUnits: 'pixels',
-			pickable: true,
-			getFillColor() {
-				return [226, 226, 226, 100]
-			},
-			onClick: (info) => {
-				if (info.object) {
-					const mock = {
-						name: 'ทดสอบ',
-						math: Math.random(),
-					}
-					showMapInfoWindow({
-						positon: {
-							x: info.x,
-							y: info.y,
-						},
-						children: <MapInfoWindowContent data={mock} />,
-					})
-				}
-			},
-		})
+	const initialLayer = useMemo(() => {
 		return [
 			{
-				id: 'muii-test-layer',
-				label: 'muii-test-layer',
-				color: '#000000',
-				layer,
+				id: 'province-layer',
+				label: 'province',
+				color: '#1f75cb',
+				layer: new MVTLayer({
+					id: 'province-layer',
+					name: 'province',
+					loadOptions: {
+						fetch: {
+							headers: {
+								'content-type': 'application/json',
+								Authorization: `Bearer ${MOCK_TOKEN}`,
+							},
+						},
+					},
+					data: tileLayer.province,
+					filled: true,
+					lineWidthUnits: 'pixels',
+					pickable: true,
+					getFillColor() {
+						return [226, 226, 226, 100]
+					},
+					onClick: (info) => {
+						if (info.object) {
+							const mock = {
+								name: 'ทดสอบ',
+								math: Math.random(),
+							}
+							setMapInfoWindow({
+								positon: {
+									x: info.x,
+									y: info.y,
+								},
+								children: <MapInfoWindowContent data={mock} />,
+							})
+						}
+					},
+				}),
 			},
 			{
-				id: 'muii-test2-layer',
-				label: 'muii-test2-layer',
-				color: '#000000',
-				layer: layer2,
+				id: 'boundary-layer',
+				label: 'boundary',
+				color: '#f9d7dc',
+				layer: new MVTLayer({
+					id: 'boundary-layer',
+					name: 'province',
+					loadOptions: {
+						fetch: {
+							headers: {
+								'content-type': 'application/json',
+								Authorization: `Bearer ${MOCK_TOKEN}`,
+							},
+						},
+					},
+					data: tileLayer.boundaryYear(2024),
+					filled: true,
+					lineWidthUnits: 'pixels',
+					getFillColor() {
+						return [226, 226, 226, 100]
+					},
+				}),
 			},
 		]
-	}
+	}, [])
 
 	useEffect(() => {
 		service.overview
@@ -219,7 +198,7 @@ const OverviewMain: React.FC = () => {
 						isDesktop ? 'h-full flex-grow' : 'h-[500px]',
 					)}
 				>
-					<MapView initialLayer={getInitialLayer()} />
+					<MapView initialLayer={initialLayer} />
 				</div>
 				<div className={classNames('flex flex-col gap-[24px]', isDesktop ? 'h-full w-[350px]' : 'w-full')}>
 					<div className='flex w-full flex-col items-center justify-center gap-[16px] rounded-[8px] bg-white p-[24px] shadow'>

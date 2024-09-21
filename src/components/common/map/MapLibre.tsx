@@ -3,9 +3,12 @@ import React, { useEffect } from 'react'
 import { Map, useControl } from 'react-map-gl/maplibre'
 import { MapboxOverlay } from '@deck.gl/mapbox'
 import useLayerStore from './store/map'
-import { BasemapType } from './interface/map'
+import { MapInterface } from './interface/map'
 import { useMap } from './context/map'
-import { BASEMAP } from '@deck.gl/carto'
+
+interface MapLibreProps extends MapInterface {
+	mapStyle: string
+}
 
 const DeckGLOverlay = () => {
 	const layers = useLayerStore((state) => state.layers)
@@ -27,9 +30,9 @@ const DeckGLOverlay = () => {
 	return null
 }
 
-export default function MapLibre() {
+export default function MapLibre({ viewState, mapStyle, onViewStateChange }: MapLibreProps) {
 	const overlay = useLayerStore((state) => state.overlay)
-	const { viewState, basemap, setViewState, setMapLibreInstance, mapType } = useMap()
+	const { setMapLibreInstance } = useMap()
 
 	useEffect(() => {
 		return () => {
@@ -46,10 +49,10 @@ export default function MapLibre() {
 	return (
 		<Map
 			initialViewState={viewState}
-			mapStyle={basemap === BasemapType.CartoLight ? BASEMAP.VOYAGER : BASEMAP.DARK_MATTER}
+			mapStyle={mapStyle}
 			preserveDrawingBuffer={true}
 			zoom={viewState?.zoom}
-			onMove={(e) => setViewState?.(e.viewState)}
+			onMove={(e) => onViewStateChange?.(e.viewState)}
 			ref={(ref) => setMapLibreInstance(ref?.getMap() || null)}
 		>
 			<DeckGLOverlay />

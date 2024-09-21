@@ -6,7 +6,7 @@ import nextI18NextConfig from '../../next-i18next.config.js'
 import PageContainer from '@/components/Layout/PageContainer'
 import { Button, Container } from '@mui/material'
 import MapView from '@/components/common/map/MapView'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useMap } from '@/components/common/map/context/map'
 import useLayerStore from '@/components/common/map/store/map'
 import { IconLayer } from '@deck.gl/layers'
@@ -37,9 +37,75 @@ const MapInfoWindowContent: React.FC<{ data: { name: string; math: number } }> =
 }
 
 const PlaygroundPage = () => {
-	const { t } = useTranslation('common')
-	const { setExtent, showMapInfoWindow } = useMap()
-	const { setLayers, addLayer, getLayer, removeLayer } = useLayerStore()
+	const { setExtent, setMapInfoWindow } = useMap()
+	const { addLayer, getLayer, removeLayer } = useLayerStore()
+
+	const initialLayer = useMemo(() => {
+		return [
+			{
+				id: 'province-layer',
+				label: 'province',
+				color: '#1f75cb',
+				layer: new MVTLayer({
+					id: 'province-layer',
+					name: 'province',
+					loadOptions: {
+						fetch: {
+							headers: {
+								'content-type': 'application/json',
+								Authorization: `Bearer ${MOCK_TOKEN}`,
+							},
+						},
+					},
+					data: tileLayer.province,
+					filled: true,
+					lineWidthUnits: 'pixels',
+					pickable: true,
+					getFillColor() {
+						return [226, 226, 226, 100]
+					},
+					onClick: (info) => {
+						if (info.object) {
+							const mock = {
+								name: 'ทดสอบ',
+								math: Math.random(),
+							}
+							setMapInfoWindow({
+								positon: {
+									x: info.x,
+									y: info.y,
+								},
+								children: <MapInfoWindowContent data={mock} />,
+							})
+						}
+					},
+				}),
+			},
+			{
+				id: 'boundary-layer',
+				label: 'boundary',
+				color: '#f9d7dc',
+				layer: new MVTLayer({
+					id: 'boundary-layer',
+					name: 'province',
+					loadOptions: {
+						fetch: {
+							headers: {
+								'content-type': 'application/json',
+								Authorization: `Bearer ${MOCK_TOKEN}`,
+							},
+						},
+					},
+					data: tileLayer.boundaryYear(2024),
+					filled: true,
+					lineWidthUnits: 'pixels',
+					getFillColor() {
+						return [226, 226, 226, 100]
+					},
+				}),
+			},
+		]
+	}, [])
 
 	const handleSetExtent = useCallback(() => {
 		setExtent([100.5, 13.7, 100.7, 13.9])
@@ -78,138 +144,6 @@ const PlaygroundPage = () => {
 		removeLayer(TEST_LAYER_ID)
 	}, [removeLayer])
 
-	const initTileLayer = useCallback(() => {
-		const layerProvince = tileLayer.province
-		const layerBoundary = tileLayer.boundaryYear(2024)
-		setLayers([
-			new MVTLayer({
-				id: 'province',
-				name: 'province',
-				loadOptions: {
-					fetch: {
-						headers: {
-							'content-type': 'application/json',
-							Authorization: `Bearer ${MOCK_TOKEN}`,
-						},
-					},
-				},
-				data: layerProvince,
-				filled: true,
-				lineWidthUnits: 'pixels',
-				pickable: true,
-				getFillColor() {
-					return [226, 226, 226, 100]
-				},
-				onClick: (info) => {
-					if (info.object) {
-						const mock = {
-							name: 'ทดสอบ',
-							math: Math.random(),
-						}
-						showMapInfoWindow({
-							positon: {
-								x: info.x,
-								y: info.y,
-							},
-							children: <MapInfoWindowContent data={mock} />,
-						})
-					}
-				},
-			}),
-		])
-	}, [setLayers])
-
-	useEffect(() => {
-		// initTileLayer()
-	}, [])
-
-	const getInitialLayer = (): MapLayer[] => {
-		const layerProvince = tileLayer.province
-		const layer = new MVTLayer({
-			id: 'muii-test-layer',
-			name: 'province',
-			loadOptions: {
-				fetch: {
-					headers: {
-						'content-type': 'application/json',
-						Authorization: `Bearer ${MOCK_TOKEN}`,
-					},
-				},
-			},
-			data: layerProvince,
-			filled: true,
-			lineWidthUnits: 'pixels',
-			pickable: true,
-			getFillColor() {
-				return [226, 226, 226, 100]
-			},
-			onClick: (info) => {
-				if (info.object) {
-					const mock = {
-						name: 'ทดสอบ',
-						math: Math.random(),
-					}
-					showMapInfoWindow({
-						positon: {
-							x: info.x,
-							y: info.y,
-						},
-						children: <MapInfoWindowContent data={mock} />,
-					})
-				}
-			},
-		})
-		const layerBoundary = tileLayer.boundaryYear(2024)
-		const layer2 = new MVTLayer({
-			id: 'muii-test2-layer',
-			name: 'province',
-			loadOptions: {
-				fetch: {
-					headers: {
-						'content-type': 'application/json',
-						Authorization: `Bearer ${MOCK_TOKEN}`,
-					},
-				},
-			},
-			data: layerBoundary,
-			filled: true,
-			lineWidthUnits: 'pixels',
-			pickable: true,
-			getFillColor() {
-				return [226, 226, 226, 100]
-			},
-			onClick: (info) => {
-				if (info.object) {
-					const mock = {
-						name: 'ทดสอบ',
-						math: Math.random(),
-					}
-					showMapInfoWindow({
-						positon: {
-							x: info.x,
-							y: info.y,
-						},
-						children: <MapInfoWindowContent data={mock} />,
-					})
-				}
-			},
-		})
-		return [
-			{
-				id: 'muii-test-layer',
-				label: 'muii-test-layer',
-				color: '#000000',
-				layer,
-			},
-			{
-				id: 'muii-test2-layer',
-				label: 'muii-test2-layer',
-				color: '#000000',
-				layer: layer2,
-			},
-		]
-	}
-
 	return (
 		<PageContainer>
 			<Container className='flex-1 p-2'>
@@ -227,7 +161,7 @@ const PlaygroundPage = () => {
 					</div>
 					<div className='flex flex-1 bg-white p-2'>
 						<div className='flex flex-1 flex-row'>
-							<MapView initialLayer={getInitialLayer()} />
+							<MapView initialLayer={initialLayer} />
 							<div className='w-[440px]'></div>
 						</div>
 					</div>

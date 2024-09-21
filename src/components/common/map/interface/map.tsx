@@ -1,4 +1,8 @@
 import { Layer } from '@deck.gl/core'
+export interface MapInterface {
+	viewState?: MapViewState
+	onViewStateChange?: (viewState: MapViewState) => void
+}
 
 export interface MapViewState {
 	longitude: number
