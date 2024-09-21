@@ -1,6 +1,6 @@
-import { forwardRef, memo, useCallback, useImperativeHandle, useRef, useState } from 'react'
+import { useCallback, useState } from 'react'
 import classNames from 'classnames'
-import { BaseMap, BasemapType, MapType, MapInfoWindow, MapLayer } from './interface/map'
+import { BaseMap, BasemapType, MapType, MapInfoWindow, MapLayer, LatLng } from './interface/map'
 import MapGoogle from './MapGoogle'
 import MapLibre from './MapLibre'
 import MapTools from './MapTools'
@@ -8,12 +8,10 @@ import { useMap } from './context/map'
 import { Button, Paper } from '@mui/material'
 import { PropsWithChildren, useEffect } from 'react'
 import useLayerStore from './store/map'
+import MapPin from './layer/MapPin'
+import { layerIdConfig } from '@/config/app.config'
 
-// Remark
-// 1. iconLayer สลับ google, libre แล้วหาย
-// 2. measurement ยังไม่มี solution
-// 3. legend ยังไม่ได้ solution ที่แน่นอน
-
+const CURRENT_LOCATION_ZOOM = 14
 const basemapList: BaseMap[] = [
 	{
 		value: BasemapType.CartoLight,
@@ -38,26 +36,42 @@ export interface MapViewProps extends PropsWithChildren {
 }
 
 export default function MapView({ className = '', initialLayer }: MapViewProps) {
-	const { mapType, mapInfoWindow, hideMapInfoWindow } = useMap()
-	const { setLayers } = useLayerStore()
+	const { mapType, mapInfoWindow, hideMapInfoWindow, setCenterAndZoom } = useMap()
+	const { getLayer, setLayers } = useLayerStore()
+	const [currentLocation, setCurrentLocation] = useState<LatLng | null>(null)
 
 	useEffect(() => {
-		console.log('Hello MapView')
 		if (initialLayer && initialLayer.length) {
 			const layers = initialLayer.map((item) => item.layer)
 			setLayers(layers)
 		}
 	}, [setLayers])
 
+	const onGetLocation = useCallback(
+		(coords: GeolocationCoordinates) => {
+			const layer = getLayer(layerIdConfig.toolCurrentLocation)
+			if (layer) {
+				setCurrentLocation(null)
+			} else {
+				const { latitude, longitude } = coords
+				setCurrentLocation({ latitude, longitude })
+				setCenterAndZoom({ latitude, longitude }, CURRENT_LOCATION_ZOOM)
+			}
+		},
+		[getLayer, setCurrentLocation, setCenterAndZoom],
+	)
+
 	return (
 		<div className={classNames('relative flex flex-1 overflow-hidden', className)}>
-			<MapTools basemapList={basemapList} layerList={initialLayer}></MapTools>
+			<MapTools basemapList={basemapList} layerList={initialLayer} onGetLocation={onGetLocation} />
 			{mapType === MapType.Libre ? <MapLibre /> : <MapGoogle />}
 			{mapInfoWindow && (
 				<InfoWindow positon={mapInfoWindow.positon} onClose={hideMapInfoWindow}>
 					{mapInfoWindow.children}
 				</InfoWindow>
 			)}
+			{currentLocation && mapType === MapType.Libre && <MapPin coords={currentLocation} />}
+			{currentLocation && mapType === MapType.Google && <MapPin coords={currentLocation} />}
 		</div>
 	)
 }

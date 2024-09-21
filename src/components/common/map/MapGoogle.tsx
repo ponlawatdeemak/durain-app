@@ -36,6 +36,12 @@ export default function MapGoogle() {
 		}
 	}, [overlay])
 
+	useEffect(() => {
+		return () => {
+			setGoogleMapInstance(null)
+		}
+	}, [setGoogleMapInstance])
+
 	return (
 		<APIProvider apiKey={process.env.GOOGLE_MAPS_API_KEY}>
 			<Map

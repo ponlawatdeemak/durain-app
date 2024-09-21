@@ -13,8 +13,8 @@ export interface BaseMap {
 }
 
 export interface LatLng {
-	lat: number
-	lng: number
+	latitude: number
+	longitude: number
 }
 
 export interface MapInfoWindow {
@@ -39,8 +39,8 @@ export interface MapLegend {
 }
 
 export enum MapType {
-	Google,
 	Libre,
+	Google,
 }
 
 export enum BasemapType {

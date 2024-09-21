@@ -12,11 +12,12 @@ import { Layer } from '@deck.gl/core'
 export interface MapToolsProps {
 	basemapList?: BaseMap[]
 	layerList?: MapLayer[]
+	onGetLocation?: (coords: GeolocationCoordinates) => void
 }
 
-const MapTools: React.FC<MapToolsProps> = ({ basemapList = [], layerList }) => {
+const MapTools: React.FC<MapToolsProps> = ({ basemapList = [], layerList, onGetLocation }) => {
 	const { t } = useTranslation()
-	const { viewState, basemap, getLocation, setViewState, setBasemap } = useMap()
+	const { viewState, basemap, setViewState, setBasemap } = useMap()
 	const [anchorBasemap, setAnchorBasemap] = useState<HTMLButtonElement | null>(null)
 	const [anchorLegend, setAnchorLegend] = useState<HTMLButtonElement | null>(null)
 	const { layers, getLayer, getLayers, setLayers, removeLayer } = useLayerStore()
@@ -41,14 +42,31 @@ const MapTools: React.FC<MapToolsProps> = ({ basemapList = [], layerList }) => {
 				removeLayer(layerId)
 			} else {
 				const item = layerList?.find((item) => item.id === layerId)
-				if (item) {
-					// - จัดเรียง layer ตาม legends
-					setLayers([...getLayers(), item.layer] as Layer[])
+				const index = layerList?.findIndex((item) => item.id === layerId)
+				if (item && index !== -1 && index !== undefined) {
+					const layers = [...getLayers()]
+					layers.splice(index, 0, item.layer)
+					setLayers(layers as Layer[])
 				}
 			}
 		},
 		[layers, getLayer, setLayers, removeLayer],
 	)
+
+	const handleGetLocation = useCallback(() => {
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(
+				async (position) => {
+					onGetLocation?.(position.coords)
+				},
+				(error) => {
+					console.error('Error fetching location:', error)
+				},
+			)
+		} else {
+			console.log('Geolocation is not supported by this browser.')
+		}
+	}, [onGetLocation])
 
 	return (
 		<>
@@ -69,7 +87,7 @@ const MapTools: React.FC<MapToolsProps> = ({ basemapList = [], layerList }) => {
 				<IconButton className='box-shadow rounded-lg bg-white' onClick={() => {}}>
 					<Icon path={mdiRulerSquareCompass} size={1} />
 				</IconButton>
-				<IconButton className='box-shadow rounded-lg bg-white' onClick={() => getLocation()}>
+				<IconButton className='box-shadow rounded-lg bg-white' onClick={handleGetLocation}>
 					{currentLocationIsActive ? (
 						<Icon path={mdiMapMarkerOutline} size={1} />
 					) : (

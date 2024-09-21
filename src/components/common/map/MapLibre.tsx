@@ -37,6 +37,12 @@ export default function MapLibre() {
 		}
 	}, [overlay])
 
+	useEffect(() => {
+		return () => {
+			setMapLibreInstance(null)
+		}
+	}, [setMapLibreInstance])
+
 	return (
 		<Map
 			initialViewState={viewState}
