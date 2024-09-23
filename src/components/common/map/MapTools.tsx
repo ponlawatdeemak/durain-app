@@ -1,5 +1,15 @@
 import React, { useCallback, useMemo, useState } from 'react'
-import { Box, ToggleButton, ToggleButtonGroup, Typography, IconButton, Popover, Button } from '@mui/material'
+import {
+	Box,
+	ToggleButton,
+	ToggleButtonGroup,
+	Typography,
+	IconButton,
+	Popover,
+	Button,
+	styled,
+	Switch,
+} from '@mui/material'
 import { mdiLayersOutline, mdiMapMarker, mdiMapMarkerOutline, mdiMinus, mdiPlus, mdiRulerSquareCompass } from '@mdi/js'
 import Icon from '@mdi/react'
 import { useTranslation } from 'next-i18next'
@@ -81,6 +91,53 @@ const MapTools: React.FC<MapToolsProps> = ({ layerList, onBasemapChanged, onZoom
 		}
 	}, [onGetLocation])
 
+	const ToggleSwitch = styled(Switch)(({ theme }) => ({
+		width: 33,
+		height: 16,
+		padding: 0,
+		display: 'flex',
+		'&:active': {
+			'& .MuiSwitch-thumb': {
+				width: 15,
+			},
+			'& .MuiSwitch-switchBase.Mui-checked': {
+				transform: 'translateX(19.5px)',
+			},
+		},
+		'& .MuiSwitch-switchBase': {
+			padding: 2,
+			'&.Mui-checked': {
+				transform: 'translateX(16.5px)',
+				color: '#fff',
+				'& + .MuiSwitch-track': {
+					opacity: 1,
+					// backgroundColor: '#1890ff',
+					...theme.applyStyles('dark', {
+						// backgroundColor: '#177ddc',
+					}),
+				},
+			},
+		},
+		'& .MuiSwitch-thumb': {
+			boxShadow: '0 2px 4px 0 rgb(0 35 11 / 20%)',
+			width: 12,
+			height: 12,
+			borderRadius: 6,
+			transition: theme.transitions.create(['width'], {
+				duration: 200,
+			}),
+		},
+		'& .MuiSwitch-track': {
+			borderRadius: 16 / 2,
+			opacity: 1,
+			backgroundColor: 'rgba(0,0,0,.25)',
+			boxSizing: 'border-box',
+			...theme.applyStyles('dark', {
+				backgroundColor: 'rgba(255,255,255,.35)',
+			}),
+		},
+	}))
+
 	return (
 		<>
 			{/* Zoom Controls */}
@@ -153,15 +210,28 @@ const MapTools: React.FC<MapToolsProps> = ({ layerList, onBasemapChanged, onZoom
 						</IconButton>
 					</Box>
 					<Popover open={Boolean(anchorLegend)} anchorEl={anchorLegend} onClose={() => setAnchorLegend(null)}>
-						<Box className='bg-white p-2 drop-shadow-md'>
-							{layerList.map((item, index) => (
-								<div key={index}>
-									<div>
-										id: {item.id}, color: {item.color}, label: {item.label}
+						<Box className='flex flex-col gap-[6px] bg-white px-[16px] py-[10px] drop-shadow-md'>
+							{layerList.slice(1).map((item, index) => {
+								return (
+									<div key={index} className='flex items-center justify-between gap-[14px]'>
+										<div className='flex gap-[8px]'>
+											<div
+												className={`h-[23px] w-[23px] rounded-[2px]`}
+												style={{ backgroundColor: item.color }}
+											></div>
+											<p className='text-[14px] font-light'>
+												{t('overview:ageOfDurianTrees')} {item.label}
+											</p>
+										</div>
+										<ToggleSwitch
+											defaultChecked
+											onChange={() => {
+												onToggleLayer(item.id)
+											}}
+										/>
 									</div>
-									<Button onClick={() => onToggleLayer(item.id)}>Toggle</Button>
-								</div>
-							))}
+								)
+							})}
 						</Box>
 					</Popover>
 				</>
