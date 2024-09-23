@@ -10,5 +10,6 @@
 	"area": "พื้นที่",
 	"ageRange": "ช่วงอายุ",
 	"age": "อายุ",
-	"plantationArea": "พื้นที่ปลูก"
+	"plantationArea": "พื้นที่ปลูก",
+    "ageOfDurianTrees":"ทุเรียนอายุ"
 }
