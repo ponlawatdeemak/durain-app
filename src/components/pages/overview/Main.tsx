@@ -268,10 +268,7 @@ const OverviewMain: React.FC = () => {
 			</div>
 			<div className={classNames('flex h-full w-full gap-[24px]', isDesktop ? 'flex-row' : 'flex-col-reverse')}>
 				<div
-					className={classNames(
-						'flex items-center justify-center rounded-[8px] bg-white',
-						isDesktop ? 'h-full flex-grow' : 'h-[500px]',
-					)}
+					className={classNames('flex rounded-[8px] bg-white', isDesktop ? 'h-full flex-grow' : 'h-[500px]')}
 				>
 					{mapLayers ? <MapView initialLayer={getInitialLayer()} /> : <CircularProgress />}
 				</div>
