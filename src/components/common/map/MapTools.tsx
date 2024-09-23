@@ -7,6 +7,14 @@ import { BaseMap, BasemapType, MapLayer } from './interface/map'
 import useLayerStore from './store/map'
 import { layerIdConfig } from '@/config/app.config'
 import { Layer } from '@deck.gl/core'
+import {
+	BaseMapIcon,
+	MapLayerIcon,
+	MapMeasureIcon,
+	MapPinIcon,
+	MapZoomInIcon,
+	MapZoomOutIcon,
+} from '@/components/svg/MenuIcon'
 
 const basemapList: BaseMap[] = [
 	{ value: BasemapType.CartoLight, image: '/images/map/basemap_bright.png', label: 'map.street' },
@@ -50,6 +58,7 @@ const MapTools: React.FC<MapToolsProps> = ({ layerList, onBasemapChanged, onZoom
 	const handleBasemapChanged = useCallback(
 		(basemap: BasemapType) => {
 			if (basemap !== null) {
+				console.log(basemap)
 				setBasemap(basemap)
 				onBasemapChanged?.(basemap)
 			}
@@ -77,16 +86,16 @@ const MapTools: React.FC<MapToolsProps> = ({ layerList, onBasemapChanged, onZoom
 			{/* Zoom Controls */}
 			<Box className='absolute right-2 top-2 z-10 flex flex-col gap-2'>
 				<IconButton className='box-shadow rounded-lg bg-white' onClick={onZoomIn}>
-					<Icon path={mdiPlus} size={1} />
+					<MapZoomInIcon />
 				</IconButton>
 				<IconButton className='box-shadow rounded-lg bg-white' onClick={onZoomOut}>
-					<Icon path={mdiMinus} size={1} />
+					<MapZoomOutIcon />
 				</IconButton>
 				<IconButton className='box-shadow rounded-lg bg-white'>
-					<Icon path={mdiRulerSquareCompass} size={1} />
+					<MapMeasureIcon />
 				</IconButton>
 				<IconButton className='box-shadow rounded-lg bg-white' onClick={handleGetLocation}>
-					<Icon path={currentLocationIsActive ? mdiMapMarkerOutline : mdiMapMarker} size={1} />
+					<MapPinIcon />
 				</IconButton>
 			</Box>
 
@@ -96,7 +105,7 @@ const MapTools: React.FC<MapToolsProps> = ({ layerList, onBasemapChanged, onZoom
 					onClick={(event) => setAnchorBasemap(event.currentTarget)}
 					className='box-shadow rounded-lg bg-white'
 				>
-					<Icon path={mdiLayersOutline} size={1} />
+					<BaseMapIcon />
 				</IconButton>
 				<Popover open={Boolean(anchorBasemap)} anchorEl={anchorBasemap} onClose={() => setAnchorBasemap(null)}>
 					<Box className='flex flex-col bg-white p-2 drop-shadow-md'>
@@ -140,7 +149,7 @@ const MapTools: React.FC<MapToolsProps> = ({ layerList, onBasemapChanged, onZoom
 							onClick={(event) => setAnchorLegend(event.currentTarget)}
 							className='box-shadow rounded-lg bg-white'
 						>
-							<Icon path={mdiLayersOutline} size={1} />
+							<MapLayerIcon />
 						</IconButton>
 					</Box>
 					<Popover open={Boolean(anchorLegend)} anchorEl={anchorLegend} onClose={() => setAnchorLegend(null)}>
