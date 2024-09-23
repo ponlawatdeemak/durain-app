@@ -17,14 +17,7 @@ import { BaseMap, BasemapType, MapLayer } from './interface/map'
 import useLayerStore from './store/map'
 import { layerIdConfig } from '@/config/app.config'
 import { Layer } from '@deck.gl/core'
-import {
-	BaseMapIcon,
-	MapLayerIcon,
-	MapMeasureIcon,
-	MapPinIcon,
-	MapZoomInIcon,
-	MapZoomOutIcon,
-} from '@/components/svg/MenuIcon'
+import { MapLayerIcon, MapMeasureIcon, MapPinIcon, MapZoomInIcon, MapZoomOutIcon } from '@/components/svg/MenuIcon'
 
 const basemapList: BaseMap[] = [
 	{ value: BasemapType.CartoLight, image: '/images/map/basemap_bright.png', label: 'map.street' },
@@ -38,9 +31,17 @@ interface MapToolsProps {
 	onZoomIn?: () => void
 	onZoomOut?: () => void
 	onGetLocation?: (coords: GeolocationCoordinates) => void
+	currentBaseMap: BasemapType
 }
 
-const MapTools: React.FC<MapToolsProps> = ({ layerList, onBasemapChanged, onZoomIn, onZoomOut, onGetLocation }) => {
+const MapTools: React.FC<MapToolsProps> = ({
+	layerList,
+	onBasemapChanged,
+	onZoomIn,
+	onZoomOut,
+	onGetLocation,
+	currentBaseMap,
+}) => {
 	const { t } = useTranslation()
 	const { layers, getLayer, getLayers, setLayers, removeLayer } = useLayerStore()
 	const [basemap, setBasemap] = useState<BasemapType | null>(null)
@@ -162,7 +163,11 @@ const MapTools: React.FC<MapToolsProps> = ({ layerList, onBasemapChanged, onZoom
 					onClick={(event) => setAnchorBasemap(event.currentTarget)}
 					className='box-shadow rounded-lg bg-white'
 				>
-					<BaseMapIcon />
+					<img
+						src={basemapList[currentBaseMap].image}
+						className='h-[60px] w-[60px] rounded-[4px] border-[1px] border-primary'
+						alt={`${basemapList[currentBaseMap].label}`}
+					/>
 				</IconButton>
 				<Popover open={Boolean(anchorBasemap)} anchorEl={anchorBasemap} onClose={() => setAnchorBasemap(null)}>
 					<Box className='flex flex-col bg-white p-2 drop-shadow-md'>
@@ -209,8 +214,21 @@ const MapTools: React.FC<MapToolsProps> = ({ layerList, onBasemapChanged, onZoom
 							<MapLayerIcon />
 						</IconButton>
 					</Box>
-					<Popover open={Boolean(anchorLegend)} anchorEl={anchorLegend} onClose={() => setAnchorLegend(null)}>
-						<Box className='flex flex-col gap-[6px] bg-white px-[16px] py-[10px] drop-shadow-md'>
+					<Popover
+						open={Boolean(anchorLegend)}
+						anchorEl={anchorLegend}
+						onClose={() => setAnchorLegend(null)}
+						elevation={0}
+						anchorOrigin={{
+							vertical: 'bottom',
+							horizontal: 'right',
+						}}
+						transformOrigin={{
+							vertical: 'bottom',
+							horizontal: 'left',
+						}}
+					>
+						<Box className='flex flex-col gap-[6px] rounded-[4px] bg-white px-[16px] py-[10px] drop-shadow-md'>
 							{layerList.slice(1).map((item, index) => {
 								return (
 									<div key={index} className='flex items-center justify-between gap-[14px]'>

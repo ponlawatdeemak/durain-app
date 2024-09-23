@@ -105,6 +105,7 @@ export default function MapView({ className = '', initialLayer }: MapViewProps) 
 				onZoomOut={() => setViewState({ ...viewState, zoom: viewState.zoom - 1 })}
 				onBasemapChanged={onBasemapChanged}
 				onGetLocation={onGetLocation}
+				currentBaseMap={basemap}
 			/>
 			{mapType === MapType.Libre ? (
 				<MapLibre
