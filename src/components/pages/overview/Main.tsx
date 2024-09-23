@@ -1,8 +1,8 @@
 import { useTranslation } from 'next-i18next'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import service from '@/api/index'
 import { OverviewIcon, OverviewYearDataIcon, OverviewTooltipIcon } from '@/components/svg/MenuIcon'
-import { Box, MenuItem, Select } from '@mui/material'
+import { Box, CircularProgress, MenuItem, Select } from '@mui/material'
 import { availabilityDurianDtoOut, OverviewSummaryDtoOut } from '@/api/overview/dto-out.dto'
 import { ResponseLanguage } from '@/api/interface'
 import useAreaUnit from '@/store/area-unit'
@@ -72,9 +72,11 @@ const OverviewMain: React.FC = () => {
 		},
 	}))
 
+	const TEST_LAYER_ID = 'test-layer'
 	const MOCK_TOKEN =
-		'eyJraWQiOiI1Vzl6NmhXZmVNQjRhTXlUcGVNV01relk5UEJrakR1YjZsN1lLUTlVdmpnPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJiOTFhYjU5Yy1mMGYxLTcwNWYtNTk0Yi04NWY1N2Q5NjVjYmIiLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuYXAtc291dGhlYXN0LTEuYW1hem9uYXdzLmNvbVwvYXAtc291dGhlYXN0LTFfSUdMb3Fub2tNIiwiY2xpZW50X2lkIjoiNHA0MzBwMmRhbGEzYWxqbWloa2s3OWg4MmciLCJvcmlnaW5fanRpIjoiNGJjNDJmZWItODY0ZC00NTFhLTg1OWYtYjkyOGM2NzZlZjFlIiwiZXZlbnRfaWQiOiIwNTQxZDM4MC0zNDdjLTQ4ZjctYWUzMS04MDI5MjM4NzE2NTAiLCJ0b2tlbl91c2UiOiJhY2Nlc3MiLCJzY29wZSI6ImF3cy5jb2duaXRvLnNpZ25pbi51c2VyLmFkbWluIiwiYXV0aF90aW1lIjoxNzI1MjYyOTQ5LCJleHAiOjE3MjY5OTE3MjEsImlhdCI6MTcyNjkwNTMyMSwianRpIjoiZDI1OWVlZjktMWIwNS00NjljLWIxMWEtNzgzYWM2OTdjOTczIiwidXNlcm5hbWUiOiJiOTFhYjU5Yy1mMGYxLTcwNWYtNTk0Yi04NWY1N2Q5NjVjYmIifQ.bSnPsgn5u_6k3ho4j9wnCj3QQ64twt82F_y_vHvdlhRIS0tNfzZzOQ7SaNDyAttZF3p1lLllo0Jsdg5TobPL1YsJnvXOaHqN4GWPG7Toi_P8dX0poO-9LdvRKp2m27a2PuSNnuyt90uZoz0tMrrsBMYYUQ8zsGv0jFvuo-VJegMFYt9ojZPCaNa7cO34zME8t7ge_XkcKga2ekcxTvzOCovn8V90HDaIGN0YQV6e0gLNfvbrYwG1g0Ja1xX0J9Ix3N2NOvD7g7myUJOxXl1Lzi9wHC2Qx0Xivc-RFHuaZKrHPykgPlpQWf86fkqRgG319Kss15uNjocuqVn0KBPc7g'
-
+		'eyJraWQiOiJIdkZFUFFFN0NrTXplNkZiOVFmVlwvQXlmNXZhOFM1UU1oS0o1K3AzRzBjST0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJmZWIyYjg3MS1lYjM1LTQyZjUtODU0Yy00YTAyYjAwM2ExMzgiLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuYXAtc291dGhlYXN0LTEuYW1hem9uYXdzLmNvbVwvYXAtc291dGhlYXN0LTFfTkFFSU5DaWU4IiwiY2xpZW50X2lkIjoiN3F2ZDdtanVsOHZxa2pyNW5qaWpxZzV1YjUiLCJvcmlnaW5fanRpIjoiYTlmZDdmZTktZTZhMy00ZGNhLTkzNzAtNDFiZWY5MTk2YjlmIiwiZXZlbnRfaWQiOiI3NzM0ZDk3Ni00MDQzLTRkYzQtYjQzOS1lMzEzYmNhMjBlOGQiLCJ0b2tlbl91c2UiOiJhY2Nlc3MiLCJzY29wZSI6ImF3cy5jb2duaXRvLnNpZ25pbi51c2VyLmFkbWluIiwiYXV0aF90aW1lIjoxNzI3MDg0NzEyLCJleHAiOjE3MjcxNzExMTIsImlhdCI6MTcyNzA4NDcxMiwianRpIjoiNGVmYTBiNTktMmUxMS00MzEzLWFlMDItNWNiZDEwMWFiZTY1IiwidXNlcm5hbWUiOiJzdXBlcmFkbWluLm1hcGJvc3MifQ.b4r9Mp8jviKQHlbdb_6KoYBP9aA23YO5PU07IxdqWQvncAAeRRC0dWK79PQ6IvYkX_w39rdJfo3rPBzOCL-2OHD3tbRK__Z10LFQLF46NEAIgRSod9U-vPEQQPvLc24WpXPfOeZQj5vqmAOzUW8j7r_4DJqE_NmbolTPWGGLQ4AoA67U6O_NYZXSlsPq4Fzg2JSs1cJxIiTavkxUNeEyEdgykxetNaTI0Cc_EqSZZLet9k4-IQ56TfdJf57cJzW8eLwci3Nh2RBUN7RCk079BqS_gOt9RHhJPHn8Q0uboWpA0oZ2REX8O0QIosRIHTgcQxnz6fyGm4fOs3hAPdq2iw'
+	const PROVINCE_TOKEN =
+		'eyJraWQiOiI1Vzl6NmhXZmVNQjRhTXlUcGVNV01relk5UEJrakR1YjZsN1lLUTlVdmpnPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJiOTFhYjU5Yy1mMGYxLTcwNWYtNTk0Yi04NWY1N2Q5NjVjYmIiLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuYXAtc291dGhlYXN0LTEuYW1hem9uYXdzLmNvbVwvYXAtc291dGhlYXN0LTFfSUdMb3Fub2tNIiwiY2xpZW50X2lkIjoiNHA0MzBwMmRhbGEzYWxqbWloa2s3OWg4MmciLCJvcmlnaW5fanRpIjoiOGU3ZGJiOTAtMzkzMS00MGVlLTk2MjktNTNlZTM1Yjg5NzFkIiwiZXZlbnRfaWQiOiI2MmQ5NWQ2ZC1kNTM4LTRkZjAtOWQ3Yi1jZGNhYWJjMWZhYTciLCJ0b2tlbl91c2UiOiJhY2Nlc3MiLCJzY29wZSI6ImF3cy5jb2duaXRvLnNpZ25pbi51c2VyLmFkbWluIiwiYXV0aF90aW1lIjoxNzI3MDYzNzgxLCJleHAiOjE3MjcxNTAxODEsImlhdCI6MTcyNzA2Mzc4MiwianRpIjoiNjk4NmRmYjAtZDg4ZC00ZjJlLTlmMmEtNWE3Y2U2NzliYzUyIiwidXNlcm5hbWUiOiJiOTFhYjU5Yy1mMGYxLTcwNWYtNTk0Yi04NWY1N2Q5NjVjYmIifQ.cR7gXpUXOhoP7gDjiUk1TV2M4qpE7HPLeZ8_L8vaGyv2J0RWy_bwg7653XHvsZ4WynNs_9G6pENHN_hQ6TSMdPOWM_ROJBetvUgDANjq-PAwbUMPmE0V-Brlfv5OjQBRLoFpWkdQW1cyubbTPYuMiQ3hFAPQJsYXoOoE_2Fs_mkQ_dsUUmeRRtH3_8RhK7SNWm_dQyMu8RCA_g-T0v88WCk6kOfq3W4FCZuoFP5N0HP6mH4NEsr7S_1BVGj_iku9Wg5iOo2LsBMo4T6OS3E_84-vw0hY50AX-nfLKQgpGMOIf2VH07wWSfEBshMXt9rXjeCttsE7SOvSk0EZJjwe1Q'
 	const MapInfoWindowContent: React.FC<{ data: { name: string; math: number } }> = ({ data }) => {
 		return (
 			<div className={`m-4 flex flex-col`}>
@@ -84,72 +86,145 @@ const OverviewMain: React.FC = () => {
 		)
 	}
 
-	const initialLayer = useMemo(() => {
+	// const handleSetExtent = useCallback(() => {
+	// 	setExtent([100.5, 13.7, 100.7, 13.9])
+	// }, [setExtent])
+
+	// const handleAddLayer = useCallback(() => {
+	// 	const layer = getLayer(TEST_LAYER_ID)
+	// 	if (!layer) {
+	// 		addLayer(layer)
+	// 	}
+	// }, [getLayer, addLayer])
+
+	// const handleRemoveLayer = useCallback(() => {
+	// 	removeLayer(TEST_LAYER_ID)
+	// }, [removeLayer])
+
+	// const initTileLayer = useCallback(() => {
+	// 	const layerProvince = tileLayer.province
+	// 	const layerBoundary = tileLayer.boundaryYear(2024)
+	// 	setLayers([
+	// 		new MVTLayer({
+	// 			id: 'province',
+	// 			name: 'province',
+	// 			loadOptions: {
+	// 				fetch: {
+	// 					headers: {
+	// 						'content-type': 'application/json',
+	// 						Authorization: `Bearer ${MOCK_TOKEN}`,
+	// 					},
+	// 				},
+	// 			},
+	// 			data: layerProvince,
+	// 			filled: true,
+	// 			lineWidthUnits: 'pixels',
+	// 			pickable: true,
+	// 			getFillColor(d) {
+	// 				return [226, 226, 226, 100]
+	// 			},
+	// 			onClick: (info) => {
+	// 				if (info.object) {
+	// 					const mock = {
+	// 						name: 'ทดสอบ',
+	// 						math: Math.random(),
+	// 					}
+	// 					setMapInfoWindow({
+	// 						positon: {
+	// 							x: info.x,
+	// 							y: info.y,
+	// 						},
+	// 						children: <MapInfoWindowContent data={mock} />,
+	// 					})
+	// 				}
+	// 			},
+	// 		}),
+	// 	])
+	// }, [setLayers])
+
+	const layers = useMemo(() => {
+		return overviewData?.overall.ageClass?.map((item) => {
+			return new MVTLayer({
+				id: item.id,
+				name: item.name[language],
+				loadOptions: {
+					fetch: {
+						headers: {
+							'content-type': 'application/json',
+							Authorization: `Bearer ${MOCK_TOKEN}`,
+						},
+					},
+				},
+				data: `${process.env.NEXT_PUBLIC_API_HOSTNAME_TILE}/durian_2020/tiles.json`,
+				filled: true,
+				lineWidthUnits: 'pixels',
+				pickable: true,
+				getFillColor(d) {
+					// console.log(d)
+					return [226, 226, 226, 100]
+				},
+				onClick: (info) => {
+					if (info.object) {
+						const mock = {
+							name: item.name[language],
+							math: Math.random(),
+						}
+						setMapInfoWindow({
+							positon: {
+								x: info.x,
+								y: info.y,
+							},
+							children: <MapInfoWindowContent data={mock} />,
+						})
+					}
+				},
+			})
+		})
+	}, [overviewData, language, setMapInfoWindow])
+
+	const mapLayers: MapLayer[] | undefined = useMemo(() => {
+		return overviewData?.overall.ageClass?.map((item, index) => {
+			return {
+				id: item.id,
+				label: item.name[language],
+				color: item.color,
+				layer: layers![index],
+			}
+		})
+	}, [overviewData, language, layers])
+
+	const getInitialLayer = useCallback((): MapLayer[] => {
+		const layerProvince = tileLayer.province
+		const provinceLayer = new MVTLayer({
+			id: 'province',
+			name: 'province',
+			loadOptions: {
+				fetch: {
+					headers: {
+						'content-type': 'application/json',
+						Authorization: `Bearer ${PROVINCE_TOKEN}`,
+					},
+				},
+			},
+			data: layerProvince,
+			filled: true,
+			lineWidthUnits: 'pixels',
+			pickable: true,
+			getFillColor() {
+				return [226, 226, 226, 100]
+			},
+		})
+
 		return [
 			{
-				id: 'province-layer',
+				id: 'province',
 				label: 'province',
-				color: '#1f75cb',
-				layer: new MVTLayer({
-					id: 'province-layer',
-					name: 'province',
-					loadOptions: {
-						fetch: {
-							headers: {
-								'content-type': 'application/json',
-								Authorization: `Bearer ${MOCK_TOKEN}`,
-							},
-						},
-					},
-					data: tileLayer.province,
-					filled: true,
-					lineWidthUnits: 'pixels',
-					pickable: true,
-					getFillColor() {
-						return [226, 226, 226, 100]
-					},
-					onClick: (info) => {
-						if (info.object) {
-							const mock = {
-								name: 'ทดสอบ',
-								math: Math.random(),
-							}
-							setMapInfoWindow({
-								positon: {
-									x: info.x,
-									y: info.y,
-								},
-								children: <MapInfoWindowContent data={mock} />,
-							})
-						}
-					},
-				}),
+				color: '#000000',
+				layer: provinceLayer,
 			},
-			{
-				id: 'boundary-layer',
-				label: 'boundary',
-				color: '#f9d7dc',
-				layer: new MVTLayer({
-					id: 'boundary-layer',
-					name: 'province',
-					loadOptions: {
-						fetch: {
-							headers: {
-								'content-type': 'application/json',
-								Authorization: `Bearer ${MOCK_TOKEN}`,
-							},
-						},
-					},
-					data: tileLayer.boundaryYear(2024),
-					filled: true,
-					lineWidthUnits: 'pixels',
-					getFillColor() {
-						return [226, 226, 226, 100]
-					},
-				}),
-			},
+			...(mapLayers ?? []),
 		]
-	}, [])
+	}, [mapLayers])
 
 	useEffect(() => {
 		service.overview
@@ -194,11 +269,11 @@ const OverviewMain: React.FC = () => {
 			<div className={classNames('flex h-full w-full gap-[24px]', isDesktop ? 'flex-row' : 'flex-col-reverse')}>
 				<div
 					className={classNames(
-						'flex rounded-[8px] bg-green-100',
+						'flex items-center justify-center rounded-[8px] bg-white',
 						isDesktop ? 'h-full flex-grow' : 'h-[500px]',
 					)}
 				>
-					<MapView initialLayer={initialLayer} />
+					{mapLayers ? <MapView initialLayer={getInitialLayer()} /> : <CircularProgress />}
 				</div>
 				<div className={classNames('flex flex-col gap-[24px]', isDesktop ? 'h-full w-[350px]' : 'w-full')}>
 					<div className='flex w-full flex-col items-center justify-center gap-[16px] rounded-[8px] bg-white p-[24px] shadow'>
