@@ -20,6 +20,7 @@ import { tileLayer } from '@/config/app.config'
 import { MapLayer } from '@/components/common/map/interface/map.jsx'
 import { useMap } from '@/components/common/map/context/map'
 import useLayerStore from '@/components/common/map/store/map'
+import { useQuery } from '@tanstack/react-query'
 
 const OverviewMain: React.FC = () => {
 	const { t, i18n } = useTranslation()
@@ -246,7 +247,17 @@ const OverviewMain: React.FC = () => {
 				setOverviewData(res.data)
 			})
 			.catch((error) => console.log(error))
-	}, [year, admCode])
+
+		if (admCode !== 0) {
+			service.overview.locationExtent(admCode).then((res) => {
+				if (res.data) {
+					setExtent(res.data.extent)
+				}
+			})
+		} else {
+			setExtent([97.3758964376, 5.69138418215, 105.589038527, 20.4178496363])
+		}
+	}, [year, admCode, setExtent])
 
 	return (
 		<div
@@ -270,7 +281,13 @@ const OverviewMain: React.FC = () => {
 				<div
 					className={classNames('flex rounded-[8px] bg-white', isDesktop ? 'h-full flex-grow' : 'h-[500px]')}
 				>
-					{mapLayers ? <MapView initialLayer={getInitialLayer()} /> : <CircularProgress />}
+					{mapLayers ? (
+						<MapView initialLayer={getInitialLayer()} />
+					) : (
+						<div className='flex h-full w-full items-center justify-center'>
+							<CircularProgress />
+						</div>
+					)}
 				</div>
 				<div className={classNames('flex flex-col gap-[24px]', isDesktop ? 'h-full w-[350px]' : 'w-full')}>
 					<div className='flex w-full flex-col items-center justify-center gap-[16px] rounded-[8px] bg-white p-[24px] shadow'>
