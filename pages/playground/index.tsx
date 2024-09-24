@@ -6,7 +6,7 @@ import nextI18NextConfig from '../../next-i18next.config.js'
 import PageContainer from '@/components/Layout/PageContainer'
 import { Button, Container } from '@mui/material'
 import MapView from '@/components/common/map/MapView'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useMap } from '@/components/common/map/context/map'
 import useLayerStore from '@/components/common/map/store/map'
 import { IconLayer } from '@deck.gl/layers'
@@ -26,8 +26,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => ({
 
 const TEST_LAYER_ID = 'test-layer'
 const MOCK_TOKEN =
-	'eyJraWQiOiI1Vzl6NmhXZmVNQjRhTXlUcGVNV01relk5UEJrakR1YjZsN1lLUTlVdmpnPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiIyOTVhNDU5Yy05MGExLTcwMzgtNzA2NC00ZGFmYzFlY2QwYjYiLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuYXAtc291dGhlYXN0LTEuYW1hem9uYXdzLmNvbVwvYXAtc291dGhlYXN0LTFfSUdMb3Fub2tNIiwiY2xpZW50X2lkIjoiNHA0MzBwMmRhbGEzYWxqbWloa2s3OWg4MmciLCJvcmlnaW5fanRpIjoiY2Q3Y2M5MzYtZTIwZC00ZThkLTk2ZjUtYmFhOGVhZGRiNTFiIiwiZXZlbnRfaWQiOiI0MTExMjg3My00ZDNhLTRlZDgtYmY3ZC05ZDdhYzY4MzZhNTkiLCJ0b2tlbl91c2UiOiJhY2Nlc3MiLCJzY29wZSI6ImF3cy5jb2duaXRvLnNpZ25pbi51c2VyLmFkbWluIiwiYXV0aF90aW1lIjoxNzI2NDAxMTUwLCJleHAiOjE3MjY0ODc1NTAsImlhdCI6MTcyNjQwMTE1MCwianRpIjoiOWM1YWFiOTgtNDU4Yy00ZGE4LWI5NzgtYzJjYmIyYzhkYjMyIiwidXNlcm5hbWUiOiIyOTVhNDU5Yy05MGExLTcwMzgtNzA2NC00ZGFmYzFlY2QwYjYifQ.DIIqgrU6J6dCp1sD7ibvl7YwoT_8WOMQlMKmZcZs4di9uK-dB5R_Z48NyQN0JUgWaeriHM1b9O1t0GOdt89cEDLnwgMb293CUiOTjCF8B00WTVm71Sy6e2h6rhzpyc5A4qNhSPxdPH1Utx3jYvrauOorri1O8VpVKxHPrsixY08fC6tx201uIgrbcfpl2MyTx1dFF1dlTDly6nKnxNqHJQndP1zxsPsBlFCm2fb-4DIEbgVpOUpPxaeqytYF-2keq1-fDjfTtQSTzgwBluiQxLYJT1jCmDQpzu6ZOFk4Z2qWEKazgwr84FVPqC3qXmxymz7H93Yi2AYMD7wg5cA2Ew'
-
+	'eyJraWQiOiI1Vzl6NmhXZmVNQjRhTXlUcGVNV01relk5UEJrakR1YjZsN1lLUTlVdmpnPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJiOTFhYjU5Yy1mMGYxLTcwNWYtNTk0Yi04NWY1N2Q5NjVjYmIiLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuYXAtc291dGhlYXN0LTEuYW1hem9uYXdzLmNvbVwvYXAtc291dGhlYXN0LTFfSUdMb3Fub2tNIiwiY2xpZW50X2lkIjoiNHA0MzBwMmRhbGEzYWxqbWloa2s3OWg4MmciLCJvcmlnaW5fanRpIjoiNGJjNDJmZWItODY0ZC00NTFhLTg1OWYtYjkyOGM2NzZlZjFlIiwiZXZlbnRfaWQiOiIwNTQxZDM4MC0zNDdjLTQ4ZjctYWUzMS04MDI5MjM4NzE2NTAiLCJ0b2tlbl91c2UiOiJhY2Nlc3MiLCJzY29wZSI6ImF3cy5jb2duaXRvLnNpZ25pbi51c2VyLmFkbWluIiwiYXV0aF90aW1lIjoxNzI1MjYyOTQ5LCJleHAiOjE3MjY5OTE3MjEsImlhdCI6MTcyNjkwNTMyMSwianRpIjoiZDI1OWVlZjktMWIwNS00NjljLWIxMWEtNzgzYWM2OTdjOTczIiwidXNlcm5hbWUiOiJiOTFhYjU5Yy1mMGYxLTcwNWYtNTk0Yi04NWY1N2Q5NjVjYmIifQ.bSnPsgn5u_6k3ho4j9wnCj3QQ64twt82F_y_vHvdlhRIS0tNfzZzOQ7SaNDyAttZF3p1lLllo0Jsdg5TobPL1YsJnvXOaHqN4GWPG7Toi_P8dX0poO-9LdvRKp2m27a2PuSNnuyt90uZoz0tMrrsBMYYUQ8zsGv0jFvuo-VJegMFYt9ojZPCaNa7cO34zME8t7ge_XkcKga2ekcxTvzOCovn8V90HDaIGN0YQV6e0gLNfvbrYwG1g0Ja1xX0J9Ix3N2NOvD7g7myUJOxXl1Lzi9wHC2Qx0Xivc-RFHuaZKrHPykgPlpQWf86fkqRgG319Kss15uNjocuqVn0KBPc7g'
 const MapInfoWindowContent: React.FC<{ data: { name: string; math: number } }> = ({ data }) => {
 	return (
 		<div className={`m-4 flex flex-col`}>
@@ -38,9 +37,75 @@ const MapInfoWindowContent: React.FC<{ data: { name: string; math: number } }> =
 }
 
 const PlaygroundPage = () => {
-	const { t } = useTranslation('common')
-	const { setExtent, showMapInfoWindow } = useMap()
-	const { setLayers, addLayer, getLayer, removeLayer } = useLayerStore()
+	const { setExtent, setMapInfoWindow } = useMap()
+	const { addLayer, getLayer, removeLayer } = useLayerStore()
+
+	const initialLayer = useMemo(() => {
+		return [
+			{
+				id: 'province-layer',
+				label: 'province',
+				color: '#1f75cb',
+				layer: new MVTLayer({
+					id: 'province-layer',
+					name: 'province',
+					loadOptions: {
+						fetch: {
+							headers: {
+								'content-type': 'application/json',
+								Authorization: `Bearer ${MOCK_TOKEN}`,
+							},
+						},
+					},
+					data: tileLayer.province,
+					filled: true,
+					lineWidthUnits: 'pixels',
+					pickable: true,
+					getFillColor() {
+						return [226, 226, 226, 100]
+					},
+					onClick: (info) => {
+						if (info.object) {
+							const mock = {
+								name: 'ทดสอบ',
+								math: Math.random(),
+							}
+							setMapInfoWindow({
+								positon: {
+									x: info.x,
+									y: info.y,
+								},
+								children: <MapInfoWindowContent data={mock} />,
+							})
+						}
+					},
+				}),
+			},
+			{
+				id: 'boundary-layer',
+				label: 'boundary',
+				color: '#f9d7dc',
+				layer: new MVTLayer({
+					id: 'boundary-layer',
+					name: 'province',
+					loadOptions: {
+						fetch: {
+							headers: {
+								'content-type': 'application/json',
+								Authorization: `Bearer ${MOCK_TOKEN}`,
+							},
+						},
+					},
+					data: tileLayer.boundaryYear(2024),
+					filled: true,
+					lineWidthUnits: 'pixels',
+					getFillColor() {
+						return [226, 226, 226, 100]
+					},
+				}),
+			},
+		]
+	}, [])
 
 	const handleSetExtent = useCallback(() => {
 		setExtent([100.5, 13.7, 100.7, 13.9])
@@ -79,138 +144,6 @@ const PlaygroundPage = () => {
 		removeLayer(TEST_LAYER_ID)
 	}, [removeLayer])
 
-	const initTileLayer = useCallback(() => {
-		const layerProvince = tileLayer.province
-		const layerBoundary = tileLayer.boundaryYear(2024)
-		setLayers([
-			new MVTLayer({
-				id: 'province',
-				name: 'province',
-				loadOptions: {
-					fetch: {
-						headers: {
-							'content-type': 'application/json',
-							Authorization: `Bearer ${MOCK_TOKEN}`,
-						},
-					},
-				},
-				data: layerProvince,
-				filled: true,
-				lineWidthUnits: 'pixels',
-				pickable: true,
-				getFillColor() {
-					return [226, 226, 226, 100]
-				},
-				onClick: (info) => {
-					if (info.object) {
-						const mock = {
-							name: 'ทดสอบ',
-							math: Math.random(),
-						}
-						showMapInfoWindow({
-							positon: {
-								x: info.x,
-								y: info.y,
-							},
-							children: <MapInfoWindowContent data={mock} />,
-						})
-					}
-				},
-			}),
-		])
-	}, [setLayers])
-
-	useEffect(() => {
-		// initTileLayer()
-	}, [])
-
-	const getInitialLayer = (): MapLayer[] => {
-		const layerProvince = tileLayer.province
-		const layer = new MVTLayer({
-			id: 'muii-test-layer',
-			name: 'province',
-			loadOptions: {
-				fetch: {
-					headers: {
-						'content-type': 'application/json',
-						Authorization: `Bearer ${MOCK_TOKEN}`,
-					},
-				},
-			},
-			data: layerProvince,
-			filled: true,
-			lineWidthUnits: 'pixels',
-			pickable: true,
-			getFillColor() {
-				return [226, 226, 226, 100]
-			},
-			onClick: (info) => {
-				if (info.object) {
-					const mock = {
-						name: 'ทดสอบ',
-						math: Math.random(),
-					}
-					showMapInfoWindow({
-						positon: {
-							x: info.x,
-							y: info.y,
-						},
-						children: <MapInfoWindowContent data={mock} />,
-					})
-				}
-			},
-		})
-		const layerBoundary = tileLayer.boundaryYear(2024)
-		const layer2 = new MVTLayer({
-			id: 'muii-test2-layer',
-			name: 'province',
-			loadOptions: {
-				fetch: {
-					headers: {
-						'content-type': 'application/json',
-						Authorization: `Bearer ${MOCK_TOKEN}`,
-					},
-				},
-			},
-			data: layerBoundary,
-			filled: true,
-			lineWidthUnits: 'pixels',
-			pickable: true,
-			getFillColor() {
-				return [226, 226, 226, 100]
-			},
-			onClick: (info) => {
-				if (info.object) {
-					const mock = {
-						name: 'ทดสอบ',
-						math: Math.random(),
-					}
-					showMapInfoWindow({
-						positon: {
-							x: info.x,
-							y: info.y,
-						},
-						children: <MapInfoWindowContent data={mock} />,
-					})
-				}
-			},
-		})
-		return [
-			{
-				id: 'muii-test-layer',
-				label: 'muii-test-layer',
-				color: '#000000',
-				layer,
-			},
-			{
-				id: 'muii-test2-layer',
-				label: 'muii-test2-layer',
-				color: '#000000',
-				layer: layer2,
-			},
-		]
-	}
-
 	return (
 		<PageContainer>
 			<Container className='flex-1 p-2'>
@@ -228,7 +161,7 @@ const PlaygroundPage = () => {
 					</div>
 					<div className='flex flex-1 bg-white p-2'>
 						<div className='flex flex-1 flex-row'>
-							<MapView initialLayer={getInitialLayer()} />
+							<MapView initialLayer={initialLayer} />
 							<div className='w-[440px]'></div>
 						</div>
 					</div>

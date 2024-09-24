@@ -30,7 +30,9 @@ function MyApp({ Component, pageProps }: AppProps<{ session: Session } & SSRConf
 					<PageManager>
 						<IdentityProvider>
 							<MainLayout>
-								<Component {...pageProps} />
+								<MapProvider>
+									<Component {...pageProps} />
+								</MapProvider>
 							</MainLayout>
 						</IdentityProvider>
 					</PageManager>

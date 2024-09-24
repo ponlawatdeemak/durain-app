@@ -1,4 +1,8 @@
 import { Layer } from '@deck.gl/core'
+export interface MapInterface {
+	viewState?: MapViewState
+	onViewStateChange?: (viewState: MapViewState) => void
+}
 
 export interface MapViewState {
 	longitude: number
@@ -13,8 +17,8 @@ export interface BaseMap {
 }
 
 export interface LatLng {
-	lat: number
-	lng: number
+	latitude: number
+	longitude: number
 }
 
 export interface MapInfoWindow {
@@ -39,8 +43,8 @@ export interface MapLegend {
 }
 
 export enum MapType {
-	Google,
 	Libre,
+	Google,
 }
 
 export enum BasemapType {
