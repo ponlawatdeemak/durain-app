@@ -87,5 +87,12 @@
 	"area": "Area",
 	"areaUnit": "Area Unit",
 	"durianPlantationData": "Durian Plantation Data",
-	"plantationArea": "Plantation Area"
+	"plantationArea": "Plantation Area",
+
+    "map":{
+        "mapType":"Map Type",
+        "street":"Street",
+        "satellite":"Satellite",
+        "hybrid":"Hybrid"
+    }
 }
