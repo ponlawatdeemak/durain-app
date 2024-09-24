@@ -41,6 +41,12 @@ export interface availabilityDurianDtoOut {
     yearName: ResponseLanguage
 }
 
+export interface locationExtentDtoOut {
+    admCode: number
+    admName: ResponseLanguage
+    extent: [number,number,number,number]
+}
+
 interface availableAdm {
     admCode: number
     admName : ResponseLanguage

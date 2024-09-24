@@ -23,7 +23,7 @@ const AboutMain: React.FC = ({}) => {
 					isDesktop ? 'mb-[24px]' : 'mb-4 justify-center',
 				)}
 			>
-				<div className={classNames('[&>svg]:fill-[#0C5D52]', isDesktop ? '' : '')}>
+				<div className={classNames('[&>svg]:fill-[#0C5D52]')}>
 					<AbountIcon />
 				</div>
 				<p className='text-2xl font-light text-[#0C5D52]'>{t('menuAbout')}</p>
@@ -36,12 +36,12 @@ const AboutMain: React.FC = ({}) => {
 			>
 				<div
 					className={classNames(
-						'flex flex-col rounded-lg bg-[#BFD6CC] p-[48px]',
-						isDesktop ? 'h-full flex-grow' : '',
+						'flex flex-col rounded-lg bg-[#BFD6CC] p-[48px] [&&::-webkit-scrollbar-thumb]:rounded [&&::-webkit-scrollbar-thumb]:bg-[#307A59] [&::-webkit-scrollbar-track]:rounded [&::-webkit-scrollbar]:w-[4px]',
+						isDesktop ? 'h-full flex-grow overflow-y-auto' : '',
 					)}
 				>
 					<iframe
-						className='aspect-video h-[421px] w-full'
+						className='aspect-video max-h-[421px] w-full max-w-[749px] self-center'
 						src='https://www.youtube.com/embed/hObI730a-0A?si=2a6GpQzkjOQc7xy5'
 						title='YouTube video player'
 						allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
@@ -53,12 +53,7 @@ const AboutMain: React.FC = ({}) => {
 							? 'Durian Crop Area Analysis System Using Satellite Technology and Artificial Intelligence'
 							: 'ระบบวิเคราะห์พื้นที่ปลูกทุเรียนด้วยเทคโนโลยีดาวเทียมและปัญญาประดิษฐ์'}
 					</div>
-					<div
-						className={classNames(
-							'flex w-full flex-grow whitespace-pre-wrap pr-0 text-sm font-light [&&::-webkit-scrollbar-thumb]:rounded [&&::-webkit-scrollbar-thumb]:bg-[#307A59] [&::-webkit-scrollbar-track]:rounded [&::-webkit-scrollbar-track]:bg-[#FFFFFF] [&::-webkit-scrollbar]:w-[5px]',
-							isDesktop ? 'overflow-y-auto' : '',
-						)}
-					>
+					<div className={classNames('flex w-full flex-grow whitespace-pre-wrap pr-0 text-sm font-light')}>
 						{language === Languages.EN
 							? `Durian is the most economically valuable export fruit in Thailand. According to an assessment by Krungthai COMPASS, the Thai durian export market to China is expected to continue expanding, with a compound annual growth rate (CAGR) of 19.3% during the period from 2022 to 2030. The export value is projected to increase to 22.162 billion USD, or approximately 700 billion THB, in 2030, up from the current level of around 120 billion THB.
 

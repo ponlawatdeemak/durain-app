@@ -44,7 +44,7 @@ const MapTools: React.FC<MapToolsProps> = ({
 }) => {
 	const { t } = useTranslation()
 	const { layers, getLayer, getLayers, setLayers, removeLayer } = useLayerStore()
-	const [basemap, setBasemap] = useState<BasemapType | null>(null)
+	const [basemap, setBasemap] = useState<BasemapType | null>(currentBaseMap ?? null)
 	const [anchorBasemap, setAnchorBasemap] = useState<HTMLButtonElement | null>(null)
 	const [anchorLegend, setAnchorLegend] = useState<HTMLButtonElement | null>(null)
 
@@ -169,7 +169,20 @@ const MapTools: React.FC<MapToolsProps> = ({
 						alt={`${basemapList[currentBaseMap].label}`}
 					/>
 				</IconButton>
-				<Popover open={Boolean(anchorBasemap)} anchorEl={anchorBasemap} onClose={() => setAnchorBasemap(null)}>
+				<Popover
+					open={Boolean(anchorBasemap)}
+					anchorEl={anchorBasemap}
+					anchorOrigin={{
+						vertical: 'bottom',
+						horizontal: 'left',
+					}}
+					transformOrigin={{
+						vertical: 'bottom',
+						horizontal: 'right',
+					}}
+					elevation={0}
+					onClose={() => setAnchorBasemap(null)}
+				>
 					<Box className='flex flex-col bg-white p-2 drop-shadow-md'>
 						<Typography
 							sx={{ display: { xs: 'none', md: 'inline-block' } }}
@@ -229,26 +242,28 @@ const MapTools: React.FC<MapToolsProps> = ({
 						}}
 					>
 						<Box className='flex flex-col gap-[6px] rounded-[4px] bg-white px-[16px] py-[10px] drop-shadow-md'>
-							{layerList.slice(1).map((item, index) => {
-								return (
-									<div key={index} className='flex items-center justify-between gap-[14px]'>
-										<div className='flex gap-[8px]'>
-											<div
-												className={`h-[23px] w-[23px] rounded-[2px]`}
-												style={{ backgroundColor: item.color }}
-											></div>
-											<p className='text-[14px] font-light'>
-												{t('overview:ageOfDurianTrees')} {item.label}
-											</p>
+							{layerList.map((item, index) => {
+								if (item.id !== 'province') {
+									return (
+										<div key={index} className='flex items-center justify-between gap-[14px]'>
+											<div className='flex gap-[8px]'>
+												<div
+													className={`h-[23px] w-[23px] rounded-[2px]`}
+													style={{ backgroundColor: item.color }}
+												></div>
+												<p className='text-[14px] font-light'>
+													{t('overview:ageOfDurianTrees')} {item.label}
+												</p>
+											</div>
+											<ToggleSwitch
+												defaultChecked
+												onChange={() => {
+													onToggleLayer(item.id)
+												}}
+											/>
 										</div>
-										<ToggleSwitch
-											defaultChecked
-											onChange={() => {
-												onToggleLayer(item.id)
-											}}
-										/>
-									</div>
-								)
+									)
+								}
 							})}
 						</Box>
 					</Popover>
