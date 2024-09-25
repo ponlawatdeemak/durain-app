@@ -10,9 +10,10 @@ export enum AppPath {
 export const allowGuestPages = [AppPath.Overview, AppPath.About, AppPath.Playground]
 
 export const tileLayer = {
-	province: 'https://tileserver.cropinsurance-dev.thaicom.io/province/tiles.json',
 	boundaryYear: (year: string | number) =>
 		`https://tileserver.cropinsurance-dev.thaicom.io/boundary_${year}/tiles.json`,
+
+	province: `${process.env.NEXT_PUBLIC_API_HOSTNAME_TILE}/province/tiles.json`,
 }
 
 export const layerIdConfig = {
