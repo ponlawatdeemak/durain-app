@@ -21,6 +21,7 @@ import { MapLayer } from '@/components/common/map/interface/map.jsx'
 import { useMap } from '@/components/common/map/context/map'
 import useLayerStore from '@/components/common/map/store/map'
 import { useQuery } from '@tanstack/react-query'
+import { apiAccessToken } from '@/api/core'
 
 const OverviewMain: React.FC = () => {
 	const { t, i18n } = useTranslation()
@@ -73,11 +74,6 @@ const OverviewMain: React.FC = () => {
 		},
 	}))
 
-	const TEST_LAYER_ID = 'test-layer'
-	const MOCK_TOKEN =
-		'eyJraWQiOiJIdkZFUFFFN0NrTXplNkZiOVFmVlwvQXlmNXZhOFM1UU1oS0o1K3AzRzBjST0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJmZWIyYjg3MS1lYjM1LTQyZjUtODU0Yy00YTAyYjAwM2ExMzgiLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuYXAtc291dGhlYXN0LTEuYW1hem9uYXdzLmNvbVwvYXAtc291dGhlYXN0LTFfTkFFSU5DaWU4IiwiY2xpZW50X2lkIjoiN3F2ZDdtanVsOHZxa2pyNW5qaWpxZzV1YjUiLCJvcmlnaW5fanRpIjoiYTlmZDdmZTktZTZhMy00ZGNhLTkzNzAtNDFiZWY5MTk2YjlmIiwiZXZlbnRfaWQiOiI3NzM0ZDk3Ni00MDQzLTRkYzQtYjQzOS1lMzEzYmNhMjBlOGQiLCJ0b2tlbl91c2UiOiJhY2Nlc3MiLCJzY29wZSI6ImF3cy5jb2duaXRvLnNpZ25pbi51c2VyLmFkbWluIiwiYXV0aF90aW1lIjoxNzI3MDg0NzEyLCJleHAiOjE3MjcxNzExMTIsImlhdCI6MTcyNzA4NDcxMiwianRpIjoiNGVmYTBiNTktMmUxMS00MzEzLWFlMDItNWNiZDEwMWFiZTY1IiwidXNlcm5hbWUiOiJzdXBlcmFkbWluLm1hcGJvc3MifQ.b4r9Mp8jviKQHlbdb_6KoYBP9aA23YO5PU07IxdqWQvncAAeRRC0dWK79PQ6IvYkX_w39rdJfo3rPBzOCL-2OHD3tbRK__Z10LFQLF46NEAIgRSod9U-vPEQQPvLc24WpXPfOeZQj5vqmAOzUW8j7r_4DJqE_NmbolTPWGGLQ4AoA67U6O_NYZXSlsPq4Fzg2JSs1cJxIiTavkxUNeEyEdgykxetNaTI0Cc_EqSZZLet9k4-IQ56TfdJf57cJzW8eLwci3Nh2RBUN7RCk079BqS_gOt9RHhJPHn8Q0uboWpA0oZ2REX8O0QIosRIHTgcQxnz6fyGm4fOs3hAPdq2iw'
-	const PROVINCE_TOKEN =
-		'eyJraWQiOiI1Vzl6NmhXZmVNQjRhTXlUcGVNV01relk5UEJrakR1YjZsN1lLUTlVdmpnPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJiOTFhYjU5Yy1mMGYxLTcwNWYtNTk0Yi04NWY1N2Q5NjVjYmIiLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuYXAtc291dGhlYXN0LTEuYW1hem9uYXdzLmNvbVwvYXAtc291dGhlYXN0LTFfSUdMb3Fub2tNIiwiY2xpZW50X2lkIjoiNHA0MzBwMmRhbGEzYWxqbWloa2s3OWg4MmciLCJvcmlnaW5fanRpIjoiOGU3ZGJiOTAtMzkzMS00MGVlLTk2MjktNTNlZTM1Yjg5NzFkIiwiZXZlbnRfaWQiOiI2MmQ5NWQ2ZC1kNTM4LTRkZjAtOWQ3Yi1jZGNhYWJjMWZhYTciLCJ0b2tlbl91c2UiOiJhY2Nlc3MiLCJzY29wZSI6ImF3cy5jb2duaXRvLnNpZ25pbi51c2VyLmFkbWluIiwiYXV0aF90aW1lIjoxNzI3MDYzNzgxLCJleHAiOjE3MjcxNTAxODEsImlhdCI6MTcyNzA2Mzc4MiwianRpIjoiNjk4NmRmYjAtZDg4ZC00ZjJlLTlmMmEtNWE3Y2U2NzliYzUyIiwidXNlcm5hbWUiOiJiOTFhYjU5Yy1mMGYxLTcwNWYtNTk0Yi04NWY1N2Q5NjVjYmIifQ.cR7gXpUXOhoP7gDjiUk1TV2M4qpE7HPLeZ8_L8vaGyv2J0RWy_bwg7653XHvsZ4WynNs_9G6pENHN_hQ6TSMdPOWM_ROJBetvUgDANjq-PAwbUMPmE0V-Brlfv5OjQBRLoFpWkdQW1cyubbTPYuMiQ3hFAPQJsYXoOoE_2Fs_mkQ_dsUUmeRRtH3_8RhK7SNWm_dQyMu8RCA_g-T0v88WCk6kOfq3W4FCZuoFP5N0HP6mH4NEsr7S_1BVGj_iku9Wg5iOo2LsBMo4T6OS3E_84-vw0hY50AX-nfLKQgpGMOIf2VH07wWSfEBshMXt9rXjeCttsE7SOvSk0EZJjwe1Q'
 	const MapInfoWindowContent: React.FC<{ data: { name: string; math: number } }> = ({ data }) => {
 		return (
 			<div className={`m-4 flex flex-col`}>
@@ -152,7 +148,8 @@ const OverviewMain: React.FC = () => {
 					fetch: {
 						headers: {
 							'content-type': 'application/json',
-							Authorization: `Bearer ${MOCK_TOKEN}`,
+							//Authorization: `Bearer ${MOCK_TOKEN}`,
+							Authorization: `Bearer ${apiAccessToken}`,
 						},
 					},
 				},
@@ -203,7 +200,7 @@ const OverviewMain: React.FC = () => {
 				fetch: {
 					headers: {
 						'content-type': 'application/json',
-						Authorization: `Bearer ${PROVINCE_TOKEN}`,
+						Authorization: `Bearer ${apiAccessToken}`,
 					},
 				},
 			},
