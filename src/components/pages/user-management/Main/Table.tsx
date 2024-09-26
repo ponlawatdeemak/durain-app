@@ -24,7 +24,7 @@ import {
 	CircularProgress,
 } from '@mui/material'
 import { visuallyHidden } from '@mui/utils'
-import { SortType } from '@/enum'
+import { SortType, UserRole } from '@/enum'
 import um from '@/api/um'
 import { DeleteProfileDtoIn, GetSearchUMDtoIn, PatchStatusDtoIn } from '@/api/um/dto-in.dto'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -244,7 +244,11 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 	const handleSelectAllClick = React.useCallback(
 		(event: React.ChangeEvent<HTMLInputElement>) => {
 			if (event.target.checked) {
-				const newSelected = tableData.filter((n) => n.id !== session?.user.id).map((n) => n.id)
+				const newSelected = tableData
+					.filter((n) => {
+						return n.id !== session?.user.id && n.role !== session?.user.role
+					})
+					.map((n) => n.id)
 				setSelected(newSelected)
 			} else {
 				setSelected([])
@@ -261,10 +265,10 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 	)
 
 	const handleClick = React.useCallback(
-		(event: React.MouseEvent<unknown>, id: string) => {
+		(event: React.MouseEvent<unknown>, id: string, role: UserRole) => {
 			const selectedIndex = selected.indexOf(id)
 			let newSelected: readonly string[] = []
-			if (id === session?.user.id) {
+			if (id === session?.user.id || session?.user.role === role) {
 				return
 			}
 			if (selectedIndex === -1) {
@@ -573,7 +577,11 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 													total === 0
 														? false
 														: selected.length ===
-															tableData.filter((n) => n.id !== session?.user.id).length
+															tableData.filter(
+																(n) =>
+																	n.id !== session?.user.id &&
+																	n.role !== session?.user.role,
+															).length
 												}
 												disabled={total === 0}
 												onChange={handleSelectAllClick}
@@ -620,7 +628,7 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 										return (
 											<TableRow
 												hover
-												onClick={(event) => handleClick(event, row.id)}
+												onClick={(event) => handleClick(event, row.id, row.role as UserRole)}
 												role='checkbox'
 												aria-checked={isItemSelected}
 												tabIndex={-1}
@@ -635,7 +643,10 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 														inputProps={{
 															'aria-labelledby': labelId,
 														}}
-														disabled={session?.user.id === row.id}
+														disabled={
+															session?.user.id === row.id ||
+															session?.user.role === row.role
+														}
 													/>
 												</TableCell>
 												<TableCell component='th' id={labelId} scope='row' padding='none'>
@@ -696,11 +707,20 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 																	setCurrentEditId(row.id)
 																	setIsEditOpen(true)
 																}}
+																disabled={
+																	session?.user.role === row.role &&
+																	session?.user.id !== row.id
+																}
 															>
 																<Icon
 																	path={mdiPencilOutline}
 																	size={1}
-																	color='var(--black-color)'
+																	color={
+																		session?.user.role === row.role &&
+																		session?.user.id !== row.id
+																			? '#c2c5cc'
+																			: 'var(--black-color)'
+																	}
 																/>
 															</IconButton>
 															<IconButton
@@ -710,13 +730,17 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 																	setCurrentDeleteId(row.id)
 																	setIsConfirmDeleteOneOpen(true)
 																}}
-																disabled={session?.user.id === row.id}
+																disabled={
+																	session?.user.id === row.id ||
+																	session?.user.role === row.role
+																}
 															>
 																<Icon
 																	path={mdiTrashCanOutline}
 																	size={1}
 																	color={
-																		session?.user.id === row.id
+																		session?.user.id === row.id ||
+																		session?.user.role === row.role
 																			? '#c2c5cc'
 																			: 'var(--error-color-1)'
 																	}
