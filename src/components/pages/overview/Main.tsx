@@ -12,7 +12,6 @@ import Tooltip, { tooltipClasses } from '@mui/material/Tooltip'
 import useResponsive from '@/hook/responsive'
 import classNames from 'classnames'
 import Chart from './Chart'
-import { Language } from '@mui/icons-material'
 import { Languages } from '@/enum'
 import MapView from '@/components/common/map/MapView'
 import { MVTLayer } from '@deck.gl/geo-layers'
@@ -20,8 +19,8 @@ import { tileLayer } from '@/config/app.config'
 import { MapLayer } from '@/components/common/map/interface/map.jsx'
 import { useMap } from '@/components/common/map/context/map'
 import useLayerStore from '@/components/common/map/store/map'
-import { useQuery } from '@tanstack/react-query'
 import { apiAccessToken } from '@/api/core'
+import hexRgb from 'hex-rgb'
 
 const OverviewMain: React.FC = () => {
 	const { t, i18n } = useTranslation()
@@ -83,62 +82,6 @@ const OverviewMain: React.FC = () => {
 		)
 	}
 
-	// const handleSetExtent = useCallback(() => {
-	// 	setExtent([100.5, 13.7, 100.7, 13.9])
-	// }, [setExtent])
-
-	// const handleAddLayer = useCallback(() => {
-	// 	const layer = getLayer(TEST_LAYER_ID)
-	// 	if (!layer) {
-	// 		addLayer(layer)
-	// 	}
-	// }, [getLayer, addLayer])
-
-	// const handleRemoveLayer = useCallback(() => {
-	// 	removeLayer(TEST_LAYER_ID)
-	// }, [removeLayer])
-
-	// const initTileLayer = useCallback(() => {
-	// 	const layerProvince = tileLayer.province
-	// 	const layerBoundary = tileLayer.boundaryYear(2024)
-	// 	setLayers([
-	// 		new MVTLayer({
-	// 			id: 'province',
-	// 			name: 'province',
-	// 			loadOptions: {
-	// 				fetch: {
-	// 					headers: {
-	// 						'content-type': 'application/json',
-	// 						Authorization: `Bearer ${MOCK_TOKEN}`,
-	// 					},
-	// 				},
-	// 			},
-	// 			data: layerProvince,
-	// 			filled: true,
-	// 			lineWidthUnits: 'pixels',
-	// 			pickable: true,
-	// 			getFillColor(d) {
-	// 				return [226, 226, 226, 100]
-	// 			},
-	// 			onClick: (info) => {
-	// 				if (info.object) {
-	// 					const mock = {
-	// 						name: 'ทดสอบ',
-	// 						math: Math.random(),
-	// 					}
-	// 					setMapInfoWindow({
-	// 						positon: {
-	// 							x: info.x,
-	// 							y: info.y,
-	// 						},
-	// 						children: <MapInfoWindowContent data={mock} />,
-	// 					})
-	// 				}
-	// 			},
-	// 		}),
-	// 	])
-	// }, [setLayers])
-
 	const layers = useMemo(() => {
 		return overviewData?.overall.ageClass?.map((item) => {
 			return new MVTLayer({
@@ -153,13 +96,55 @@ const OverviewMain: React.FC = () => {
 						},
 					},
 				},
-				data: `${process.env.NEXT_PUBLIC_API_HOSTNAME_TILE}/durian_2020/tiles.json`,
+				data: `${process.env.NEXT_PUBLIC_API_HOSTNAME_TILE}/durian_${year}/tiles.json`,
 				filled: true,
 				lineWidthUnits: 'pixels',
 				pickable: true,
 				getFillColor(d) {
-					// console.log(d)
-					return [226, 226, 226, 100]
+					if (admCode === 0) {
+						if (item.id === d.properties.ageClass_id) {
+							const array = hexRgb(item.color, { format: 'array' })
+							array[3] = 255
+							return array
+						} else {
+							return [0, 0, 0, 0]
+						}
+					} else {
+						if (String(admCode) === String(d.properties.admCode).substring(0, 2)) {
+							if (item.id === d.properties.ageClass_id) {
+								const array = hexRgb(item.color, { format: 'array' })
+								array[3] = 255
+								return array
+							} else {
+								return [0, 0, 0, 0]
+							}
+						} else {
+							return [0, 0, 0, 0]
+						}
+					}
+				},
+				getLineColor(d) {
+					if (admCode === 0) {
+						if (item.id === d.properties.ageClass_id) {
+							const array = hexRgb(item.color, { format: 'array' })
+							array[3] = 255
+							return array
+						} else {
+							return [0, 0, 0, 0]
+						}
+					} else {
+						if (admCode === d.properties.admCode.substring(0, 2)) {
+							if (item.id === d.properties.ageClass_id) {
+								const array = hexRgb(item.color, { format: 'array' })
+								array[3] = 255
+								return array
+							} else {
+								return [0, 0, 0, 0]
+							}
+						} else {
+							return [0, 0, 0, 0]
+						}
+					}
 				},
 				onClick: (info) => {
 					if (info.object) {
@@ -176,9 +161,14 @@ const OverviewMain: React.FC = () => {
 						})
 					}
 				},
+				updateTriggers: {
+					getFillColor: admCode,
+					getLineColor: admCode,
+					getLineWidth: admCode,
+				},
 			})
 		})
-	}, [overviewData, language, setMapInfoWindow])
+	}, [overviewData, language, setMapInfoWindow, year, admCode])
 
 	const mapLayers: MapLayer[] | undefined = useMemo(() => {
 		return overviewData?.overall.ageClass?.map((item, index) => {
@@ -208,8 +198,32 @@ const OverviewMain: React.FC = () => {
 			filled: true,
 			lineWidthUnits: 'pixels',
 			pickable: true,
-			getFillColor() {
-				return [226, 226, 226, 100]
+			getFillColor(d) {
+				if (admCode === 0) {
+					return [226, 226, 226, 100]
+				} else {
+					if (admCode === d.properties.provinceCode) {
+						return [226, 226, 226, 100]
+					} else {
+						return [0, 0, 0, 0]
+					}
+				}
+			},
+			getLineColor(d: any) {
+				if (admCode === 0) {
+					return [0, 0, 0, 255]
+				} else {
+					if (admCode === d.properties.provinceCode) {
+						return [0, 0, 0, 255]
+					} else {
+						return [0, 0, 0, 0]
+					}
+				}
+			},
+			updateTriggers: {
+				getFillColor: admCode,
+				getLineColor: admCode,
+				getLineWidth: admCode,
 			},
 		})
 
@@ -222,15 +236,15 @@ const OverviewMain: React.FC = () => {
 			},
 			...(mapLayers ?? []),
 		]
-	}, [mapLayers])
+	}, [mapLayers, admCode])
 
 	useEffect(() => {
 		service.overview
 			.availabilityDurian()
 			.then((res) => {
 				setAvailabilityData(res.data)
-				if (!year) {
-					setYear(res.data![res.data!.length - 1].year)
+				if (!year && res.data) {
+					setYear(res.data[0].year)
 				}
 			})
 			.catch((error) => console.log(error))
@@ -240,7 +254,6 @@ const OverviewMain: React.FC = () => {
 		service.overview
 			.overviewSummary({ year: year, admCode: admCode === 0 ? undefined : admCode })
 			.then((res) => {
-				console.log('overview : ', res.data)
 				setOverviewData(res.data)
 			})
 			.catch((error) => console.log(error))
@@ -255,6 +268,20 @@ const OverviewMain: React.FC = () => {
 			setExtent([97.3758964376, 5.69138418215, 105.589038527, 20.4178496363])
 		}
 	}, [year, admCode, setExtent])
+
+	useEffect(() => {
+		if (layers && overviewData) {
+			overviewData?.overall.ageClass?.forEach((item) => {
+				const layer = getLayer(item.id)
+				if (layer) {
+					removeLayer(item.id)
+				}
+			})
+
+			const province = getInitialLayer().find((item) => item.id === 'province')!.layer
+			setLayers([province, ...(layers as any[])])
+		}
+	}, [admCode, getInitialLayer, getLayer, layers, overviewData, removeLayer, setLayers, year])
 
 	return (
 		<div
