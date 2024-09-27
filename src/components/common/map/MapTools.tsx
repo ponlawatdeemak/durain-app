@@ -10,14 +10,13 @@ import {
 	styled,
 	Switch,
 } from '@mui/material'
-import { mdiLayersOutline, mdiMapMarker, mdiMapMarkerOutline, mdiMinus, mdiPlus, mdiRulerSquareCompass } from '@mdi/js'
-import Icon from '@mdi/react'
 import { useTranslation } from 'next-i18next'
 import { BaseMap, BasemapType, MapLayer } from './interface/map'
 import useLayerStore from './store/map'
 import { layerIdConfig } from '@/config/app.config'
 import { Layer } from '@deck.gl/core'
 import { MapLayerIcon, MapMeasureIcon, MapPinIcon, MapZoomInIcon, MapZoomOutIcon } from '@/components/svg/MenuIcon'
+import classNames from 'classnames'
 
 const basemapList: BaseMap[] = [
 	{ value: BasemapType.CartoLight, image: '/images/map/basemap_street.png', label: 'map.street' },
@@ -47,6 +46,11 @@ const MapTools: React.FC<MapToolsProps> = ({
 	const [basemap, setBasemap] = useState<BasemapType | null>(currentBaseMap ?? null)
 	const [anchorBasemap, setAnchorBasemap] = useState<HTMLButtonElement | null>(null)
 	const [anchorLegend, setAnchorLegend] = useState<HTMLButtonElement | null>(null)
+	const [switchState, setSwichState] = useState(
+		layerList!.map((item) => {
+			return { id: item.id, isOn: true }
+		}),
+	)
 
 	const currentLocationIsActive = useMemo(() => !!getLayer(layerIdConfig.toolCurrentLocation), [layers, getLayer])
 
@@ -62,14 +66,17 @@ const MapTools: React.FC<MapToolsProps> = ({
 					setLayers(updatedLayers as Layer[])
 				}
 			}
+			const state = [...switchState]
+			const objIndex = state.findIndex((item) => item.id === layerId)
+			state[objIndex].isOn = !switchState[objIndex].isOn
+			setSwichState([...state])
 		},
-		[layerList, getLayer, getLayers, setLayers, removeLayer],
+		[layerList, getLayer, getLayers, setLayers, removeLayer, switchState],
 	)
 
 	const handleBasemapChanged = useCallback(
 		(basemap: BasemapType) => {
 			if (basemap !== null) {
-				console.log(basemap)
 				setBasemap(basemap)
 				onBasemapChanged?.(basemap)
 			}
@@ -158,7 +165,7 @@ const MapTools: React.FC<MapToolsProps> = ({
 			</Box>
 
 			{/* Basemap Selector */}
-			<Box className='absolute bottom-2 right-2 z-10'>
+			<Box className='absolute bottom-10 right-1 z-10'>
 				<IconButton
 					onClick={(event) => setAnchorBasemap(event.currentTarget)}
 					className='box-shadow rounded-lg bg-white'
@@ -267,6 +274,7 @@ const MapTools: React.FC<MapToolsProps> = ({
 											</div>
 											<ToggleSwitch
 												defaultChecked
+												checked={switchState!.find((sw) => sw.id === item.id)!.isOn}
 												onChange={() => {
 													onToggleLayer(item.id)
 												}}
