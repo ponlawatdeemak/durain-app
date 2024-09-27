@@ -20,9 +20,9 @@ import { Layer } from '@deck.gl/core'
 import { MapLayerIcon, MapMeasureIcon, MapPinIcon, MapZoomInIcon, MapZoomOutIcon } from '@/components/svg/MenuIcon'
 
 const basemapList: BaseMap[] = [
-	{ value: BasemapType.CartoLight, image: '/images/map/basemap_bright.png', label: 'map.street' },
-	{ value: BasemapType.CartoDark, image: '/images/map/basemap_satellite.png', label: 'map.satellite' },
-	{ value: BasemapType.Google, image: '/images/map/basemap_satellite_hybrid.png', label: 'map.hybrid' },
+	{ value: BasemapType.CartoLight, image: '/images/map/basemap_street.png', label: 'map.street' },
+	{ value: BasemapType.CartoDark, image: '/images/map/basemap_dark.png', label: 'map.satellite' },
+	{ value: BasemapType.Google, image: '/images/map/basemap_hybrid.png', label: 'map.hybrid' },
 ]
 
 interface MapToolsProps {
@@ -186,9 +186,9 @@ const MapTools: React.FC<MapToolsProps> = ({
 					<Box className='flex flex-col bg-white p-2 drop-shadow-md'>
 						<Typography
 							sx={{ display: { xs: 'none', md: 'inline-block' } }}
-							mb={1}
+							mb='4px'
 							variant='body2'
-							className='font-bold'
+							className='pl-2 !font-bold'
 						>
 							{t('map.mapType')}
 						</Typography>
@@ -196,16 +196,26 @@ const MapTools: React.FC<MapToolsProps> = ({
 							size='small'
 							exclusive
 							color='primary'
+							className='[&&>.Mui-selected]:bg-white [&_.MuiToggleButtonGroup-grouped]:border-none'
 							value={basemap}
 							onChange={(_, value) => handleBasemapChanged(value)}
 						>
 							{basemapList.map((item, index) => (
 								<ToggleButton
 									key={index}
-									className='flex flex-col rounded-none border-none'
+									className='[&]:hover:bg-gray-light flex flex-col rounded-none border-none'
 									value={item.value}
 								>
-									<img src={item.image} className='h-[60px] w-[60px]' alt={`${item.label}`} />
+									<img
+										src={item.image}
+										className={classNames(
+											'h-[60px] w-[60px] rounded',
+											item.value === basemapList[currentBaseMap].value
+												? 'border-[1px] border-primary'
+												: '',
+										)}
+										alt={`${item.label}`}
+									/>
 									<Typography variant='body2' align='center' className='text-sm'>
 										{t(`${item.label}`)}
 									</Typography>
