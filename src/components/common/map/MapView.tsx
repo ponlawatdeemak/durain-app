@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import classNames from 'classnames'
 import { BasemapType, MapType, MapInfoWindow, MapLayer, LatLng, MapViewState } from './interface/map'
 import MapGoogle from './MapGoogle'
@@ -14,6 +14,8 @@ import { BASEMAP } from '@deck.gl/carto'
 import { IconLayer } from '@deck.gl/layers'
 import { MVTLayer } from '@deck.gl/geo-layers'
 import { Layer } from '@deck.gl/core'
+import { createGoogleStyle } from '@/utils/google'
+// import { createGoogleStyle } from '@/utils/google'
 
 const CURRENT_LOCATION_ZOOM = 14
 const DEFAULT = {
@@ -38,6 +40,18 @@ export default function MapView({ className = '', initialLayer }: MapViewProps) 
 	const [viewState, setViewState] = useState<MapViewState>(DEFAULT.viewState)
 	const [basemap, setBasemap] = useState(DEFAULT.basemap)
 	const [currentLocation, setCurrentLocation] = useState<LatLng | null>(null)
+
+	const mapStyle = useMemo(() => {
+		if (basemap === BasemapType.CartoLight) {
+			return BASEMAP.VOYAGER
+		} else if (basemap === BasemapType.CartoDark) {
+			return BASEMAP.DARK_MATTER
+		} else if (basemap === BasemapType.Google) {
+			return createGoogleStyle('google', 'satellite', process.env.GOOGLE_MAPS_API_KEY)
+		} else {
+			return BASEMAP.VOYAGER
+		}
+	}, [basemap])
 
 	useEffect(() => {
 		return () => {
@@ -107,15 +121,11 @@ export default function MapView({ className = '', initialLayer }: MapViewProps) 
 				onGetLocation={onGetLocation}
 				currentBaseMap={basemap}
 			/>
-			{mapType === MapType.Libre ? (
-				<MapLibre
-					viewState={viewState}
-					mapStyle={basemap === BasemapType.CartoLight ? BASEMAP.VOYAGER : BASEMAP.DARK_MATTER}
-					onViewStateChange={onViewStateChange}
-				/>
+			<MapLibre viewState={viewState} mapStyle={mapStyle} onViewStateChange={onViewStateChange} />
+			{/* {mapType === MapType.Libre ? (
 			) : (
 				<MapGoogle viewState={viewState} onViewStateChange={onViewStateChange} />
-			)}
+			)} */}
 			{mapInfoWindow && (
 				<InfoWindow positon={mapInfoWindow.positon} onClose={() => setMapInfoWindow(null)}>
 					{mapInfoWindow.children}

@@ -1,7 +1,8 @@
-import { createContext, useState, ReactNode, useContext, useCallback } from 'react'
+import { createContext, useState, ReactNode, useContext, useCallback, useEffect } from 'react'
 import maplibregl from 'maplibre-gl'
 import { LatLng, MapInfoWindow } from '../interface/map'
 import useLayerStore from '../store/map'
+import { googleProtocol } from '@/utils/google'
 
 interface MapContextProps {
 	setExtent: (extent: [number, number, number, number]) => void
@@ -30,6 +31,10 @@ export const MapProvider = ({ children }: { children: ReactNode }) => {
 	const [googleMapInstance, setGoogleMapInstance] = useState<google.maps.Map | null>(null)
 	const [mapLibreInstance, setMapLibreInstance] = useState<maplibregl.Map | null>(null)
 	const [mapInfoWindow, setMapInfoWindow] = useState<MapInfoWindow | null>(null)
+
+	useEffect(() => {
+		maplibregl.addProtocol('google', googleProtocol)
+	}, [])
 
 	const setExtent = useCallback(
 		(extent: [number, number, number, number]) => {
