@@ -10,19 +10,18 @@ import {
 	styled,
 	Switch,
 } from '@mui/material'
-import { mdiLayersOutline, mdiMapMarker, mdiMapMarkerOutline, mdiMinus, mdiPlus, mdiRulerSquareCompass } from '@mdi/js'
-import Icon from '@mdi/react'
 import { useTranslation } from 'next-i18next'
 import { BaseMap, BasemapType, MapLayer } from './interface/map'
 import useLayerStore from './store/map'
 import { layerIdConfig } from '@/config/app.config'
 import { Layer } from '@deck.gl/core'
 import { MapLayerIcon, MapMeasureIcon, MapPinIcon, MapZoomInIcon, MapZoomOutIcon } from '@/components/svg/MenuIcon'
+import classNames from 'classnames'
 
 const basemapList: BaseMap[] = [
-	{ value: BasemapType.CartoLight, image: '/images/map/basemap_bright.png', label: 'map.street' },
-	{ value: BasemapType.CartoDark, image: '/images/map/basemap_satellite.png', label: 'map.satellite' },
-	{ value: BasemapType.Google, image: '/images/map/basemap_satellite_hybrid.png', label: 'map.hybrid' },
+	{ value: BasemapType.CartoLight, image: '/images/map/basemap_street.png', label: 'map.street' },
+	{ value: BasemapType.CartoDark, image: '/images/map/basemap_dark.png', label: 'map.satellite' },
+	{ value: BasemapType.Google, image: '/images/map/basemap_hybrid.png', label: 'map.hybrid' },
 ]
 
 interface MapToolsProps {
@@ -47,6 +46,11 @@ const MapTools: React.FC<MapToolsProps> = ({
 	const [basemap, setBasemap] = useState<BasemapType | null>(currentBaseMap ?? null)
 	const [anchorBasemap, setAnchorBasemap] = useState<HTMLButtonElement | null>(null)
 	const [anchorLegend, setAnchorLegend] = useState<HTMLButtonElement | null>(null)
+	const [switchState, setSwichState] = useState(
+		layerList!.map((item) => {
+			return { id: item.id, isOn: true }
+		}),
+	)
 
 	const currentLocationIsActive = useMemo(() => !!getLayer(layerIdConfig.toolCurrentLocation), [layers, getLayer])
 
@@ -62,14 +66,17 @@ const MapTools: React.FC<MapToolsProps> = ({
 					setLayers(updatedLayers as Layer[])
 				}
 			}
+			const state = [...switchState]
+			const objIndex = state.findIndex((item) => item.id === layerId)
+			state[objIndex].isOn = !switchState[objIndex].isOn
+			setSwichState([...state])
 		},
-		[layerList, getLayer, getLayers, setLayers, removeLayer],
+		[layerList, getLayer, getLayers, setLayers, removeLayer, switchState],
 	)
 
 	const handleBasemapChanged = useCallback(
 		(basemap: BasemapType) => {
 			if (basemap !== null) {
-				console.log(basemap)
 				setBasemap(basemap)
 				onBasemapChanged?.(basemap)
 			}
@@ -158,7 +165,7 @@ const MapTools: React.FC<MapToolsProps> = ({
 			</Box>
 
 			{/* Basemap Selector */}
-			<Box className='absolute bottom-2 right-2 z-10'>
+			<Box className='absolute bottom-10 right-1 z-10'>
 				<IconButton
 					onClick={(event) => setAnchorBasemap(event.currentTarget)}
 					className='box-shadow rounded-lg bg-white'
@@ -186,9 +193,9 @@ const MapTools: React.FC<MapToolsProps> = ({
 					<Box className='flex flex-col bg-white p-2 drop-shadow-md'>
 						<Typography
 							sx={{ display: { xs: 'none', md: 'inline-block' } }}
-							mb={1}
+							mb='4px'
 							variant='body2'
-							className='font-bold'
+							className='pl-2 !font-bold'
 						>
 							{t('map.mapType')}
 						</Typography>
@@ -196,16 +203,26 @@ const MapTools: React.FC<MapToolsProps> = ({
 							size='small'
 							exclusive
 							color='primary'
+							className='[&&>.Mui-selected]:bg-white [&_.MuiToggleButtonGroup-grouped]:border-none'
 							value={basemap}
 							onChange={(_, value) => handleBasemapChanged(value)}
 						>
 							{basemapList.map((item, index) => (
 								<ToggleButton
 									key={index}
-									className='flex flex-col rounded-none border-none'
+									className='[&]:hover:bg-gray-light flex flex-col rounded-none border-none'
 									value={item.value}
 								>
-									<img src={item.image} className='h-[60px] w-[60px]' alt={`${item.label}`} />
+									<img
+										src={item.image}
+										className={classNames(
+											'h-[60px] w-[60px] rounded',
+											item.value === basemapList[currentBaseMap].value
+												? 'border-[1px] border-primary'
+												: '',
+										)}
+										alt={`${item.label}`}
+									/>
 									<Typography variant='body2' align='center' className='text-sm'>
 										{t(`${item.label}`)}
 									</Typography>
@@ -257,6 +274,7 @@ const MapTools: React.FC<MapToolsProps> = ({
 											</div>
 											<ToggleSwitch
 												defaultChecked
+												checked={switchState!.find((sw) => sw.id === item.id)!.isOn}
 												onChange={() => {
 													onToggleLayer(item.id)
 												}}
