@@ -147,6 +147,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 							}
 							placeholder={t('pleaseEnter')}
 							inputProps={{ maxLength: 100 }}
+							title=''
 						/>
 						<FormInput
 							className='w-full text-sm font-medium lg:w-[240px]'
@@ -163,6 +164,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 							}
 							placeholder={t('pleaseEnter')}
 							inputProps={{ maxLength: 100 }}
+							title=''
 						/>
 					</div>
 					<div className='flex gap-[12px] max-lg:flex-col'>
@@ -175,6 +177,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 							disabled={loading}
 							placeholder={t('pleaseEnter')}
 							inputProps={{ maxLength: 100 }}
+							title=''
 						/>
 						<FormInput
 							className='w-full text-sm font-medium lg:w-[240px]'
@@ -185,6 +188,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 							disabled={loading}
 							placeholder={t('pleaseEnter')}
 							inputProps={{ maxLength: 100 }}
+							title=''
 						/>
 					</div>
 				</Box>
@@ -205,6 +209,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 							disabled={isProvinceDataLoading || loading}
 							required
 							placeholder={t('pleaseEnter')}
+							title=''
 						/>
 						<AutocompleteInput
 							className='w-full text-sm font-medium lg:w-[240px]'
@@ -246,8 +251,15 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 								userDialogmode === UserDialogMode.UserProfile ||
 								userDialogmode === UserDialogMode.UserEdit
 							}
-							required={userDialogmode === UserDialogMode.UserAdd ? true : false}
+							required={
+								userDialogmode === UserDialogMode.UserAdd ||
+								userDialogmode === UserDialogMode.UserEdit ||
+								userDialogmode === UserDialogMode.UserProfile
+									? true
+									: false
+							}
 							placeholder={userDialogmode === UserDialogMode.UserAdd ? t('pleaseEnter') : t('notEnter')}
+							title=''
 						/>
 						<AutocompleteInput
 							className='w-full text-sm font-medium lg:w-[240px]'
@@ -267,8 +279,15 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 								userDialogmode === UserDialogMode.UserProfile ||
 								userDialogmode === UserDialogMode.UserEdit
 							}
-							required={userDialogmode === UserDialogMode.UserAdd ? true : false}
+							required={
+								userDialogmode === UserDialogMode.UserAdd ||
+								userDialogmode === UserDialogMode.UserEdit ||
+								userDialogmode === UserDialogMode.UserProfile
+									? true
+									: false
+							}
 							placeholder={userDialogmode === UserDialogMode.UserAdd ? t('pleaseEnter') : t('notEnter')}
+							title=''
 						/>
 					</div>
 					{userDialogmode === UserDialogMode.UserProfile && (
