@@ -1,4 +1,7 @@
 /** @type {import('tailwindcss').Config} */
+import { Tooltip } from '@mui/material'
+import { RegisterTableColor, RegisterTypeColor, TooltipColor } from './src/config/color'
+
 module.exports = {
 	content: [
 		'./app/**/*.{js,ts,jsx,tsx,mdx}',
@@ -26,16 +29,31 @@ module.exports = {
 					DEFAULT: 'var(--error-color-1)',
 					light: 'var(--error-color-2)',
 				},
-                green: {
-                    light: 'var(--light-green-color)',
-                    light1: 'var(--light-green-color1)',
-                    dark: 'var(--dark-green-color)',
-                    dark1: 'var(--deep-green-600)',
-                    alpha: 'var(--light-green-color-alpha)'
-                },
-                gray: {
-                    DEFAULT: 'var(--light-gray-color)'
-                }
+				green: {
+					light: 'var(--light-green-color)',
+					light1: 'var(--light-green-color1)',
+					dark: 'var(--dark-green-color)',
+					dark1: 'var(--deep-green-600)',
+					dark2: 'var(--deep-green-200)',
+					dark3: 'var(--deep-green-50)',
+					alpha: 'var(--light-green-color-alpha)',
+				},
+				gray: {
+					DEFAULT: 'var(--light-gray-color)',
+					light1: 'var(--gray-400)',
+				},
+				registerType: {
+					registered: RegisterTypeColor.registered,
+					nonRegistered: RegisterTypeColor.nonRegistered,
+				},
+				tooltip: {
+					DEFAULT: TooltipColor.default,
+					hover: TooltipColor.hover,
+				},
+				registerTable: {
+					header: RegisterTableColor.header,
+					rowHover: RegisterTableColor.rowHover,
+				},
 			},
 		},
 	},
