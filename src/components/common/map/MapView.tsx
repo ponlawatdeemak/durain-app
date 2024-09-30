@@ -134,9 +134,8 @@ export interface InfoWindowProps extends MapInfoWindow, PropsWithChildren {
 const InfoWindow: React.FC<InfoWindowProps> = ({ positon, children, onClose }) => {
 	if (!positon) return null
 	return (
-		<Paper className='absolute z-10 bg-white p-2' style={{ left: positon.x, top: positon.y }}>
+		<Paper className={classNames('absolute z-10 !rounded-[8px]')} style={{ left: positon.x, top: positon.y }}>
 			{children}
-			<Button onClick={onClose}>close</Button>
 		</Paper>
 	)
 }
