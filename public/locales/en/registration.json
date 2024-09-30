@@ -13,5 +13,7 @@
 	"hectare": "Hectare",
 	"sqkm": "Square Kilometer",
 	"GS02": "GS02",
-	"nonGS02": "Non-GS02"
+	"nonGS02": "Non-GS02",
+    "registeredArea":"Registered Area",
+    "unregisteredArea":"Unregistered Area"
 }
