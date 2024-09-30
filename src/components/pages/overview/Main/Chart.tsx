@@ -121,7 +121,7 @@ const Chart: React.FC<OverviewBarTableProps> = ({ data }) => {
 				isDesktop
 					? language === 'en'
 						? `[&_.bb-axis-x-label]:translate-x-[-216px]`
-						: `[&_.bb-axis-x-label]:translate-x-[-237px]`
+						: `[&_.bb-axis-x-label]:translate-x-[-232px]`
 					: `[&_.bb-axis-x-label]:translate-y-[5px]`,
 			)}
 		></div>
