@@ -149,7 +149,7 @@ deploy_prod:
     - docker pull ${CI_REGISTRY}/${CI_PROJECT_PATH}-${ENV_VAR}:${CI_COMMIT_TIMESTAMP:0:10}-$CI_COMMIT_SHORT_SHA
     - docker tag ${CI_REGISTRY}/${CI_PROJECT_PATH}-${ENV_VAR}:${CI_COMMIT_TIMESTAMP:0:10}-$CI_COMMIT_SHORT_SHA ${CI_REGISTRY}/${CI_PROJECT_PATH}-${ENV_VAR}:${ENV_VAR}
     - docker push ${CI_REGISTRY}/${CI_PROJECT_PATH}-${ENV_VAR}:${ENV_VAR}
-    script:
+  script:
     - echo deploy_prod
     - kubectl --insecure-skip-tls-verify --kubeconfig=/kubeconfig/durian-prod-aws apply -f durian-web-prod.yaml -n durian
     - kubectl --insecure-skip-tls-verify --kubeconfig=/kubeconfig/durian-prod-aws rollout restart deployments durian-web -n durian
