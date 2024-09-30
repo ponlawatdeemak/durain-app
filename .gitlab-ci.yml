@@ -3,6 +3,7 @@ stages:
   - deploy-dev
   - source-scan
   - container-scan
+  - build-prod
   - deploy-prod
 
 source-code-scan:
