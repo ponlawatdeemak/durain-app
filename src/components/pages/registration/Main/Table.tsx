@@ -31,7 +31,7 @@ export default function RegistrationTable({
 		return (
 			<TableContainer
 				className={classNames(
-					'h-full [&&::-webkit-scrollbar-thumb]:rounded [&&::-webkit-scrollbar-thumb]:bg-[#2F7A59] [&::-webkit-scrollbar-track]:rounded [&::-webkit-scrollbar-track]:bg-[#EAF2EE] [&::-webkit-scrollbar]:w-[5px] [&_.MuiTable-root]:border-separate [&_.MuiTable-root]:border-spacing-y-[4px]',
+					'[&::-webkit-scrollbar-track]:bg-green-dark3 h-full [&&::-webkit-scrollbar-thumb]:rounded [&&::-webkit-scrollbar-thumb]:bg-green-light [&::-webkit-scrollbar-track]:rounded [&::-webkit-scrollbar]:w-[5px] [&_.MuiTable-root]:border-separate [&_.MuiTable-root]:border-spacing-y-[4px]',
 					isDesktop ? 'absolute px-[3px]' : '',
 				)}
 			>
@@ -41,7 +41,7 @@ export default function RegistrationTable({
 							'[&_.MuiTableCell-root]:border-none [&_.MuiTableCell-root]:px-[16px] [&_.MuiTableCell-root]:py-[12px]',
 						)}
 					>
-						<TableRow className='[&>th]:bg-[#F0F2F4] [&>th]:text-[16px]'>
+						<TableRow className='[&>th]:bg-registerTable-header [&>th]:text-[16px]'>
 							<TableCell className='rounded-l-[4px]'>{t('registration:area')}</TableCell>
 							<TableCell align='right'>{t('registration:GS02')}</TableCell>
 							<TableCell className='rounded-r-[4px]' align='right'>
@@ -52,7 +52,7 @@ export default function RegistrationTable({
 					<TableBody className='[&_.MuiTableCell-root]:px-[16px] [&_.MuiTableCell-root]:py-[12px]'>
 						{data?.adms.map((row) => (
 							<TableRow
-								className='hover:!bg-[#F2F6F0] [&>td]:font-medium'
+								className='hover:!bg-registerTable-rowHover [&>td]:font-medium'
 								hover
 								tabIndex={-1}
 								key={row.admCode}
