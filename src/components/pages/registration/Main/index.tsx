@@ -752,18 +752,18 @@ const RegistrationMain: React.FC = () => {
 									? t('registration:provincialRegistrationData')
 									: tableAdmCode === 0
 										? language === Languages.TH
-											? `${t('registration:registrationData')}จ.${selectedAdm?.[language] ?? ''}`
+											? `${t('registration:registrationData')} จ.${selectedAdm?.[language] ?? ''}`
 											: `${selectedAdm?.[language] ?? ''} Province ${t('registration:registrationData')}`
 										: admCode === 0
 											? String(tableAdmCode).length === 4
 												? language === Languages.TH
-													? `${t('registration:registrationData')}อ.${district?.[language] ?? ''}`
+													? `${t('registration:registrationData')} อ.${district?.[language] ?? ''}`
 													: `${district?.[language] ?? ''} District ${t('registration:registrationData')}`
 												: language === Languages.TH
-													? `${t('registration:registrationData')}จ.${selectedTableAdm?.[language] ?? ''}`
+													? `${t('registration:registrationData')} จ.${selectedTableAdm?.[language] ?? ''}`
 													: `${selectedTableAdm?.[language] ?? ''} Province ${t('registration:registrationData')}`
 											: language === Languages.TH
-												? `${t('registration:registrationData')}อ.${selectedTableAdm?.[language] ?? ''}`
+												? `${t('registration:registrationData')} อ.${selectedTableAdm?.[language] ?? ''}`
 												: `${selectedTableAdm?.[language] ?? ''} District ${t('registration:registrationData')}`}
 							</div>
 						</p>
