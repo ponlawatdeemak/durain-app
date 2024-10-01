@@ -71,7 +71,7 @@ const MapInfoWindowContent: React.FC<{ data: MapInfoWindowContentProp }> = ({ da
 							ตำบล {data.subDistrictTH} อำเภอ {data.districtTH} จังหวัด {data.provinceTH}
 						</p>
 					</div>
-					{data.status !== RegisterType.Registered ? (
+					{data.status === RegisterType.Registered ? (
 						<div className='flex w-max gap-2 rounded-[4px] bg-white px-2 py-1'>
 							<PopupRegistrationChecked />
 							<p className='text-[16px] font-medium text-primary'>{t('registration:registeredArea')}</p>
@@ -175,7 +175,7 @@ const RegistrationMain: React.FC = () => {
 			return res.data
 		},
 	})
-	console.log(registeredData)
+
 	const {
 		data: tableInnerData,
 		isLoading: isTableInnerDataLoading,
@@ -279,7 +279,7 @@ const RegistrationMain: React.FC = () => {
 				lineWidthUnits: 'pixels',
 				pickable: true,
 				getFillColor(d) {
-					if (admCode === 0) {
+					if (admCode === 0 && tableAdmCode === 0) {
 						if (d.properties.status === RegisterType.Registered) {
 							const array = hexRgb(RegisterTypeColor.registered, { format: 'array' })
 							array[3] = 255
@@ -288,7 +288,10 @@ const RegistrationMain: React.FC = () => {
 							return [0, 0, 0, 0]
 						}
 					} else {
-						if (String(admCode) === String(d.properties.admCode).substring(0, 2)) {
+						if (
+							String(admCode) === String(d.properties.admCode).substring(0, 2) ||
+							String(tableAdmCode) === String(d.properties.admCode).substring(0, 2)
+						) {
 							if (d.properties.status === RegisterType.Registered) {
 								const array = hexRgb(RegisterTypeColor.registered, { format: 'array' })
 								array[3] = 255
@@ -302,7 +305,7 @@ const RegistrationMain: React.FC = () => {
 					}
 				},
 				getLineColor(d) {
-					if (admCode === 0) {
+					if (admCode === 0 && tableAdmCode === 0) {
 						if (d.properties.status === RegisterType.Registered) {
 							const array = hexRgb(RegisterTypeColor.registered, { format: 'array' })
 							array[3] = 255
@@ -311,7 +314,10 @@ const RegistrationMain: React.FC = () => {
 							return [0, 0, 0, 0]
 						}
 					} else {
-						if (String(admCode) === String(d.properties.admCode).substring(0, 2)) {
+						if (
+							String(admCode) === String(d.properties.admCode).substring(0, 2) ||
+							String(tableAdmCode) === String(d.properties.admCode).substring(0, 2)
+						) {
 							if (d.properties.status === RegisterType.Registered) {
 								const array = hexRgb(RegisterTypeColor.registered, { format: 'array' })
 								array[3] = 255
@@ -367,7 +373,7 @@ const RegistrationMain: React.FC = () => {
 				lineWidthUnits: 'pixels',
 				pickable: true,
 				getFillColor(d) {
-					if (admCode === 0) {
+					if (admCode === 0 && tableAdmCode === 0) {
 						if (d.properties.status === RegisterType.NonRegistered) {
 							const array = hexRgb(RegisterTypeColor.nonRegistered, { format: 'array' })
 							array[3] = 255
@@ -376,7 +382,10 @@ const RegistrationMain: React.FC = () => {
 							return [0, 0, 0, 0]
 						}
 					} else {
-						if (String(admCode) === String(d.properties.admCode).substring(0, 2)) {
+						if (
+							String(admCode) === String(d.properties.admCode).substring(0, 2) ||
+							String(tableAdmCode) === String(d.properties.admCode).substring(0, 2)
+						) {
 							if (d.properties.status === RegisterType.NonRegistered) {
 								const array = hexRgb(RegisterTypeColor.nonRegistered, { format: 'array' })
 								array[3] = 255
@@ -390,7 +399,7 @@ const RegistrationMain: React.FC = () => {
 					}
 				},
 				getLineColor(d) {
-					if (admCode === 0) {
+					if (admCode === 0 && tableAdmCode === 0) {
 						if (d.properties.status === RegisterType.NonRegistered) {
 							const array = hexRgb(RegisterTypeColor.nonRegistered, { format: 'array' })
 							array[3] = 255
@@ -399,7 +408,10 @@ const RegistrationMain: React.FC = () => {
 							return [0, 0, 0, 0]
 						}
 					} else {
-						if (String(admCode) === String(d.properties.admCode).substring(0, 2)) {
+						if (
+							String(admCode) === String(d.properties.admCode).substring(0, 2) ||
+							String(tableAdmCode) === String(d.properties.admCode).substring(0, 2)
+						) {
 							if (d.properties.status === RegisterType.NonRegistered) {
 								const array = hexRgb(RegisterTypeColor.nonRegistered, { format: 'array' })
 								array[3] = 255
@@ -433,13 +445,13 @@ const RegistrationMain: React.FC = () => {
 					}
 				},
 				updateTriggers: {
-					getFillColor: [admCode, year],
-					getLineColor: [admCode, year],
-					getLineWidth: [admCode, year],
+					getFillColor: [admCode, year, tableAdmCode],
+					getLineColor: [admCode, year, tableAdmCode],
+					getLineWidth: [admCode, year, tableAdmCode],
 				},
 			}),
 		]
-	}, [setMapInfoWindow, year, admCode])
+	}, [setMapInfoWindow, year, admCode, tableAdmCode])
 
 	const mapLayers: MapLayer[] | undefined = useMemo(() => {
 		return [
@@ -460,6 +472,9 @@ const RegistrationMain: React.FC = () => {
 
 	const getInitialLayer = useCallback((): MapLayer[] => {
 		const layerProvince = tileLayer.province
+		const layerDistrict = tileLayer.district
+		const layerSubDistrict = tileLayer.subDistrict
+
 		const provinceLayer = new MVTLayer({
 			id: 'boundary',
 			name: 'boundary',
@@ -471,19 +486,19 @@ const RegistrationMain: React.FC = () => {
 					},
 				},
 			},
-			data: layerProvince,
+			data: admCode !== 0 || tableAdmCode !== 0 ? layerDistrict : layerProvince,
 			filled: true,
 			lineWidthUnits: 'pixels',
 			pickable: true,
 			getFillColor(d: any) {
-				if (admCode === 0) {
+				if (admCode === 0 && tableAdmCode === 0) {
 					if (mapBoundaryAdmCodes?.includes(d.properties.provinceCode)) {
 						return [226, 226, 226, 100]
 					} else {
 						return [0, 0, 0, 0]
 					}
 				} else {
-					if (admCode === d.properties.provinceCode) {
+					if (admCode === d.properties.provinceCode || tableAdmCode === d.properties.provinceCode) {
 						return [226, 226, 226, 100]
 					} else {
 						return [0, 0, 0, 0]
@@ -491,14 +506,15 @@ const RegistrationMain: React.FC = () => {
 				}
 			},
 			getLineColor(d) {
-				if (admCode === 0) {
+				console.log(d)
+				if (admCode === 0 && tableAdmCode === 0) {
 					if (mapBoundaryAdmCodes?.includes(d.properties.provinceCode)) {
 						return [0, 0, 0, 255]
 					} else {
 						return [0, 0, 0, 0]
 					}
 				} else {
-					if (admCode === d.properties.provinceCode) {
+					if (admCode === d.properties.provinceCode || tableAdmCode === d.properties.provinceCode) {
 						return [0, 0, 0, 255]
 					} else {
 						return [0, 0, 0, 0]
@@ -506,9 +522,9 @@ const RegistrationMain: React.FC = () => {
 				}
 			},
 			updateTriggers: {
-				getFillColor: [admCode, year, mapBoundaryAdmCodes],
-				getLineColor: [admCode, year, mapBoundaryAdmCodes],
-				getLineWidth: [admCode, year, mapBoundaryAdmCodes],
+				getFillColor: [admCode, year, mapBoundaryAdmCodes, tableAdmCode],
+				getLineColor: [admCode, year, mapBoundaryAdmCodes, tableAdmCode],
+				getLineWidth: [admCode, year, mapBoundaryAdmCodes, tableAdmCode],
 			},
 		})
 
@@ -521,7 +537,7 @@ const RegistrationMain: React.FC = () => {
 			},
 			...(mapLayers ?? []),
 		]
-	}, [admCode, year, mapLayers, t, mapBoundaryAdmCodes])
+	}, [admCode, year, mapLayers, t, mapBoundaryAdmCodes, tableAdmCode])
 
 	useEffect(() => {
 		if (admCode === tableAdmCode || tableAdmCode === 0) {
