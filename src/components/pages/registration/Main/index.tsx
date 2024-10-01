@@ -71,7 +71,7 @@ const MapInfoWindowContent: React.FC<{ data: MapInfoWindowContentProp }> = ({ da
 							ตำบล {data.subDistrictTH} อำเภอ {data.districtTH} จังหวัด {data.provinceTH}
 						</p>
 					</div>
-					{data.status === RegisterType.Registered ? (
+					{data.status !== RegisterType.Registered ? (
 						<div className='flex w-max gap-2 rounded-[4px] bg-white px-2 py-1'>
 							<PopupRegistrationChecked />
 							<p className='text-[16px] font-medium text-primary'>{t('registration:registeredArea')}</p>
@@ -210,6 +210,10 @@ const RegistrationMain: React.FC = () => {
 		}
 		return selectedYearObj?.availableAdm.find((item: any) => item.admCode === tableAdmCode)?.admName
 	}, [selectedYearObj, tableAdmCode, registeredData])
+
+	const mapBoundaryAdmCodes = useMemo(() => {
+		return registeredData?.adms.map((item) => item.admCode)
+	}, [registeredData])
 
 	const StyledTooltip = styled(
 		({ className, title, children, ...props }: { className?: any; title: any; children: any }) => (
@@ -457,8 +461,8 @@ const RegistrationMain: React.FC = () => {
 	const getInitialLayer = useCallback((): MapLayer[] => {
 		const layerProvince = tileLayer.province
 		const provinceLayer = new MVTLayer({
-			id: 'province',
-			name: 'province',
+			id: 'boundary',
+			name: 'boundary',
 			loadOptions: {
 				fetch: {
 					headers: {
@@ -473,7 +477,11 @@ const RegistrationMain: React.FC = () => {
 			pickable: true,
 			getFillColor(d: any) {
 				if (admCode === 0) {
-					return [226, 226, 226, 100]
+					if (mapBoundaryAdmCodes?.includes(d.properties.provinceCode)) {
+						return [226, 226, 226, 100]
+					} else {
+						return [0, 0, 0, 0]
+					}
 				} else {
 					if (admCode === d.properties.provinceCode) {
 						return [226, 226, 226, 100]
@@ -482,9 +490,13 @@ const RegistrationMain: React.FC = () => {
 					}
 				}
 			},
-			getLineColor(d: any) {
+			getLineColor(d) {
 				if (admCode === 0) {
-					return [0, 0, 0, 255]
+					if (mapBoundaryAdmCodes?.includes(d.properties.provinceCode)) {
+						return [0, 0, 0, 255]
+					} else {
+						return [0, 0, 0, 0]
+					}
 				} else {
 					if (admCode === d.properties.provinceCode) {
 						return [0, 0, 0, 255]
@@ -494,22 +506,22 @@ const RegistrationMain: React.FC = () => {
 				}
 			},
 			updateTriggers: {
-				getFillColor: [admCode, year],
-				getLineColor: [admCode, year],
-				getLineWidth: [admCode, year],
+				getFillColor: [admCode, year, mapBoundaryAdmCodes],
+				getLineColor: [admCode, year, mapBoundaryAdmCodes],
+				getLineWidth: [admCode, year, mapBoundaryAdmCodes],
 			},
 		})
 
 		return [
 			{
-				id: 'province',
+				id: 'boundary',
 				label: t('registration:farmerRegistration'),
 				color: '#000000',
 				layer: provinceLayer,
 			},
 			...(mapLayers ?? []),
 		]
-	}, [admCode, year, mapLayers, t])
+	}, [admCode, year, mapLayers, t, mapBoundaryAdmCodes])
 
 	useEffect(() => {
 		if (admCode === tableAdmCode || tableAdmCode === 0) {
@@ -530,7 +542,7 @@ const RegistrationMain: React.FC = () => {
 				}
 			})
 
-			const province = getInitialLayer().find((item) => item.id === 'province')!.layer
+			const province = getInitialLayer().find((item) => item.id === 'boundary')!.layer
 			setLayers([province, ...(layers as any[])])
 		}
 	}, [admCode, getInitialLayer, getLayer, layers, mapLayers, registeredData, removeLayer, setLayers, year])

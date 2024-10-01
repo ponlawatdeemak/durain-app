@@ -270,10 +270,10 @@ const MapTools: React.FC<MapToolsProps> = ({
 					>
 						<Box className='flex flex-col gap-[6px] rounded-[4px] bg-white px-[16px] py-[10px] drop-shadow-md'>
 							<p className='text-[14px] font-bold'>
-								{layerList.find((item) => item.id === 'province')?.label}
+								{layerList.find((item) => item.id === 'boundary')?.label}
 							</p>
 							{layerList.map((item, index) => {
-								if (item.id !== 'province') {
+								if (item.id !== 'boundary') {
 									return (
 										<div key={index} className='flex items-center justify-between gap-[14px]'>
 											<div className='flex gap-[8px]'>
