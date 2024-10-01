@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: durian-web
-  namespace: durian-dev
+  namespace: durian
   labels:
     app: durian-web
 spec:
@@ -18,28 +18,27 @@ spec:
     spec:
       containers:
       - name: durian-web
-        image: rome.thaicom.io/earthinsight/durian-web:latest
+        image: rome.thaicom.io/earthinsight/durian-web-prod:prod
         imagePullPolicy: Always
         ports:
         - containerPort: 3000
         env:
         - name: NEXTAUTH_URL
-          value: "https://durian-dev.thaicom.io"
+          value: "https://durian.earthinsights.net"
         - name: NEXTAUTH_SECRET
-          value: "TI4j8FMO44Jlo60VLjAa8L335ndcsKkMT1WgkbkZS6Y="
-
+          value: "5M4BByr5G0w8mEQuPElSHBXFcPlxlYvxAR8HNcoM9TIA"
         - name: NEXT_PUBLIC_API_HOSTNAME
-          value: "https://durian-api-dev.thaicom.io"
+          value: "https://durian-api.earthinsights.net"
         - name: NEXT_PUBLIC_API_KEY
-          value: "ng4Uz54h41PJvflDhDSz5qELkqp7hj8H"
+          value: "m7DLPr1DHklzeiHzNeTFzEaDHQGjZKkV"
         - name: NEXT_PUBLIC_API_HOSTNAME_DATA
-          value: "https://durian.api-data.promptplook.co"
+          value: "https://durian-api-data.earthinsights.net"
         - name: NEXT_PUBLIC_API_KEY_DATA
-          value: "rlTCvmHRKh8RcVAnkiWf75t7pjEhTA823zj4zvTB"
+          value: "sO48AEgPp5JWDd36FdU6ZLtFgPe8caY0"
         - name: NEXT_PUBLIC_API_HOSTNAME_TILE
-          value: "https://durian.tileserver.promptplook.co"
+          value: "https://durian-tileserver.earthinsights.net"
         - name: NEXT_PUBLIC_API_KEY_TILE
-          value: "7qvd7mjul8vqkjr5njijqg5ub5"
+          value: "dsfNw8ueP7cO3o7Pk23zd6b8siqsGNve"
         - name: COGNITO_CLIENT_ID
           value: "7qvd7mjul8vqkjr5njijqg5ub5"
         - name: COGNITO_CLIENT_SECRET
@@ -57,7 +56,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: durian-web
-  namespace: durian-dev
+  namespace: durian
 spec:
   #type: NodePort
   selector:
