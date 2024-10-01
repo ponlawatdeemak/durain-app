@@ -52,7 +52,7 @@ export default function RegistrationTable({
 					<TableBody className='[&_.MuiTableCell-root]:px-[16px] [&_.MuiTableCell-root]:py-[12px]'>
 						{data?.adms.map((row) => (
 							<TableRow
-								className='hover:!bg-registerTable-rowHover [&>td]:font-medium'
+								className='hover:cursor-pointer hover:!bg-registerTable-rowHover [&>td]:font-medium'
 								hover
 								tabIndex={-1}
 								key={row.admCode}

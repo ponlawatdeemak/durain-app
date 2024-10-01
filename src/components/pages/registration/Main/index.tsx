@@ -642,7 +642,7 @@ const RegistrationMain: React.FC = () => {
 										</p>
 									}
 								>
-									<InfoIcon fontSize='small' className='text-tooltip' />
+									<InfoIcon fontSize='small' className='text-tooltip hover:cursor-pointer' />
 								</StyledTooltip>
 							</div>
 						</div>
