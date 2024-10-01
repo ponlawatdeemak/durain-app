@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import classNames from 'classnames'
-import { BasemapType, MapType, MapInfoWindow, MapLayer, LatLng, MapViewState } from './interface/map'
-import MapGoogle from './MapGoogle'
+import { BasemapType, MapInfoWindow, MapLayer, LatLng, MapViewState } from './interface/map'
+
 import MapLibre from './MapLibre'
 import MapTools from './MapTools'
 import { useMap } from './context/map'
@@ -15,7 +15,6 @@ import { IconLayer } from '@deck.gl/layers'
 import { MVTLayer } from '@deck.gl/geo-layers'
 import { Layer } from '@deck.gl/core'
 import { createGoogleStyle } from '@/utils/google'
-// import { createGoogleStyle } from '@/utils/google'
 
 const CURRENT_LOCATION_ZOOM = 14
 const DEFAULT = {
@@ -24,7 +23,7 @@ const DEFAULT = {
 		latitude: 13,
 		zoom: 5,
 	},
-	mapType: MapType.Libre,
+
 	basemap: BasemapType.CartoLight,
 }
 
@@ -36,7 +35,7 @@ export interface MapViewProps extends PropsWithChildren {
 export default function MapView({ className = '', initialLayer }: MapViewProps) {
 	const { mapInfoWindow, setCenter, setMapInfoWindow } = useMap()
 	const { getLayer, getLayers, setLayers } = useLayerStore()
-	const [mapType, setMapType] = useState<MapType>(DEFAULT.mapType)
+
 	const [viewState, setViewState] = useState<MapViewState>(DEFAULT.viewState)
 	const [basemap, setBasemap] = useState(DEFAULT.basemap)
 	const [currentLocation, setCurrentLocation] = useState<LatLng | null>(null)
@@ -81,7 +80,7 @@ export default function MapView({ className = '', initialLayer }: MapViewProps) 
 			setLayers(newLayers as Layer[])
 		}
 		recreateLayers()
-	}, [mapType, setLayers, getLayers])
+	}, [setLayers, getLayers])
 
 	const onViewStateChange = useCallback((viewState: MapViewState) => {
 		setViewState(viewState)
@@ -89,11 +88,6 @@ export default function MapView({ className = '', initialLayer }: MapViewProps) 
 
 	const onBasemapChanged = useCallback((basemap: BasemapType) => {
 		setBasemap(basemap)
-		if (basemap === BasemapType.Google) {
-			setMapType(MapType.Google)
-		} else {
-			setMapType(MapType.Libre)
-		}
 	}, [])
 
 	const onGetLocation = useCallback(
@@ -122,17 +116,13 @@ export default function MapView({ className = '', initialLayer }: MapViewProps) 
 				currentBaseMap={basemap}
 			/>
 			<MapLibre viewState={viewState} mapStyle={mapStyle} onViewStateChange={onViewStateChange} />
-			{/* {mapType === MapType.Libre ? (
-			) : (
-				<MapGoogle viewState={viewState} onViewStateChange={onViewStateChange} />
-			)} */}
+
 			{mapInfoWindow && (
 				<InfoWindow positon={mapInfoWindow.positon} onClose={() => setMapInfoWindow(null)}>
 					{mapInfoWindow.children}
 				</InfoWindow>
 			)}
-			{currentLocation && mapType === MapType.Libre && <MapPin coords={currentLocation} />}
-			{currentLocation && mapType === MapType.Google && <MapPin coords={currentLocation} />}
+			{currentLocation && <MapPin coords={currentLocation} />}
 		</div>
 	)
 }
