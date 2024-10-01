@@ -5,6 +5,10 @@ import {
 	CheckedIcon,
 	CrossIcon,
 	OverviewIcon,
+	PopupRegistrationChecked,
+	PopupRegistrationCross,
+	PopupRegistrationPin,
+	PopupReistrationLogo,
 	RegisteredIcon,
 	RegistrationIcon,
 	RegistrationTableBackIcon,
@@ -54,10 +58,33 @@ const MapInfoWindowContent: React.FC<{ data: MapInfoWindowContentProp }> = ({ da
 			<IconButton onClick={() => setMapInfoWindow(null)} className='self-right flex h-[25px] w-[25px]'>
 				<CloseIcon fontSize='small' className='text-white' />
 			</IconButton>
-			<div className={`flex h-full w-full items-center justify-center p-4 text-[14px] font-medium`}>
-				<p className='text-white'>
-					ตำบล {data.subDistrictTH} อำเภอ {data.districtTH} จังหวัด {data.provinceTH}
-				</p>
+			<div className={`flex h-full w-full gap-2 px-4 py-1 text-[14px] font-medium`}>
+				<div className='flex h-full'>
+					<PopupReistrationLogo />
+				</div>
+				<div className='flex flex-col gap-2'>
+					<div className='flex gap-2'>
+						<div className='pt-[1px]'>
+							<PopupRegistrationPin />
+						</div>
+						<p className='flex text-white'>
+							ตำบล {data.subDistrictTH} อำเภอ {data.districtTH} จังหวัด {data.provinceTH}
+						</p>
+					</div>
+					{data.status === RegisterType.Registered ? (
+						<div className='flex w-max gap-2 rounded-[4px] bg-white px-2 py-1'>
+							<PopupRegistrationChecked />
+							<p className='text-[16px] font-medium text-primary'>{t('registration:registeredArea')}</p>
+						</div>
+					) : (
+						<div className='flex w-max gap-2 rounded-[4px] bg-white px-2 py-1'>
+							<PopupRegistrationCross />
+							<p className='text-[16px] font-medium text-registerType-nonRegistered'>
+								{t('registration:unregisteredArea')}
+							</p>
+						</div>
+					)}
+				</div>
 			</div>
 		</div>
 	) : (
@@ -65,10 +92,35 @@ const MapInfoWindowContent: React.FC<{ data: MapInfoWindowContentProp }> = ({ da
 			<IconButton onClick={() => setMapInfoWindow(null)} className='self-right flex h-[25px] w-[25px]'>
 				<CloseIcon fontSize='small' className='text-white' />
 			</IconButton>
-			<div className={`flex h-full w-full items-center justify-center p-4 text-[14px] font-medium`}>
-				<p className='text-white'>
-					{data.subDistrictEN}, {data.districtEN}, {data.provinceEN}
-				</p>
+			<div className={`flex h-full w-full gap-2 px-4 py-1 text-[14px] font-medium`}>
+				<div className='flex h-full'>
+					<PopupReistrationLogo />
+				</div>
+				<div className='flex flex-col gap-2'>
+					<div className='flex gap-2'>
+						<div className='pt-[1px]'>
+							<PopupRegistrationPin />
+						</div>
+						<p className='flex text-white'>
+							{data.subDistrictEN}, {data.districtEN}, {data.provinceEN}
+						</p>
+					</div>
+					{data.status === RegisterType.Registered ? (
+						<div className='flex w-max gap-2 rounded-[4px] bg-white px-2 py-1'>
+							<PopupRegistrationChecked />
+							<p className='text-[16px] font-medium text-registerType-registered'>
+								{t('registration:registeredArea')}
+							</p>
+						</div>
+					) : (
+						<div className='flex w-max gap-2 rounded-[4px] bg-white px-2 py-1'>
+							<PopupRegistrationCross />
+							<p className='text-[16px] font-medium text-registerType-nonRegistered'>
+								{t('registration:unregisteredArea')}
+							</p>
+						</div>
+					)}
+				</div>
 			</div>
 		</div>
 	)
@@ -556,7 +608,7 @@ const RegistrationMain: React.FC = () => {
 							<div className='flex items-center'>
 								{`${t('registration:durianPlantationRegistration')} ${t('registration:year')} ${selectedYearObj?.yearName[language] ?? ''}`}
 								<StyledTooltip
-									className='hover:text-tooltip-hover ml-1 w-max'
+									className='ml-1 w-max hover:text-tooltip-hover'
 									title={
 										<p className='text-xs'>
 											{language === 'th'
@@ -593,12 +645,12 @@ const RegistrationMain: React.FC = () => {
 									<div className='flex pb-[6px]'>
 										<CheckedIcon />
 									</div>
-									<p className='text-registerType-registered text-[18px] font-normal'>
+									<p className='text-[18px] font-normal text-registerType-registered'>
 										{t('registration:registered')}
 									</p>
 								</div>
 								<p className='pt-[8px] text-base font-medium'>{t(`registration:${areaUnit}`)}</p>
-								<p className='text-registerType-registered text-[24px] font-medium leading-none'>
+								<p className='text-[24px] font-medium leading-none text-registerType-registered'>
 									{registeredData?.overall.nonRegisteredArea
 										? Math.round(
 												registeredData?.overall.registeredArea?.[areaUnit],
@@ -613,12 +665,12 @@ const RegistrationMain: React.FC = () => {
 									<div className='flex pb-[6px]'>
 										<CrossIcon />
 									</div>
-									<p className='text-registerType-nonRegistered text-[18px] font-normal'>
+									<p className='text-[18px] font-normal text-registerType-nonRegistered'>
 										{t('registration:unregistered')}
 									</p>
 								</div>
 								<p className='pt-[8px] text-base font-medium'>{t(`registration:${areaUnit}`)}</p>
-								<p className='text-registerType-nonRegistered text-[24px] font-medium leading-none'>
+								<p className='text-[24px] font-medium leading-none text-registerType-nonRegistered'>
 									{registeredData?.overall.registeredArea
 										? Math.round(
 												registeredData?.overall.nonRegisteredArea?.[areaUnit],
