@@ -526,8 +526,23 @@ const RegistrationMain: React.FC = () => {
 	useEffect(() => {
 		if (admCode === tableAdmCode || tableAdmCode === 0) {
 			setShowBack(false)
+			if (admCode !== 0) {
+				service.overview.locationExtent(admCode).then((res) => {
+					if (res.data) {
+						setExtent(res.data.extent)
+					}
+				})
+			} else {
+				setExtent([97.3758964376, 5.69138418215, 105.589038527, 20.4178496363])
+			}
+		} else {
+			service.overview.locationExtent(tableAdmCode).then((res) => {
+				if (res.data) {
+					setExtent(res.data.extent)
+				}
+			})
 		}
-	}, [tableAdmCode, admCode])
+	}, [tableAdmCode, admCode, setExtent])
 
 	useEffect(() => {
 		// initTileLayer()
