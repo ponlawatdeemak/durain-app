@@ -49,18 +49,11 @@ const Chart: React.FC<OverviewBarTableProps> = ({ data }) => {
 								return data.overall.ageClass?.[index].name[language]
 							},
 						},
-						label: {
-							text: `${t('overview:ageRange')}`,
-							position: 'outer-top',
-						},
 					},
 					y: {
 						max: 100,
 						padding: { top: 4 },
-						label: {
-							text: `% ${t('overview:plantationArea')}`,
-							position: 'inner-top',
-						},
+
 						tick: {
 							stepSize: 20,
 							format: function (x: number) {
@@ -85,8 +78,8 @@ const Chart: React.FC<OverviewBarTableProps> = ({ data }) => {
 					mode: 'fit' as const,
 					top: 20,
 					bottom: 10,
-					right: isDesktop ? 10 : language === Languages.TH ? 25 : 45,
-					left: language === Languages.TH ? 20 : 40,
+					right: 25,
+					left: isDesktop ? 15 : 20,
 				},
 				resize: {
 					auto: true,
@@ -110,19 +103,12 @@ const Chart: React.FC<OverviewBarTableProps> = ({ data }) => {
 				`bb`,
 				`[&_.bb-main]:font-[anuphan,sans-serif]`,
 				`[&_.bb-axis>.tick>line]:hidden`,
-				`[&_.bb-axis-x-label]:translate-y-[-12px] [&_.bb-axis-x-label]:text-[10px] [&_.bb-axis-x-label]:font-normal`,
 				`[&_.bb-axis-x]:text-sm [&_.bb-axis-x]:font-medium`,
-				`[&_.bb-axis-y-label]:translate-x-[26px] [&_.bb-axis-y-label]:translate-y-[-22px]`,
 				`[&_.bb-axis-y>.tick]:text-[10px] [&_.bb-axis-y>.tick]:opacity-35`,
 				`[&_.bb-tooltip]:mb-1 [&_.bb-tooltip]:w-max [&_.bb-tooltip]:p-1 [&_.bb-tooltip]:text-center [&_.bb-tooltip]:text-white [&_.bb-tooltip]:shadow-xl`,
 				`[&_.bb-xgrid-focus]:hidden`,
 				`[&_.bb-ygrids]:opacity-45`,
 				`[&_.domain]:hidden [&_.value]:text-center`,
-				isDesktop
-					? language === 'en'
-						? `[&_.bb-axis-x-label]:translate-x-[-216px]`
-						: `[&_.bb-axis-x-label]:translate-x-[-232px]`
-					: `[&_.bb-axis-x-label]:translate-y-[5px]`,
 			)}
 		></div>
 	)

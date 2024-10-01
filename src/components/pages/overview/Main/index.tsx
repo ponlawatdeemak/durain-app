@@ -21,6 +21,7 @@ import { useMap } from '@/components/common/map/context/map'
 import useLayerStore from '@/components/common/map/store/map'
 import { apiAccessToken } from '@/api/core'
 import hexRgb from 'hex-rgb'
+import clsx from 'clsx'
 
 const OverviewMain: React.FC = () => {
 	const { t, i18n } = useTranslation()
@@ -337,7 +338,7 @@ const OverviewMain: React.FC = () => {
 								{t('overview:durianPlantationData')} {t('overview:year')}{' '}
 								{selectedYearObj?.yearName[language]}
 								<StyledTooltip
-									className='hover:text-tooltip-hover ml-1'
+									className='ml-1 hover:text-tooltip-hover'
 									title={
 										<div className='flex flex-row items-center gap-2'>
 											<p className='text-xs'>
@@ -383,18 +384,36 @@ const OverviewMain: React.FC = () => {
 							className={classNames(
 								'box-border w-full',
 								isDesktop
-									? '[&::-webkit-scrollbar-track]:bg-green-dark3 overflow-y-auto overflow-x-hidden [&&::-webkit-scrollbar-thumb]:rounded [&&::-webkit-scrollbar-thumb]:bg-green-light [&::-webkit-scrollbar-track]:rounded [&::-webkit-scrollbar]:w-[5px]' +
+									? 'overflow-y-auto overflow-x-hidden [&&::-webkit-scrollbar-thumb]:rounded [&&::-webkit-scrollbar-thumb]:bg-green-light [&::-webkit-scrollbar-track]:rounded [&::-webkit-scrollbar-track]:bg-green-dark3 [&::-webkit-scrollbar]:w-[5px]' +
 											(language === Languages.TH
 												? ' max-h-[calc(100vh-650px)]'
 												: ' max-h-[calc(100vh-680px)]')
 									: '',
 							)}
 						>
-							<div className={classNames('flex min-h-[250px]', isDesktop ? 'flex-grow' : '')}>
+							<div className={classNames('relative flex min-h-[250px]', isDesktop ? 'flex-grow' : '')}>
+								<span
+									className={clsx('absolute bottom-[10px] text-[10px] font-normal', {
+										'left-[15px]': language === Languages.TH,
+										'left-[10px]': !isDesktop && language === Languages.EN,
+										'left-[5.5%]': !isDesktop && language === Languages.TH,
+									})}
+								>
+									{t('overview:ageRange')}
+								</span>
+								<span
+									className={clsx('absolute top-[2px] text-[10px] font-normal', {
+										'left-[4px]': language === Languages.TH,
+										'left-[10px]': !isDesktop && language === Languages.EN,
+										'left-[3%]': !isDesktop && language === Languages.TH,
+									})}
+								>
+									% {t('overview:plantationArea')}
+								</span>
 								<Chart data={overviewData}></Chart>
 							</div>
 							<hr className={classNames('w-full', isDesktop ? 'mb-4' : 'my-4')} />
-							<div className='text-gray-light1 mb-2 flex w-full text-sm font-medium'>
+							<div className='mb-2 flex w-full text-sm font-medium text-gray-light1'>
 								<div
 									className={classNames('flex w-1/2 flex-row items-center', isDesktop ? '' : 'ml-5')}
 								>
