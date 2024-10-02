@@ -285,7 +285,10 @@ const OverviewMain: React.FC = () => {
 					className={classNames('flex rounded-[8px] bg-white', isDesktop ? 'h-full flex-grow' : 'h-[500px]')}
 				>
 					{mapLayers && year !== 0 ? (
-						<MapView initialLayer={getInitialLayer()} />
+						<MapView
+							initialLayer={getInitialLayer()}
+							legendSelectorLabel={t('overview:ageRangeOfDurianPlantationAreas')}
+						/>
 					) : (
 						<div className='flex h-full w-full items-center justify-center'>
 							<CircularProgress />
