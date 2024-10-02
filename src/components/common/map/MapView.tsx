@@ -3,7 +3,7 @@ import classNames from 'classnames'
 import { BasemapType, MapInfoWindow, MapLayer, LatLng, MapViewState } from './interface/map'
 
 import MapLibre from './MapLibre'
-import MapTools from './MapTools'
+
 import { useMap } from './context/map'
 import { Button, Paper } from '@mui/material'
 import { PropsWithChildren, useEffect } from 'react'
@@ -15,6 +15,7 @@ import { IconLayer } from '@deck.gl/layers'
 import { MVTLayer } from '@deck.gl/geo-layers'
 import { Layer } from '@deck.gl/core'
 import { createGoogleStyle } from '@/utils/google'
+import MapTools from './tools'
 
 const CURRENT_LOCATION_ZOOM = 14
 const DEFAULT = {
@@ -109,8 +110,6 @@ export default function MapView({ className = '', initialLayer }: MapViewProps) 
 		<div className={classNames('relative flex flex-1 overflow-hidden', className)}>
 			<MapTools
 				layerList={initialLayer}
-				onZoomIn={() => setViewState({ ...viewState, zoom: viewState.zoom + 1 })}
-				onZoomOut={() => setViewState({ ...viewState, zoom: viewState.zoom - 1 })}
 				onBasemapChanged={onBasemapChanged}
 				onGetLocation={onGetLocation}
 				currentBaseMap={basemap}
