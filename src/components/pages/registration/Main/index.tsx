@@ -586,9 +586,10 @@ const RegistrationMain: React.FC = () => {
 		return [
 			{
 				id: 'boundary',
-				label: t('registration:farmerRegistration'),
+				label: '',
 				color: '#000000',
 				layer: provinceLayer,
+				isHide: true,
 			},
 			...(mapLayers ?? []),
 		]
@@ -624,8 +625,8 @@ const RegistrationMain: React.FC = () => {
 				}
 			})
 
-			const province = getInitialLayer().find((item) => item.id === 'boundary')!.layer
-			setLayers([province, ...(layers as any[])])
+			const reload = getInitialLayer().map((item) => item.layer)
+			setLayers(reload)
 		}
 	}, [admCode, getInitialLayer, getLayer, layers, mapLayers, registeredData, removeLayer, setLayers, year])
 
@@ -652,7 +653,10 @@ const RegistrationMain: React.FC = () => {
 					className={classNames('flex rounded-[8px] bg-white', isDesktop ? 'h-full flex-grow' : 'h-[500px]')}
 				>
 					{year !== 0 ? (
-						<MapView initialLayer={getInitialLayer()} />
+						<MapView
+							initialLayer={getInitialLayer()}
+							legendSelectorLabel={t('registration:farmerRegistration')}
+						/>
 					) : (
 						<div className='flex h-full w-full items-center justify-center'>
 							<CircularProgress />

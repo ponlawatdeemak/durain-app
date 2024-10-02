@@ -31,6 +31,7 @@ interface MapToolsProps {
 	onZoomOut?: () => void
 	onGetLocation?: (coords: GeolocationCoordinates) => void
 	currentBaseMap: BasemapType
+	legendSelectorLabel?: string
 }
 
 const MapTools: React.FC<MapToolsProps> = ({
@@ -40,6 +41,7 @@ const MapTools: React.FC<MapToolsProps> = ({
 	onZoomOut,
 	onGetLocation,
 	currentBaseMap,
+	legendSelectorLabel,
 }) => {
 	const { t } = useTranslation()
 	const { layers, getLayer, getLayers, setLayers, removeLayer } = useLayerStore()
@@ -269,11 +271,11 @@ const MapTools: React.FC<MapToolsProps> = ({
 						}}
 					>
 						<Box className='flex flex-col gap-[6px] rounded-[4px] bg-white px-[16px] py-[10px] drop-shadow-md'>
-							<p className='text-[14px] font-bold'>
-								{layerList.find((item) => item.id === 'boundary')?.label}
-							</p>
+							{legendSelectorLabel ? (
+								<p className='text-[14px] font-bold'>{legendSelectorLabel}</p>
+							) : null}
 							{layerList.map((item, index) => {
-								if (item.id !== 'boundary') {
+								if (!item.isHide) {
 									return (
 										<div key={index} className='flex items-center justify-between gap-[14px]'>
 											<div className='flex gap-[8px]'>

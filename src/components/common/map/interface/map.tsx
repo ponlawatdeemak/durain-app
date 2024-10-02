@@ -34,6 +34,7 @@ export interface MapLayer {
 	label: string
 	color: string
 	layer: Layer
+	isHide?: boolean
 }
 
 export interface MapLegend {

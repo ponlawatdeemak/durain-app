@@ -29,9 +29,10 @@ const DEFAULT = {
 export interface MapViewProps extends PropsWithChildren {
 	className?: string
 	initialLayer?: MapLayer[]
+	legendSelectorLabel?: string
 }
 
-export default function MapView({ className = '', initialLayer }: MapViewProps) {
+export default function MapView({ className = '', initialLayer, legendSelectorLabel }: MapViewProps) {
 	const { mapInfoWindow, setCenter, setMapInfoWindow } = useMap()
 	const { getLayer, getLayers, setLayers } = useLayerStore()
 	const [mapType, setMapType] = useState<MapType>(DEFAULT.mapType)
@@ -106,6 +107,7 @@ export default function MapView({ className = '', initialLayer }: MapViewProps) 
 				onBasemapChanged={onBasemapChanged}
 				onGetLocation={onGetLocation}
 				currentBaseMap={basemap}
+				legendSelectorLabel={legendSelectorLabel}
 			/>
 			{mapType === MapType.Libre ? (
 				<MapLibre

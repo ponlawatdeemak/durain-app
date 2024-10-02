@@ -211,6 +211,7 @@ const OverviewMain: React.FC = () => {
 				label: '',
 				color: '#000000',
 				layer: provinceLayer,
+				isHide: true,
 			},
 			...(mapLayers ?? []),
 		]
@@ -256,8 +257,8 @@ const OverviewMain: React.FC = () => {
 				}
 			})
 
-			const province = getInitialLayer().find((item) => item.id === 'province')!.layer
-			setLayers([province, ...(layers as any[])])
+			const reload = getInitialLayer().map((item) => item.layer)
+			setLayers(reload)
 		}
 	}, [admCode, getInitialLayer, getLayer, layers, overviewData, removeLayer, setLayers, year])
 
