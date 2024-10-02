@@ -685,7 +685,7 @@ const RegistrationMain: React.FC = () => {
 						</div>
 					)}
 				</div>
-				<div className={classNames('flex flex-col gap-[24px]', isDesktop ? 'h-full w-[350px]' : 'w-full')}>
+				<div className={classNames('flex flex-col gap-[8px]', isDesktop ? 'h-full w-[350px]' : 'w-full')}>
 					<div className='flex w-full flex-col items-center justify-center gap-[16px] rounded-[8px] bg-white p-[24px] shadow'>
 						<p className='text-xl font-medium'>{t('registration:farmerRegistration')}</p>
 						<div className='flex w-full flex-row gap-3'>
