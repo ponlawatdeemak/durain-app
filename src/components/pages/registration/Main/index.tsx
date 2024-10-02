@@ -13,7 +13,7 @@ import {
 	RegistrationIcon,
 	RegistrationTableBackIcon,
 } from '@/components/svg/MenuIcon'
-import { Alert, Button, CircularProgress, IconButton, MenuItem, Select, Snackbar } from '@mui/material'
+import { Alert, CircularProgress, IconButton, MenuItem, Select, Snackbar } from '@mui/material'
 import { ResponseLanguage } from '@/api/interface'
 import useAreaUnit from '@/store/area-unit'
 import InfoIcon from '@mui/icons-material/Info'
@@ -26,13 +26,10 @@ import { Languages, RegisterType } from '@/enum'
 import RegistrationTable from './Table'
 import { useMap } from '@/components/common/map/context/map'
 import useLayerStore from '@/components/common/map/store/map'
-import { IconLayer } from '@deck.gl/layers'
-import { MVTLayer, MVTLayerPickingInfo } from '@deck.gl/geo-layers'
+import { MVTLayer } from '@deck.gl/geo-layers'
 import { tileLayer } from '@/config/app.config'
 import { MapLayer } from '@/components/common/map/interface/map.jsx'
 import MapView from '@/components/common/map/MapView'
-import type { Feature, Geometry } from 'geojson'
-import { Deck } from '@deck.gl/core'
 import hexRgb from 'hex-rgb'
 import { apiAccessToken } from '@/api/core'
 import { RegisterTypeColor } from '@/config/color'
@@ -101,6 +98,10 @@ const RegistrationMain: React.FC = () => {
 	const language = i18n.language as keyof ResponseLanguage
 	const { isDesktop } = useResponsive()
 	const { areaUnit } = useAreaUnit()
+	const districtCodeLength = 4
+	const allprovinceCode = 0
+	const initialTableAdmCode = 0
+
 	const [year, setYear] = useState(0)
 	const [admCode, setAdmCode] = useState(0)
 	const [tableAdmCode, setTableAdmCode] = useState(0)
@@ -113,9 +114,9 @@ const RegistrationMain: React.FC = () => {
 	})
 
 	const { setExtent, setMapInfoWindow } = useMap()
-	const { setLayers, addLayer, getLayer, removeLayer } = useLayerStore()
+	const { setLayers, getLayer, removeLayer } = useLayerStore()
 
-	const { data: availabilityData, isLoading: isAvailabilityDataLoading } = useQuery({
+	const { data: availabilityData } = useQuery({
 		queryKey: ['availabilityRegistered'],
 		queryFn: async () => {
 			try {
@@ -130,7 +131,7 @@ const RegistrationMain: React.FC = () => {
 		},
 	})
 
-	const { data: registeredData, isLoading: isRegisteredDataLoading } = useQuery({
+	const { data: registeredData } = useQuery({
 		queryKey: ['overviewRegistered', year, admCode],
 		queryFn: async () => {
 			try {
@@ -155,7 +156,7 @@ const RegistrationMain: React.FC = () => {
 		},
 	})
 
-	const { data: tableInnerData, isLoading: isTableInnerDataLoading } = useQuery({
+	const { data: tableInnerData } = useQuery({
 		queryKey: ['overviewRegisteredTable', tableAdmCode],
 		queryFn: async () => {
 			try {
@@ -168,7 +169,7 @@ const RegistrationMain: React.FC = () => {
 				setAlertInfo({ open: true, severity: 'error', message: t('error.somethingWrong') })
 			}
 		},
-		enabled: tableAdmCode !== 0,
+		enabled: tableAdmCode !== initialTableAdmCode,
 	})
 
 	const availableAdm = useMemo(() => {
@@ -207,7 +208,7 @@ const RegistrationMain: React.FC = () => {
 				{children}
 			</Tooltip>
 		),
-	)(({ theme }) => ({
+	)(() => ({
 		[`& .MuiTooltip-tooltip`]: {
 			backgroundColor: 'white',
 			color: 'black',
@@ -222,7 +223,7 @@ const RegistrationMain: React.FC = () => {
 	}))
 
 	const handleRowClick = (rowAdmCode: number, rowAdmName: ResponseLanguage) => {
-		if (String(rowAdmCode).length <= 4) {
+		if (String(rowAdmCode).length <= districtCodeLength) {
 			setDistrict(rowAdmName)
 			setTableAdmCode(rowAdmCode)
 			setShowBack(true)
@@ -232,7 +233,7 @@ const RegistrationMain: React.FC = () => {
 	}
 
 	const handleBackClick = () => {
-		if (String(tableAdmCode).length === 4 && admCode === 0) {
+		if (String(tableAdmCode).length === districtCodeLength && admCode === allprovinceCode) {
 			setTableAdmCode((tableAdmCode) => Number(String(tableAdmCode).slice(0, 2)))
 		} else {
 			setTableAdmCode(0)
@@ -252,7 +253,7 @@ const RegistrationMain: React.FC = () => {
 						},
 					},
 				},
-				data: `${process.env.NEXT_PUBLIC_API_HOSTNAME_TILE}/registered_${year}/tiles.json`,
+				data: tileLayer.registerLayer(year),
 				onError(error) {
 					if (error.message.startsWith('loading TileJSON')) {
 						setAlertInfo({ open: true, severity: 'error', message: t('error.somethingWrong') })
@@ -262,7 +263,7 @@ const RegistrationMain: React.FC = () => {
 				lineWidthUnits: 'pixels',
 				pickable: true,
 				getFillColor(d) {
-					if (admCode === 0 && tableAdmCode === 0) {
+					if (admCode === allprovinceCode && tableAdmCode === initialTableAdmCode) {
 						if (d.properties.status === RegisterType.Registered) {
 							const array = hexRgb(RegisterTypeColor.registered, { format: 'array' })
 							array[3] = 255
@@ -272,7 +273,8 @@ const RegistrationMain: React.FC = () => {
 						}
 					} else {
 						if (
-							(String(admCode) === String(d.properties.admCode).substring(0, 2) && tableAdmCode === 0) ||
+							(String(admCode) === String(d.properties.admCode).substring(0, 2) &&
+								tableAdmCode === initialTableAdmCode) ||
 							String(tableAdmCode) === String(d.properties.admCode).substring(0, 2) ||
 							String(tableAdmCode) === String(d.properties.admCode).substring(0, 4)
 						) {
@@ -289,7 +291,7 @@ const RegistrationMain: React.FC = () => {
 					}
 				},
 				getLineColor(d) {
-					if (admCode === 0 && tableAdmCode === 0) {
+					if (admCode === allprovinceCode && tableAdmCode === initialTableAdmCode) {
 						if (d.properties.status === RegisterType.Registered) {
 							const array = hexRgb(RegisterTypeColor.registered, { format: 'array' })
 							array[3] = 255
@@ -299,7 +301,8 @@ const RegistrationMain: React.FC = () => {
 						}
 					} else {
 						if (
-							(String(admCode) === String(d.properties.admCode).substring(0, 2) && tableAdmCode === 0) ||
+							(String(admCode) === String(d.properties.admCode).substring(0, 2) &&
+								tableAdmCode === initialTableAdmCode) ||
 							String(tableAdmCode) === String(d.properties.admCode).substring(0, 2) ||
 							String(tableAdmCode) === String(d.properties.admCode).substring(0, 4)
 						) {
@@ -352,7 +355,7 @@ const RegistrationMain: React.FC = () => {
 						},
 					},
 				},
-				data: `${process.env.NEXT_PUBLIC_API_HOSTNAME_TILE}/registered_${year}/tiles.json`,
+				data: tileLayer.registerLayer(year),
 				onError(error) {
 					if (error.message.startsWith('loading TileJSON')) {
 						setAlertInfo({ open: true, severity: 'error', message: t('error.somethingWrong') })
@@ -362,7 +365,7 @@ const RegistrationMain: React.FC = () => {
 				lineWidthUnits: 'pixels',
 				pickable: true,
 				getFillColor(d) {
-					if (admCode === 0 && tableAdmCode === 0) {
+					if (admCode === allprovinceCode && tableAdmCode === initialTableAdmCode) {
 						if (d.properties.status === RegisterType.NonRegistered) {
 							const array = hexRgb(RegisterTypeColor.nonRegistered, { format: 'array' })
 							array[3] = 255
@@ -372,7 +375,8 @@ const RegistrationMain: React.FC = () => {
 						}
 					} else {
 						if (
-							(String(admCode) === String(d.properties.admCode).substring(0, 2) && tableAdmCode === 0) ||
+							(String(admCode) === String(d.properties.admCode).substring(0, 2) &&
+								tableAdmCode === initialTableAdmCode) ||
 							String(tableAdmCode) === String(d.properties.admCode).substring(0, 2) ||
 							String(tableAdmCode) === String(d.properties.admCode).substring(0, 4)
 						) {
@@ -389,7 +393,7 @@ const RegistrationMain: React.FC = () => {
 					}
 				},
 				getLineColor(d) {
-					if (admCode === 0 && tableAdmCode === 0) {
+					if (admCode === allprovinceCode && tableAdmCode === initialTableAdmCode) {
 						if (d.properties.status === RegisterType.NonRegistered) {
 							const array = hexRgb(RegisterTypeColor.nonRegistered, { format: 'array' })
 							array[3] = 255
@@ -399,7 +403,8 @@ const RegistrationMain: React.FC = () => {
 						}
 					} else {
 						if (
-							(String(admCode) === String(d.properties.admCode).substring(0, 2) && tableAdmCode === 0) ||
+							(String(admCode) === String(d.properties.admCode).substring(0, 2) &&
+								tableAdmCode === initialTableAdmCode) ||
 							String(tableAdmCode) === String(d.properties.admCode).substring(0, 2) ||
 							String(tableAdmCode) === String(d.properties.admCode).substring(0, 4)
 						) {
@@ -478,8 +483,8 @@ const RegistrationMain: React.FC = () => {
 				},
 			},
 			data:
-				admCode !== 0 || tableAdmCode !== 0
-					? String(tableAdmCode).length === 4
+				admCode !== allprovinceCode || tableAdmCode !== initialTableAdmCode
+					? String(tableAdmCode).length === districtCodeLength
 						? layerSubDistrict
 						: layerDistrict
 					: layerProvince,
@@ -492,7 +497,7 @@ const RegistrationMain: React.FC = () => {
 			lineWidthUnits: 'pixels',
 			pickable: true,
 			getFillColor(d) {
-				if (admCode === 0 && tableAdmCode === 0) {
+				if (admCode === allprovinceCode && tableAdmCode === initialTableAdmCode) {
 					if (mapBoundaryAdmCodes?.includes(d.properties.provinceCode)) {
 						return [226, 226, 226, 100]
 					} else {
@@ -500,7 +505,7 @@ const RegistrationMain: React.FC = () => {
 					}
 				} else {
 					if (
-						(admCode === d.properties.provinceCode && tableAdmCode === 0) ||
+						(admCode === d.properties.provinceCode && tableAdmCode === initialTableAdmCode) ||
 						tableAdmCode === d.properties.provinceCode ||
 						tableAdmCode === d.properties.districtCode
 					) {
@@ -511,7 +516,7 @@ const RegistrationMain: React.FC = () => {
 				}
 			},
 			getLineColor(d) {
-				if (admCode === 0 && tableAdmCode === 0) {
+				if (admCode === allprovinceCode && tableAdmCode === initialTableAdmCode) {
 					if (mapBoundaryAdmCodes?.includes(d.properties.provinceCode)) {
 						return [0, 0, 0, 255]
 					} else {
@@ -519,7 +524,7 @@ const RegistrationMain: React.FC = () => {
 					}
 				} else {
 					if (
-						(admCode === d.properties.provinceCode && tableAdmCode === 0) ||
+						(admCode === d.properties.provinceCode && tableAdmCode === initialTableAdmCode) ||
 						tableAdmCode === d.properties.provinceCode ||
 						tableAdmCode === d.properties.districtCode
 					) {
@@ -548,9 +553,9 @@ const RegistrationMain: React.FC = () => {
 	}, [admCode, year, mapLayers, t, mapBoundaryAdmCodes, tableAdmCode])
 
 	useEffect(() => {
-		if (admCode === tableAdmCode || tableAdmCode === 0) {
+		if (admCode === tableAdmCode || tableAdmCode === initialTableAdmCode) {
 			setShowBack(false)
-			if (admCode !== 0) {
+			if (admCode !== allprovinceCode) {
 				service.overview.locationExtent(admCode).then((res) => {
 					if (res.data) {
 						setExtent(res.data.extent)
@@ -656,13 +661,7 @@ const RegistrationMain: React.FC = () => {
 								{`${t('registration:durianPlantationRegistration')} ${t('registration:year')} ${selectedYearObj?.yearName[language] ?? ''}`}
 								<StyledTooltip
 									className='ml-1 w-max hover:text-tooltip-hover'
-									title={
-										<p className='text-xs'>
-											{language === 'th'
-												? 'ข้อมูลการขึ้นทะเบียนพื้นที่ปลูกทุเรียนจากกรมส่งเสริมการเกษตร'
-												: 'Durian Planting Area Registration Data from the Department of Agricultural Extension'}
-										</p>
-									}
+									title={<p className='text-xs'>{t('registration:tooltip')}</p>}
 								>
 									<InfoIcon fontSize='small' className='text-tooltip hover:cursor-pointer' />
 								</StyledTooltip>
@@ -670,7 +669,7 @@ const RegistrationMain: React.FC = () => {
 						</div>
 						<p className='py-[8px] text-center text-[18px] font-medium'>
 							{t('registration:plantationArea')}
-							{language === Languages.EN ? ' in ' : admCode === 0 ? '' : 'จังหวัด'}
+							{language === Languages.EN ? ' in ' : admCode === allprovinceCode ? '' : 'จังหวัด'}
 							{selectedAdm?.[language] ?? t('registration:allProvinces')} ({t(`registration:${areaUnit}`)}
 							)
 						</p>
@@ -740,14 +739,14 @@ const RegistrationMain: React.FC = () => {
 								</IconButton>
 							</div>
 							<div className='flex w-full justify-center text-center'>
-								{admCode === 0 && tableAdmCode === 0
+								{admCode === allprovinceCode && tableAdmCode === initialTableAdmCode
 									? t('registration:provincialRegistrationData')
-									: tableAdmCode === 0
+									: tableAdmCode === initialTableAdmCode
 										? language === Languages.TH
 											? `${t('registration:registrationData')} จ.${selectedAdm?.[language] ?? ''}`
 											: `${selectedAdm?.[language] ?? ''} Province ${t('registration:registrationData')}`
-										: admCode === 0
-											? String(tableAdmCode).length === 4
+										: admCode === allprovinceCode
+											? String(tableAdmCode).length === districtCodeLength
 												? language === Languages.TH
 													? `${t('registration:registrationData')} อ.${district?.[language] ?? ''}`
 													: `${district?.[language] ?? ''} District ${t('registration:registrationData')}`
