@@ -1,6 +1,18 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import { Box, ToggleButton, ToggleButtonGroup, Typography, IconButton, Popover, styled, Switch } from '@mui/material'
 
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import {
+	Box,
+	ToggleButton,
+	ToggleButtonGroup,
+	Typography,
+	IconButton,
+	Popover,
+	Button,
+	styled,
+	Switch,
+} from '@mui/material'
 import { useTranslation } from 'next-i18next'
 
 import { Layer } from '@deck.gl/core'
@@ -11,9 +23,9 @@ import Measurement from './measurement'
 import { useMap } from '../context/map'
 
 const basemapList: BaseMap[] = [
-	{ value: BasemapType.CartoLight, image: '/images/map/basemap_bright.png', label: 'map.street' },
-	{ value: BasemapType.CartoDark, image: '/images/map/basemap_satellite.png', label: 'map.satellite' },
-	{ value: BasemapType.Google, image: '/images/map/basemap_satellite_hybrid.png', label: 'map.hybrid' },
+	{ value: BasemapType.CartoLight, image: '/images/map/basemap_street.png', label: 'map.street' },
+	{ value: BasemapType.CartoDark, image: '/images/map/basemap_dark.png', label: 'map.satellite' },
+	{ value: BasemapType.Google, image: '/images/map/basemap_hybrid.png', label: 'map.hybrid' },
 ]
 
 interface MapToolsProps {
@@ -21,9 +33,18 @@ interface MapToolsProps {
 	onBasemapChanged?: (basemap: BasemapType) => void
 	onGetLocation?: (coords: GeolocationCoordinates) => void
 	currentBaseMap: BasemapType
+	legendSelectorLabel?: string
 }
 
-const MapTools: React.FC<MapToolsProps> = ({ layerList, onBasemapChanged, onGetLocation, currentBaseMap }) => {
+const MapTools: React.FC<MapToolsProps> = ({
+	layerList,
+	onBasemapChanged,
+	onZoomIn,
+	onZoomOut,
+	onGetLocation,
+	currentBaseMap,
+	legendSelectorLabel,
+}) => {
 	const { t } = useTranslation()
 	const { getLayer, getLayers, setLayers, removeLayer } = useLayerStore()
 	const { mapLibreInstance } = useMap()
@@ -32,6 +53,21 @@ const MapTools: React.FC<MapToolsProps> = ({ layerList, onBasemapChanged, onGetL
 	const [anchorBasemap, setAnchorBasemap] = useState<HTMLButtonElement | null>(null)
 	const [anchorLegend, setAnchorLegend] = useState<HTMLButtonElement | null>(null)
 	const [showMeasure, setShowMeasure] = useState(false)
+	const [switchState, setSwichState] = useState(
+		layerList!.map((item) => {
+			return { id: item.id, isOn: true }
+		}),
+	)
+	useEffect(() => {
+		switchState.forEach((item) => {
+			if (item.isOn === false) {
+				const layer = getLayer(item.id)
+				if (layer) {
+					removeLayer(item.id)
+				}
+			}
+		})
+	}, [getLayer, layerList, removeLayer])
 
 	const onToggleLayer = useCallback(
 		(layerId: string) => {
@@ -45,14 +81,17 @@ const MapTools: React.FC<MapToolsProps> = ({ layerList, onBasemapChanged, onGetL
 					setLayers(updatedLayers as Layer[])
 				}
 			}
+			const state = [...switchState]
+			const objIndex = state.findIndex((item) => item.id === layerId)
+			state[objIndex].isOn = !switchState[objIndex].isOn
+			setSwichState([...state])
 		},
-		[layerList, getLayer, getLayers, setLayers, removeLayer],
+		[layerList, getLayer, getLayers, setLayers, removeLayer, switchState],
 	)
 
 	const handleBasemapChanged = useCallback(
 		(basemap: BasemapType) => {
 			if (basemap !== null) {
-				console.log(basemap)
 				setBasemap(basemap)
 				onBasemapChanged?.(basemap)
 			}
@@ -153,7 +192,7 @@ const MapTools: React.FC<MapToolsProps> = ({ layerList, onBasemapChanged, onGetL
 			</Box>
 
 			{/* Basemap Selector */}
-			<Box className='absolute bottom-2 right-2 z-10'>
+			<Box className='absolute bottom-10 right-1 z-10'>
 				<IconButton
 					onClick={(event) => setAnchorBasemap(event.currentTarget)}
 					className='box-shadow rounded-lg bg-white'
@@ -181,9 +220,9 @@ const MapTools: React.FC<MapToolsProps> = ({ layerList, onBasemapChanged, onGetL
 					<Box className='flex flex-col bg-white p-2 drop-shadow-md'>
 						<Typography
 							sx={{ display: { xs: 'none', md: 'inline-block' } }}
-							mb={1}
+							mb='4px'
 							variant='body2'
-							className='font-bold'
+							className='pl-2 !font-bold'
 						>
 							{t('map.mapType')}
 						</Typography>
@@ -191,16 +230,26 @@ const MapTools: React.FC<MapToolsProps> = ({ layerList, onBasemapChanged, onGetL
 							size='small'
 							exclusive
 							color='primary'
+							className='[&&>.Mui-selected]:bg-white [&_.MuiToggleButtonGroup-grouped]:border-none'
 							value={basemap}
 							onChange={(_, value) => handleBasemapChanged(value)}
 						>
 							{basemapList.map((item, index) => (
 								<ToggleButton
 									key={index}
-									className='flex flex-col rounded-none border-none'
+									className='[&]:hover:bg-gray-light flex flex-col rounded-none border-none'
 									value={item.value}
 								>
-									<img src={item.image} className='h-[60px] w-[60px]' alt={`${item.label}`} />
+									<img
+										src={item.image}
+										className={classNames(
+											'h-[60px] w-[60px] rounded',
+											item.value === basemapList[currentBaseMap].value
+												? 'border-[1px] border-primary'
+												: '',
+										)}
+										alt={`${item.label}`}
+									/>
 									<Typography variant='body2' align='center' className='text-sm'>
 										{t(`${item.label}`)}
 									</Typography>
@@ -237,8 +286,11 @@ const MapTools: React.FC<MapToolsProps> = ({ layerList, onBasemapChanged, onGetL
 						}}
 					>
 						<Box className='flex flex-col gap-[6px] rounded-[4px] bg-white px-[16px] py-[10px] drop-shadow-md'>
+							{legendSelectorLabel ? (
+								<p className='text-[14px] font-bold'>{legendSelectorLabel}</p>
+							) : null}
 							{layerList.map((item, index) => {
-								if (item.id !== 'province') {
+								if (!item.isHide) {
 									return (
 										<div key={index} className='flex items-center justify-between gap-[14px]'>
 											<div className='flex gap-[8px]'>
@@ -246,12 +298,11 @@ const MapTools: React.FC<MapToolsProps> = ({ layerList, onBasemapChanged, onGetL
 													className={`h-[23px] w-[23px] rounded-[2px]`}
 													style={{ backgroundColor: item.color }}
 												></div>
-												<p className='text-[14px] font-light'>
-													{t('overview:ageOfDurianTrees')} {item.label}
-												</p>
+												<p className='text-[14px] font-light'>{item.label}</p>
 											</div>
 											<ToggleSwitch
 												defaultChecked
+												checked={switchState!.find((sw) => sw.id === item.id)!.isOn}
 												onChange={() => {
 													onToggleLayer(item.id)
 												}}

@@ -12,7 +12,6 @@ import Tooltip, { tooltipClasses } from '@mui/material/Tooltip'
 import useResponsive from '@/hook/responsive'
 import classNames from 'classnames'
 import Chart from './Chart'
-import { Language } from '@mui/icons-material'
 import { Languages } from '@/enum'
 import MapView from '@/components/common/map/MapView'
 import { MVTLayer } from '@deck.gl/geo-layers'
@@ -20,8 +19,9 @@ import { tileLayer } from '@/config/app.config'
 import { MapLayer } from '@/components/common/map/interface/map.jsx'
 import { useMap } from '@/components/common/map/context/map'
 import useLayerStore from '@/components/common/map/store/map'
-import { useQuery } from '@tanstack/react-query'
 import { apiAccessToken } from '@/api/core'
+import hexRgb from 'hex-rgb'
+import clsx from 'clsx'
 
 const OverviewMain: React.FC = () => {
 	const { t, i18n } = useTranslation()
@@ -32,7 +32,7 @@ const OverviewMain: React.FC = () => {
 	const [admCode, setAdmCode] = useState(0)
 	const [availabilityData, setAvailabilityData] = useState<availabilityDurianDtoOut[]>()
 	const [overviewData, setOverviewData] = useState<OverviewSummaryDtoOut>()
-	const { setExtent, setMapInfoWindow } = useMap()
+	const { setExtent } = useMap()
 	const { setLayers, addLayer, getLayer, removeLayer } = useLayerStore()
 
 	const availableAdm = useMemo(() => {
@@ -74,71 +74,6 @@ const OverviewMain: React.FC = () => {
 		},
 	}))
 
-	const MapInfoWindowContent: React.FC<{ data: { name: string; math: number } }> = ({ data }) => {
-		return (
-			<div className={`m-4 flex flex-col`}>
-				<div>name : {data.name}</div>
-				<div>math : {data.math}</div>
-			</div>
-		)
-	}
-
-	// const handleSetExtent = useCallback(() => {
-	// 	setExtent([100.5, 13.7, 100.7, 13.9])
-	// }, [setExtent])
-
-	// const handleAddLayer = useCallback(() => {
-	// 	const layer = getLayer(TEST_LAYER_ID)
-	// 	if (!layer) {
-	// 		addLayer(layer)
-	// 	}
-	// }, [getLayer, addLayer])
-
-	// const handleRemoveLayer = useCallback(() => {
-	// 	removeLayer(TEST_LAYER_ID)
-	// }, [removeLayer])
-
-	// const initTileLayer = useCallback(() => {
-	// 	const layerProvince = tileLayer.province
-	// 	const layerBoundary = tileLayer.boundaryYear(2024)
-	// 	setLayers([
-	// 		new MVTLayer({
-	// 			id: 'province',
-	// 			name: 'province',
-	// 			loadOptions: {
-	// 				fetch: {
-	// 					headers: {
-	// 						'content-type': 'application/json',
-	// 						Authorization: `Bearer ${MOCK_TOKEN}`,
-	// 					},
-	// 				},
-	// 			},
-	// 			data: layerProvince,
-	// 			filled: true,
-	// 			lineWidthUnits: 'pixels',
-	// 			pickable: true,
-	// 			getFillColor(d) {
-	// 				return [226, 226, 226, 100]
-	// 			},
-	// 			onClick: (info) => {
-	// 				if (info.object) {
-	// 					const mock = {
-	// 						name: 'ทดสอบ',
-	// 						math: Math.random(),
-	// 					}
-	// 					setMapInfoWindow({
-	// 						positon: {
-	// 							x: info.x,
-	// 							y: info.y,
-	// 						},
-	// 						children: <MapInfoWindowContent data={mock} />,
-	// 					})
-	// 				}
-	// 			},
-	// 		}),
-	// 	])
-	// }, [setLayers])
-
 	const layers = useMemo(() => {
 		return overviewData?.overall.ageClass?.map((item) => {
 			return new MVTLayer({
@@ -153,43 +88,76 @@ const OverviewMain: React.FC = () => {
 						},
 					},
 				},
-				data: `${process.env.NEXT_PUBLIC_API_HOSTNAME_TILE}/durian_2020/tiles.json`,
+				data: tileLayer.durianLayer(year),
 				filled: true,
 				lineWidthUnits: 'pixels',
 				pickable: true,
 				getFillColor(d) {
-					// console.log(d)
-					return [226, 226, 226, 100]
-				},
-				onClick: (info) => {
-					if (info.object) {
-						const mock = {
-							name: item.name[language],
-							math: Math.random(),
+					if (admCode === 0) {
+						if (item.id === d.properties.ageClass_id) {
+							const array = hexRgb(item.color, { format: 'array' })
+							array[3] = 255
+							return array
+						} else {
+							return [0, 0, 0, 0]
 						}
-						setMapInfoWindow({
-							positon: {
-								x: info.x,
-								y: info.y,
-							},
-							children: <MapInfoWindowContent data={mock} />,
-						})
+					} else {
+						if (String(admCode) === String(d.properties.admCode).substring(0, 2)) {
+							if (item.id === d.properties.ageClass_id) {
+								const array = hexRgb(item.color, { format: 'array' })
+								array[3] = 255
+								return array
+							} else {
+								return [0, 0, 0, 0]
+							}
+						} else {
+							return [0, 0, 0, 0]
+						}
 					}
+				},
+				getLineColor(d) {
+					if (admCode === 0) {
+						if (item.id === d.properties.ageClass_id) {
+							const array = hexRgb(item.color, { format: 'array' })
+							array[3] = 255
+							return array
+						} else {
+							return [0, 0, 0, 0]
+						}
+					} else {
+						if (admCode === d.properties.admCode.substring(0, 2)) {
+							if (item.id === d.properties.ageClass_id) {
+								const array = hexRgb(item.color, { format: 'array' })
+								array[3] = 255
+								return array
+							} else {
+								return [0, 0, 0, 0]
+							}
+						} else {
+							return [0, 0, 0, 0]
+						}
+					}
+				},
+
+				updateTriggers: {
+					getFillColor: [admCode, year],
+					getLineColor: [admCode, year],
+					getLineWidth: [admCode, year],
 				},
 			})
 		})
-	}, [overviewData, language, setMapInfoWindow])
+	}, [overviewData, language, year, admCode])
 
 	const mapLayers: MapLayer[] | undefined = useMemo(() => {
 		return overviewData?.overall.ageClass?.map((item, index) => {
 			return {
 				id: item.id,
-				label: item.name[language],
+				label: `${t('overview:ageOfDurianTrees')} ${item.name[language]}`,
 				color: item.color,
 				layer: layers![index],
 			}
 		})
-	}, [overviewData, language, layers])
+	}, [overviewData?.overall.ageClass, t, language, layers])
 
 	const getInitialLayer = useCallback((): MapLayer[] => {
 		const layerProvince = tileLayer.province
@@ -208,29 +176,54 @@ const OverviewMain: React.FC = () => {
 			filled: true,
 			lineWidthUnits: 'pixels',
 			pickable: true,
-			getFillColor() {
-				return [226, 226, 226, 100]
+			getFillColor(d) {
+				if (admCode === 0) {
+					return [226, 226, 226, 100]
+				} else {
+					if (admCode === d.properties.provinceCode) {
+						return [226, 226, 226, 100]
+					} else {
+						return [0, 0, 0, 0]
+					}
+				}
+			},
+			getLineColor(d: any) {
+				if (admCode === 0) {
+					return [0, 0, 0, 255]
+				} else {
+					if (admCode === d.properties.provinceCode) {
+						return [0, 0, 0, 255]
+					} else {
+						return [0, 0, 0, 0]
+					}
+				}
+			},
+			updateTriggers: {
+				getFillColor: [admCode, year],
+				getLineColor: [admCode, year],
+				getLineWidth: [admCode, year],
 			},
 		})
 
 		return [
 			{
 				id: 'province',
-				label: 'province',
+				label: '',
 				color: '#000000',
 				layer: provinceLayer,
+				isHide: true,
 			},
 			...(mapLayers ?? []),
 		]
-	}, [mapLayers])
+	}, [mapLayers, admCode, year])
 
 	useEffect(() => {
 		service.overview
 			.availabilityDurian()
 			.then((res) => {
 				setAvailabilityData(res.data)
-				if (!year) {
-					setYear(res.data![res.data!.length - 1].year)
+				if (!year && res.data) {
+					setYear(res.data[0].year)
 				}
 			})
 			.catch((error) => console.log(error))
@@ -240,7 +233,6 @@ const OverviewMain: React.FC = () => {
 		service.overview
 			.overviewSummary({ year: year, admCode: admCode === 0 ? undefined : admCode })
 			.then((res) => {
-				console.log('overview : ', res.data)
 				setOverviewData(res.data)
 			})
 			.catch((error) => console.log(error))
@@ -255,6 +247,20 @@ const OverviewMain: React.FC = () => {
 			setExtent([97.3758964376, 5.69138418215, 105.589038527, 20.4178496363])
 		}
 	}, [year, admCode, setExtent])
+
+	useEffect(() => {
+		if (layers && overviewData) {
+			overviewData?.overall.ageClass?.forEach((item) => {
+				const layer = getLayer(item.id)
+				if (layer) {
+					removeLayer(item.id)
+				}
+			})
+
+			const reload = getInitialLayer().map((item) => item.layer)
+			setLayers(reload)
+		}
+	}, [admCode, getInitialLayer, getLayer, layers, overviewData, removeLayer, setLayers, year])
 
 	return (
 		<div
@@ -278,7 +284,7 @@ const OverviewMain: React.FC = () => {
 				<div
 					className={classNames('flex rounded-[8px] bg-white', isDesktop ? 'h-full flex-grow' : 'h-[500px]')}
 				>
-					{mapLayers ? (
+					{mapLayers && year !== 0 ? (
 						<MapView initialLayer={getInitialLayer()} />
 					) : (
 						<div className='flex h-full w-full items-center justify-center'>
@@ -333,7 +339,7 @@ const OverviewMain: React.FC = () => {
 								{t('overview:durianPlantationData')} {t('overview:year')}{' '}
 								{selectedYearObj?.yearName[language]}
 								<StyledTooltip
-									className='ml-1 hover:text-[#9FC2B3]'
+									className='ml-1 hover:cursor-pointer hover:text-tooltip-hover'
 									title={
 										<div className='flex flex-row items-center gap-2'>
 											<p className='text-xs'>
@@ -347,7 +353,7 @@ const OverviewMain: React.FC = () => {
 										</div>
 									}
 								>
-									<InfoIcon fontSize='small' className='text-[#FFE25D]' />
+									<InfoIcon fontSize='small' className='text-tooltip' />
 								</StyledTooltip>
 							</div>
 							<p className='pt-[8px] text-[22px] font-semibold'>
@@ -379,18 +385,36 @@ const OverviewMain: React.FC = () => {
 							className={classNames(
 								'box-border w-full',
 								isDesktop
-									? 'overflow-y-auto overflow-x-hidden [&&::-webkit-scrollbar-thumb]:rounded [&&::-webkit-scrollbar-thumb]:bg-[#2F7A59] [&::-webkit-scrollbar-track]:rounded [&::-webkit-scrollbar-track]:bg-[#EAF2EE] [&::-webkit-scrollbar]:w-[5px]' +
+									? 'overflow-y-auto overflow-x-hidden [&&::-webkit-scrollbar-thumb]:rounded [&&::-webkit-scrollbar-thumb]:bg-green-light [&::-webkit-scrollbar-track]:rounded [&::-webkit-scrollbar-track]:bg-green-dark3 [&::-webkit-scrollbar]:w-[5px]' +
 											(language === Languages.TH
 												? ' max-h-[calc(100vh-650px)]'
 												: ' max-h-[calc(100vh-680px)]')
 									: '',
 							)}
 						>
-							<div className={classNames('flex min-h-[250px]', isDesktop ? 'flex-grow' : '')}>
+							<div className={classNames('relative flex min-h-[250px]', isDesktop ? 'flex-grow' : '')}>
+								<span
+									className={clsx('absolute bottom-[10px] text-[10px] font-normal', {
+										'left-[15px]': language === Languages.TH,
+										'left-[10px]': !isDesktop && language === Languages.EN,
+										'left-[5.5%]': !isDesktop && language === Languages.TH,
+									})}
+								>
+									{t('overview:ageRange')}
+								</span>
+								<span
+									className={clsx('absolute top-[2px] text-[10px] font-normal', {
+										'left-[4px]': language === Languages.TH,
+										'left-[10px]': !isDesktop && language === Languages.EN,
+										'left-[3%]': !isDesktop && language === Languages.TH,
+									})}
+								>
+									% {t('overview:plantationArea')}
+								</span>
 								<Chart data={overviewData}></Chart>
 							</div>
 							<hr className={classNames('w-full', isDesktop ? 'mb-4' : 'my-4')} />
-							<div className='mb-2 flex w-full text-sm font-medium text-[#5C5C5C]'>
+							<div className='mb-2 flex w-full text-sm font-medium text-gray-light1'>
 								<div
 									className={classNames('flex w-1/2 flex-row items-center', isDesktop ? '' : 'ml-5')}
 								>

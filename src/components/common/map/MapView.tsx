@@ -31,9 +31,10 @@ const DEFAULT = {
 export interface MapViewProps extends PropsWithChildren {
 	className?: string
 	initialLayer?: MapLayer[]
+	legendSelectorLabel?: string
 }
 
-export default function MapView({ className = '', initialLayer }: MapViewProps) {
+export default function MapView({ className = '', initialLayer, legendSelectorLabel }: MapViewProps) {
 	const { mapInfoWindow, setCenter, setMapInfoWindow } = useMap()
 	const { getLayer, getLayers, setLayers } = useLayerStore()
 
@@ -113,6 +114,7 @@ export default function MapView({ className = '', initialLayer }: MapViewProps) 
 				onBasemapChanged={onBasemapChanged}
 				onGetLocation={onGetLocation}
 				currentBaseMap={basemap}
+				legendSelectorLabel={legendSelectorLabel}
 			/>
 			<MapLibre viewState={viewState} mapStyle={mapStyle} onViewStateChange={onViewStateChange} />
 
@@ -133,9 +135,8 @@ export interface InfoWindowProps extends MapInfoWindow, PropsWithChildren {
 const InfoWindow: React.FC<InfoWindowProps> = ({ positon, children, onClose }) => {
 	if (!positon) return null
 	return (
-		<Paper className='absolute z-10 bg-white p-2' style={{ left: positon.x, top: positon.y }}>
+		<Paper className={classNames('absolute z-10 !rounded-[8px]')} style={{ left: positon.x, top: positon.y }}>
 			{children}
-			<Button onClick={onClose}>close</Button>
 		</Paper>
 	)
 }
