@@ -19,3 +19,8 @@ export enum SortType {
 	ASC = 'asc',
 	DESC = 'desc',
 }
+
+export enum RegisterType {
+    Registered = 'registeredArea',
+    NonRegistered = 'nonRegisteredArea'
+}
