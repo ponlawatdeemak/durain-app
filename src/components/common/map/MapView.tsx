@@ -5,7 +5,7 @@ import { BasemapType, MapInfoWindow, MapLayer, LatLng, MapViewState } from './in
 import MapLibre from './MapLibre'
 
 import { useMap } from './context/map'
-import { Button, Paper } from '@mui/material'
+import { Paper } from '@mui/material'
 import { PropsWithChildren, useEffect } from 'react'
 import useLayerStore from './store/map'
 import MapPin from './layer/MapPin'

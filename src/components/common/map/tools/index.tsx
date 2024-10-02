@@ -1,18 +1,5 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Box, ToggleButton, ToggleButtonGroup, Typography, IconButton, Popover, styled, Switch } from '@mui/material'
-
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import {
-	Box,
-	ToggleButton,
-	ToggleButtonGroup,
-	Typography,
-	IconButton,
-	Popover,
-	Button,
-	styled,
-	Switch,
-} from '@mui/material'
 import { useTranslation } from 'next-i18next'
 
 import { Layer } from '@deck.gl/core'
@@ -21,6 +8,7 @@ import { BaseMap, BasemapType, MapLayer } from '../interface/map'
 import useLayerStore from '../store/map'
 import Measurement from './measurement'
 import { useMap } from '../context/map'
+import classNames from 'classnames'
 
 const basemapList: BaseMap[] = [
 	{ value: BasemapType.CartoLight, image: '/images/map/basemap_street.png', label: 'map.street' },
@@ -39,8 +27,6 @@ interface MapToolsProps {
 const MapTools: React.FC<MapToolsProps> = ({
 	layerList,
 	onBasemapChanged,
-	onZoomIn,
-	onZoomOut,
 	onGetLocation,
 	currentBaseMap,
 	legendSelectorLabel,
