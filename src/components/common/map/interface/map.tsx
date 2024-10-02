@@ -34,17 +34,13 @@ export interface MapLayer {
 	label: string
 	color: string
 	layer: Layer
+	isHide?: boolean
 }
 
 export interface MapLegend {
 	id: string
 	label: string
 	color: string
-}
-
-export enum MapType {
-	Libre,
-	Google,
 }
 
 export enum BasemapType {

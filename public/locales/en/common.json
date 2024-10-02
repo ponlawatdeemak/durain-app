@@ -89,14 +89,14 @@
 	"durianPlantationData": "Durian Plantation Data",
 	"plantationArea": "Plantation Area",
 
-    "map":{
-        "mapType":"Map Type",
-        "street":"Street",
-        "satellite":"Satellite",
-        "hybrid":"Hybrid"
-    },
+	"map": {
+		"mapType": "Map Type",
+		"street": "Street",
+		"satellite": "Dard",
+		"hybrid": "Satellite"
+	},
 
-    "error": {
+	"error": {
 		"somethingWrong": "Something went wrong. Please check the information again."
 	}
 }

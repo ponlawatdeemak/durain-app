@@ -47,6 +47,10 @@ const OverviewMain: React.FC = () => {
 		return selectedYearObj?.availableAdm.find((item) => item.admCode === admCode)?.admName
 	}, [selectedYearObj?.availableAdm, admCode])
 
+	const mapBoundaryAdmCodes = useMemo(() => {
+		return overviewData?.adms.map((item) => item.admCode)
+	}, [overviewData])
+
 	const StyledTooltip = styled(
 		({ className, title, children, ...props }: { className?: any; title: any; children: any }) => (
 			<Tooltip
@@ -178,7 +182,11 @@ const OverviewMain: React.FC = () => {
 			pickable: true,
 			getFillColor(d) {
 				if (admCode === 0) {
-					return [226, 226, 226, 100]
+					if (mapBoundaryAdmCodes?.includes(d.properties.provinceCode)) {
+						return [226, 226, 226, 100]
+					} else {
+						return [0, 0, 0, 0]
+					}
 				} else {
 					if (admCode === d.properties.provinceCode) {
 						return [226, 226, 226, 100]
@@ -189,7 +197,11 @@ const OverviewMain: React.FC = () => {
 			},
 			getLineColor(d: any) {
 				if (admCode === 0) {
-					return [0, 0, 0, 255]
+					if (mapBoundaryAdmCodes?.includes(d.properties.provinceCode)) {
+						return [0, 0, 0, 255]
+					} else {
+						return [0, 0, 0, 0]
+					}
 				} else {
 					if (admCode === d.properties.provinceCode) {
 						return [0, 0, 0, 255]
@@ -211,10 +223,11 @@ const OverviewMain: React.FC = () => {
 				label: '',
 				color: '#000000',
 				layer: provinceLayer,
+				isHide: true,
 			},
 			...(mapLayers ?? []),
 		]
-	}, [mapLayers, admCode, year])
+	}, [admCode, year, mapLayers, mapBoundaryAdmCodes])
 
 	useEffect(() => {
 		service.overview
@@ -256,8 +269,8 @@ const OverviewMain: React.FC = () => {
 				}
 			})
 
-			const province = getInitialLayer().find((item) => item.id === 'province')!.layer
-			setLayers([province, ...(layers as any[])])
+			const reload = getInitialLayer().map((item) => item.layer)
+			setLayers(reload)
 		}
 	}, [admCode, getInitialLayer, getLayer, layers, overviewData, removeLayer, setLayers, year])
 
@@ -284,7 +297,10 @@ const OverviewMain: React.FC = () => {
 					className={classNames('flex rounded-[8px] bg-white', isDesktop ? 'h-full flex-grow' : 'h-[500px]')}
 				>
 					{mapLayers && year !== 0 ? (
-						<MapView initialLayer={getInitialLayer()} />
+						<MapView
+							initialLayer={getInitialLayer()}
+							legendSelectorLabel={t('overview:ageRangeOfDurianPlantationAreas')}
+						/>
 					) : (
 						<div className='flex h-full w-full items-center justify-center'>
 							<CircularProgress />

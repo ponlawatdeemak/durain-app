@@ -36,6 +36,9 @@ import { RegisterTypeColor } from '@/config/color'
 import CloseIcon from '@mui/icons-material/Close'
 import { AlertInfoType } from '@/components/shared/ProfileForm/interface'
 
+import { IconLayer } from '@deck.gl/layers'
+import { getPin } from '@/utils/pin'
+
 interface MapInfoWindowContentProp {
 	provinceTH: string
 	districtTH: string
@@ -82,7 +85,7 @@ const MapInfoWindowContent: React.FC<{ data: MapInfoWindowContentProp }> = ({ da
 						) : (
 							<>
 								<PopupRegistrationCross />
-								<p className='text-[16px] font-medium text-registerType-nonRegistered'>
+								<p className='text-registerType-nonRegistered text-[16px] font-medium'>
 									{t('registration:unregisteredArea')}
 								</p>
 							</>
@@ -113,8 +116,47 @@ const RegistrationMain: React.FC = () => {
 		message: '',
 	})
 
-	const { setExtent, setMapInfoWindow } = useMap()
-	const { setLayers, getLayer, removeLayer } = useLayerStore()
+	const { mapLibreInstance, setExtent, setMapInfoWindow, setCenter } = useMap()
+	const { setLayers, getLayer, removeLayer, addLayer } = useLayerStore()
+
+	const selectPinId = 'selected-pin'
+
+	useEffect(() => {
+		console.log('mapLibreInstance init')
+		mapLibreInstance?.on('click', (evt) => {
+			const lngLat = evt.lngLat
+
+			console.log('lngLat 1', lngLat)
+
+			if (lngLat) {
+				const coordinates: [number, number] = [lngLat.lng, lngLat.lat]
+				removeLayer(selectPinId)
+				const iconLayer = new IconLayer({
+					id: selectPinId,
+					// beforeId: "road-exit-shield",
+					data: [{ coordinates }],
+					visible: true,
+					getIcon: () => {
+						return {
+							url: getPin('#F03E3E'),
+							anchorY: 69,
+							width: 58,
+							height: 69,
+							mask: false,
+						}
+					},
+					sizeScale: 1,
+					getPosition: (d) => d.coordinates,
+					getSize: 40,
+				})
+				addLayer(iconLayer)
+				setCenter({
+					latitude: lngLat.lat,
+					longitude: lngLat.lng,
+				})
+			}
+		})
+	}, [addLayer, mapLibreInstance, removeLayer, setCenter])
 
 	const { data: availabilityData } = useQuery({
 		queryKey: ['availabilityRegistered'],
@@ -544,9 +586,10 @@ const RegistrationMain: React.FC = () => {
 		return [
 			{
 				id: 'boundary',
-				label: t('registration:farmerRegistration'),
+				label: '',
 				color: '#000000',
 				layer: provinceLayer,
+				isHide: true,
 			},
 			...(mapLayers ?? []),
 		]
@@ -582,8 +625,8 @@ const RegistrationMain: React.FC = () => {
 				}
 			})
 
-			const province = getInitialLayer().find((item) => item.id === 'boundary')!.layer
-			setLayers([province, ...(layers as any[])])
+			const reload = getInitialLayer().map((item) => item.layer)
+			setLayers(reload)
 		}
 	}, [admCode, getInitialLayer, getLayer, layers, mapLayers, registeredData, removeLayer, setLayers, year])
 
@@ -610,7 +653,10 @@ const RegistrationMain: React.FC = () => {
 					className={classNames('flex rounded-[8px] bg-white', isDesktop ? 'h-full flex-grow' : 'h-[500px]')}
 				>
 					{year !== 0 ? (
-						<MapView initialLayer={getInitialLayer()} />
+						<MapView
+							initialLayer={getInitialLayer()}
+							legendSelectorLabel={t('registration:farmerRegistration')}
+						/>
 					) : (
 						<div className='flex h-full w-full items-center justify-center'>
 							<CircularProgress />
@@ -660,7 +706,7 @@ const RegistrationMain: React.FC = () => {
 							<div className='flex items-center'>
 								{`${t('registration:durianPlantationRegistration')} ${t('registration:year')} ${selectedYearObj?.yearName[language] ?? ''}`}
 								<StyledTooltip
-									className='ml-1 w-max hover:text-tooltip-hover'
+									className='hover:text-tooltip-hover ml-1 w-max'
 									title={<p className='text-xs'>{t('registration:tooltip')}</p>}
 								>
 									<InfoIcon fontSize='small' className='text-tooltip hover:cursor-pointer' />
@@ -691,12 +737,12 @@ const RegistrationMain: React.FC = () => {
 									<div className='flex pb-[6px]'>
 										<CheckedIcon />
 									</div>
-									<p className='text-[18px] font-normal text-registerType-registered'>
+									<p className='text-registerType-registered text-[18px] font-normal'>
 										{t('registration:registered')}
 									</p>
 								</div>
 								<p className='pt-[8px] text-base font-medium'>{t(`registration:${areaUnit}`)}</p>
-								<p className='text-[24px] font-medium leading-none text-registerType-registered'>
+								<p className='text-registerType-registered text-[24px] font-medium leading-none'>
 									{registeredData?.overall.nonRegisteredArea
 										? Math.round(
 												registeredData?.overall.registeredArea?.[areaUnit],
@@ -711,12 +757,12 @@ const RegistrationMain: React.FC = () => {
 									<div className='flex pb-[6px]'>
 										<CrossIcon />
 									</div>
-									<p className='text-[18px] font-normal text-registerType-nonRegistered'>
+									<p className='text-registerType-nonRegistered text-[18px] font-normal'>
 										{t('registration:unregistered')}
 									</p>
 								</div>
 								<p className='pt-[8px] text-base font-medium'>{t(`registration:${areaUnit}`)}</p>
-								<p className='text-[24px] font-medium leading-none text-registerType-nonRegistered'>
+								<p className='text-registerType-nonRegistered text-[24px] font-medium leading-none'>
 									{registeredData?.overall.registeredArea
 										? Math.round(
 												registeredData?.overall.nonRegisteredArea?.[areaUnit],
