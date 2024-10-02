@@ -13,7 +13,7 @@ import {
 	RegistrationIcon,
 	RegistrationTableBackIcon,
 } from '@/components/svg/MenuIcon'
-import { Button, CircularProgress, IconButton, MenuItem, Select } from '@mui/material'
+import { Alert, Button, CircularProgress, IconButton, MenuItem, Select, Snackbar } from '@mui/material'
 import { ResponseLanguage } from '@/api/interface'
 import useAreaUnit from '@/store/area-unit'
 import InfoIcon from '@mui/icons-material/Info'
@@ -37,6 +37,7 @@ import hexRgb from 'hex-rgb'
 import { apiAccessToken } from '@/api/core'
 import { RegisterTypeColor } from '@/config/color'
 import CloseIcon from '@mui/icons-material/Close'
+import { AlertInfoType } from '@/components/shared/ProfileForm/interface'
 
 interface MapInfoWindowContentProp {
 	provinceTH: string
@@ -105,59 +106,67 @@ const RegistrationMain: React.FC = () => {
 	const [tableAdmCode, setTableAdmCode] = useState(0)
 	const [showBack, setShowBack] = useState(false)
 	const [district, setDistrict] = useState<ResponseLanguage>()
+	const [alertInfo, setAlertInfo] = React.useState<AlertInfoType>({
+		open: false,
+		severity: 'success',
+		message: '',
+	})
 
 	const { setExtent, setMapInfoWindow } = useMap()
 	const { setLayers, addLayer, getLayer, removeLayer } = useLayerStore()
 
-	const {
-		data: availabilityData,
-		isLoading: isAvailabilityDataLoading,
-		error: availabilityDataError,
-	} = useQuery({
+	const { data: availabilityData, isLoading: isAvailabilityDataLoading } = useQuery({
 		queryKey: ['availabilityRegistered'],
 		queryFn: async () => {
-			const res = await service.registration.availabilityRegistered()
-			if (!year) {
-				setYear(res.data![0].year)
+			try {
+				const res = await service.registration.availabilityRegistered()
+				if (!year) {
+					setYear(res.data![0].year)
+				}
+				return res.data
+			} catch {
+				setAlertInfo({ open: true, severity: 'error', message: t('error.somethingWrong') })
 			}
-			return res.data
 		},
 	})
 
-	const {
-		data: registeredData,
-		isLoading: isRegisteredDataLoading,
-		error: registeredDataError,
-	} = useQuery({
+	const { data: registeredData, isLoading: isRegisteredDataLoading } = useQuery({
 		queryKey: ['overviewRegistered', year, admCode],
 		queryFn: async () => {
-			setTableAdmCode(0)
-			const res = await service.registration.overviewRegistered({ year: year, admCode: admCode ?? undefined })
-			if (admCode !== 0) {
-				service.overview.locationExtent(admCode).then((res) => {
-					if (res.data) {
-						setExtent(res.data.extent)
-					}
+			try {
+				setTableAdmCode(0)
+				const res = await service.registration.overviewRegistered({
+					year: year,
+					admCode: admCode ?? undefined,
 				})
-			} else {
-				setExtent([97.3758964376, 5.69138418215, 105.589038527, 20.4178496363])
+				if (admCode !== 0) {
+					service.overview.locationExtent(admCode).then((res) => {
+						if (res.data) {
+							setExtent(res.data.extent)
+						}
+					})
+				} else {
+					setExtent([97.3758964376, 5.69138418215, 105.589038527, 20.4178496363])
+				}
+				return res.data
+			} catch {
+				setAlertInfo({ open: true, severity: 'error', message: t('error.somethingWrong') })
 			}
-			return res.data
 		},
 	})
 
-	const {
-		data: tableInnerData,
-		isLoading: isTableInnerDataLoading,
-		error: tableInnerDataError,
-	} = useQuery({
+	const { data: tableInnerData, isLoading: isTableInnerDataLoading } = useQuery({
 		queryKey: ['overviewRegisteredTable', tableAdmCode],
 		queryFn: async () => {
-			const res = await service.registration.overviewRegistered({
-				year: year,
-				admCode: tableAdmCode ?? undefined,
-			})
-			return res.data
+			try {
+				const res = await service.registration.overviewRegistered({
+					year: year,
+					admCode: tableAdmCode ?? undefined,
+				})
+				return res.data
+			} catch {
+				setAlertInfo({ open: true, severity: 'error', message: t('error.somethingWrong') })
+			}
 		},
 		enabled: tableAdmCode !== 0,
 	})
@@ -239,12 +248,16 @@ const RegistrationMain: React.FC = () => {
 					fetch: {
 						headers: {
 							'content-type': 'application/json',
-							//Authorization: `Bearer ${MOCK_TOKEN}`,
 							Authorization: `Bearer ${apiAccessToken}`,
 						},
 					},
 				},
 				data: `${process.env.NEXT_PUBLIC_API_HOSTNAME_TILE}/registered_${year}/tiles.json`,
+				onError(error) {
+					if (error.message.startsWith('loading TileJSON')) {
+						setAlertInfo({ open: true, severity: 'error', message: t('error.somethingWrong') })
+					}
+				},
 				filled: true,
 				lineWidthUnits: 'pixels',
 				pickable: true,
@@ -335,12 +348,16 @@ const RegistrationMain: React.FC = () => {
 					fetch: {
 						headers: {
 							'content-type': 'application/json',
-							//Authorization: `Bearer ${MOCK_TOKEN}`,
 							Authorization: `Bearer ${apiAccessToken}`,
 						},
 					},
 				},
 				data: `${process.env.NEXT_PUBLIC_API_HOSTNAME_TILE}/registered_${year}/tiles.json`,
+				onError(error) {
+					if (error.message.startsWith('loading TileJSON')) {
+						setAlertInfo({ open: true, severity: 'error', message: t('error.somethingWrong') })
+					}
+				},
 				filled: true,
 				lineWidthUnits: 'pixels',
 				pickable: true,
@@ -425,7 +442,7 @@ const RegistrationMain: React.FC = () => {
 				},
 			}),
 		]
-	}, [setMapInfoWindow, year, admCode, tableAdmCode])
+	}, [setMapInfoWindow, year, admCode, tableAdmCode, t])
 
 	const mapLayers: MapLayer[] | undefined = useMemo(() => {
 		return [
@@ -466,6 +483,11 @@ const RegistrationMain: React.FC = () => {
 						? layerSubDistrict
 						: layerDistrict
 					: layerProvince,
+			onError(error) {
+				if (error.message.startsWith('loading TileJSON')) {
+					setAlertInfo({ open: true, severity: 'error', message: t('error.somethingWrong') })
+				}
+			},
 			filled: true,
 			lineWidthUnits: 'pixels',
 			pickable: true,
@@ -754,6 +776,21 @@ const RegistrationMain: React.FC = () => {
 					</div>
 				</div>
 			</div>
+			<Snackbar
+				anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+				open={alertInfo.open}
+				autoHideDuration={6000}
+				onClose={() => setAlertInfo({ ...alertInfo, open: false })}
+				className='w-[300px]'
+			>
+				<Alert
+					onClose={() => setAlertInfo({ ...alertInfo, open: false })}
+					severity={alertInfo.severity}
+					className='w-full'
+				>
+					{alertInfo.message}
+				</Alert>
+			</Snackbar>
 		</div>
 	)
 }

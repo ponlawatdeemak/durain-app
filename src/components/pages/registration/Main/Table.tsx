@@ -27,11 +27,11 @@ export default function RegistrationTable({
 	const { isDesktop } = useResponsive()
 	const { areaUnit } = useAreaUnit()
 
-	if (data?.adms)
+	if (data?.adms.length !== 0)
 		return (
 			<TableContainer
 				className={classNames(
-					'[&::-webkit-scrollbar-track]:bg-green-dark3 h-full [&&::-webkit-scrollbar-thumb]:rounded [&&::-webkit-scrollbar-thumb]:bg-green-light [&::-webkit-scrollbar-track]:rounded [&::-webkit-scrollbar]:w-[5px] [&_.MuiTable-root]:border-separate [&_.MuiTable-root]:border-spacing-y-[4px]',
+					'h-full [&&::-webkit-scrollbar-thumb]:rounded [&&::-webkit-scrollbar-thumb]:bg-green-light [&::-webkit-scrollbar-track]:rounded [&::-webkit-scrollbar-track]:bg-green-dark3 [&::-webkit-scrollbar]:w-[5px] [&_.MuiTable-root]:border-separate [&_.MuiTable-root]:border-spacing-y-[4px]',
 					isDesktop ? 'absolute px-[3px]' : '',
 				)}
 			>
