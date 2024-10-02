@@ -27,11 +27,11 @@ export default function RegistrationTable({
 	const { isDesktop } = useResponsive()
 	const { areaUnit } = useAreaUnit()
 
-	if (data?.adms)
+	if (data?.adms.length !== 0)
 		return (
 			<TableContainer
 				className={classNames(
-					'[&::-webkit-scrollbar-track]:bg-green-dark3 h-full [&&::-webkit-scrollbar-thumb]:rounded [&&::-webkit-scrollbar-thumb]:bg-green-light [&::-webkit-scrollbar-track]:rounded [&::-webkit-scrollbar]:w-[5px] [&_.MuiTable-root]:border-separate [&_.MuiTable-root]:border-spacing-y-[4px]',
+					'h-full [&&::-webkit-scrollbar-thumb]:rounded [&&::-webkit-scrollbar-thumb]:bg-green-light [&::-webkit-scrollbar-track]:rounded [&::-webkit-scrollbar-track]:bg-green-dark3 [&::-webkit-scrollbar]:w-[5px] [&_.MuiTable-root]:border-separate [&_.MuiTable-root]:border-spacing-y-[4px]',
 					isDesktop ? 'absolute px-[3px]' : '',
 				)}
 			>
@@ -52,7 +52,7 @@ export default function RegistrationTable({
 					<TableBody className='[&_.MuiTableCell-root]:px-[16px] [&_.MuiTableCell-root]:py-[12px]'>
 						{data?.adms.map((row) => (
 							<TableRow
-								className='hover:!bg-registerTable-rowHover [&>td]:font-medium'
+								className='hover:cursor-pointer hover:!bg-registerTable-rowHover [&>td]:font-medium'
 								hover
 								tabIndex={-1}
 								key={row.admCode}

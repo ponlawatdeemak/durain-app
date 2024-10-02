@@ -13,7 +13,7 @@ import {
 	RegistrationIcon,
 	RegistrationTableBackIcon,
 } from '@/components/svg/MenuIcon'
-import { Button, CircularProgress, IconButton, MenuItem, Select } from '@mui/material'
+import { Alert, Button, CircularProgress, IconButton, MenuItem, Select, Snackbar } from '@mui/material'
 import { ResponseLanguage } from '@/api/interface'
 import useAreaUnit from '@/store/area-unit'
 import InfoIcon from '@mui/icons-material/Info'
@@ -37,6 +37,7 @@ import hexRgb from 'hex-rgb'
 import { apiAccessToken } from '@/api/core'
 import { RegisterTypeColor } from '@/config/color'
 import CloseIcon from '@mui/icons-material/Close'
+import { AlertInfoType } from '@/components/shared/ProfileForm/interface'
 
 interface MapInfoWindowContentProp {
 	provinceTH: string
@@ -53,7 +54,7 @@ const MapInfoWindowContent: React.FC<{ data: MapInfoWindowContentProp }> = ({ da
 	const language = i18n.language as keyof ResponseLanguage
 	const { setMapInfoWindow } = useMap()
 
-	return language === Languages.TH ? (
+	return (
 		<div className='flex h-[145px] w-[315px] flex-col items-end rounded-[8px] bg-green-light p-1'>
 			<IconButton onClick={() => setMapInfoWindow(null)} className='self-right flex h-[25px] w-[25px]'>
 				<CloseIcon fontSize='small' className='text-white' />
@@ -68,58 +69,28 @@ const MapInfoWindowContent: React.FC<{ data: MapInfoWindowContentProp }> = ({ da
 							<PopupRegistrationPin />
 						</div>
 						<p className='flex text-white'>
-							ตำบล {data.subDistrictTH} อำเภอ {data.districtTH} จังหวัด {data.provinceTH}
+							{language === Languages.TH
+								? `ตำบล${data.subDistrictTH} อำเภอ${data.districtTH} จังหวัด${data.provinceTH}`
+								: `${data.subDistrictEN}, ${data.districtEN}, ${data.provinceEN}`}
 						</p>
 					</div>
-					{data.status === RegisterType.Registered ? (
-						<div className='flex w-max gap-2 rounded-[4px] bg-white px-2 py-1'>
-							<PopupRegistrationChecked />
-							<p className='text-[16px] font-medium text-primary'>{t('registration:registeredArea')}</p>
-						</div>
-					) : (
-						<div className='flex w-max gap-2 rounded-[4px] bg-white px-2 py-1'>
-							<PopupRegistrationCross />
-							<p className='text-[16px] font-medium text-registerType-nonRegistered'>
-								{t('registration:unregisteredArea')}
-							</p>
-						</div>
-					)}
-				</div>
-			</div>
-		</div>
-	) : (
-		<div className='flex h-[145px] w-[315px] flex-col items-end rounded-[8px] bg-green-light p-1'>
-			<IconButton onClick={() => setMapInfoWindow(null)} className='self-right flex h-[25px] w-[25px]'>
-				<CloseIcon fontSize='small' className='text-white' />
-			</IconButton>
-			<div className={`flex h-full w-full gap-2 px-4 py-1 text-[14px] font-medium`}>
-				<div className='flex h-full'>
-					<PopupReistrationLogo />
-				</div>
-				<div className='flex flex-col gap-2'>
-					<div className='flex gap-2'>
-						<div className='pt-[1px]'>
-							<PopupRegistrationPin />
-						</div>
-						<p className='flex text-white'>
-							{data.subDistrictEN}, {data.districtEN}, {data.provinceEN}
-						</p>
+					<div className='flex w-max gap-2 rounded-[4px] bg-white px-2 py-1'>
+						{data.status === RegisterType.Registered ? (
+							<>
+								<PopupRegistrationChecked />
+								<p className='text-[16px] font-medium text-primary'>
+									{t('registration:registeredArea')}
+								</p>
+							</>
+						) : (
+							<>
+								<PopupRegistrationCross />
+								<p className='text-[16px] font-medium text-registerType-nonRegistered'>
+									{t('registration:unregisteredArea')}
+								</p>
+							</>
+						)}
 					</div>
-					{data.status === RegisterType.Registered ? (
-						<div className='flex w-max gap-2 rounded-[4px] bg-white px-2 py-1'>
-							<PopupRegistrationChecked />
-							<p className='text-[16px] font-medium text-registerType-registered'>
-								{t('registration:registeredArea')}
-							</p>
-						</div>
-					) : (
-						<div className='flex w-max gap-2 rounded-[4px] bg-white px-2 py-1'>
-							<PopupRegistrationCross />
-							<p className='text-[16px] font-medium text-registerType-nonRegistered'>
-								{t('registration:unregisteredArea')}
-							</p>
-						</div>
-					)}
 				</div>
 			</div>
 		</div>
@@ -135,59 +106,67 @@ const RegistrationMain: React.FC = () => {
 	const [tableAdmCode, setTableAdmCode] = useState(0)
 	const [showBack, setShowBack] = useState(false)
 	const [district, setDistrict] = useState<ResponseLanguage>()
+	const [alertInfo, setAlertInfo] = React.useState<AlertInfoType>({
+		open: false,
+		severity: 'success',
+		message: '',
+	})
 
 	const { setExtent, setMapInfoWindow } = useMap()
 	const { setLayers, addLayer, getLayer, removeLayer } = useLayerStore()
 
-	const {
-		data: availabilityData,
-		isLoading: isAvailabilityDataLoading,
-		error: availabilityDataError,
-	} = useQuery({
+	const { data: availabilityData, isLoading: isAvailabilityDataLoading } = useQuery({
 		queryKey: ['availabilityRegistered'],
 		queryFn: async () => {
-			const res = await service.registration.availabilityRegistered()
-			if (!year) {
-				setYear(res.data![0].year)
+			try {
+				const res = await service.registration.availabilityRegistered()
+				if (!year) {
+					setYear(res.data![0].year)
+				}
+				return res.data
+			} catch {
+				setAlertInfo({ open: true, severity: 'error', message: t('error.somethingWrong') })
 			}
-			return res.data
 		},
 	})
 
-	const {
-		data: registeredData,
-		isLoading: isRegisteredDataLoading,
-		error: registeredDataError,
-	} = useQuery({
+	const { data: registeredData, isLoading: isRegisteredDataLoading } = useQuery({
 		queryKey: ['overviewRegistered', year, admCode],
 		queryFn: async () => {
-			setTableAdmCode(0)
-			const res = await service.registration.overviewRegistered({ year: year, admCode: admCode ?? undefined })
-			if (admCode !== 0) {
-				service.overview.locationExtent(admCode).then((res) => {
-					if (res.data) {
-						setExtent(res.data.extent)
-					}
+			try {
+				setTableAdmCode(0)
+				const res = await service.registration.overviewRegistered({
+					year: year,
+					admCode: admCode ?? undefined,
 				})
-			} else {
-				setExtent([97.3758964376, 5.69138418215, 105.589038527, 20.4178496363])
+				if (admCode !== 0) {
+					service.overview.locationExtent(admCode).then((res) => {
+						if (res.data) {
+							setExtent(res.data.extent)
+						}
+					})
+				} else {
+					setExtent([97.3758964376, 5.69138418215, 105.589038527, 20.4178496363])
+				}
+				return res.data
+			} catch {
+				setAlertInfo({ open: true, severity: 'error', message: t('error.somethingWrong') })
 			}
-			return res.data
 		},
 	})
 
-	const {
-		data: tableInnerData,
-		isLoading: isTableInnerDataLoading,
-		error: tableInnerDataError,
-	} = useQuery({
+	const { data: tableInnerData, isLoading: isTableInnerDataLoading } = useQuery({
 		queryKey: ['overviewRegisteredTable', tableAdmCode],
 		queryFn: async () => {
-			const res = await service.registration.overviewRegistered({
-				year: year,
-				admCode: tableAdmCode ?? undefined,
-			})
-			return res.data
+			try {
+				const res = await service.registration.overviewRegistered({
+					year: year,
+					admCode: tableAdmCode ?? undefined,
+				})
+				return res.data
+			} catch {
+				setAlertInfo({ open: true, severity: 'error', message: t('error.somethingWrong') })
+			}
 		},
 		enabled: tableAdmCode !== 0,
 	})
@@ -269,12 +248,16 @@ const RegistrationMain: React.FC = () => {
 					fetch: {
 						headers: {
 							'content-type': 'application/json',
-							//Authorization: `Bearer ${MOCK_TOKEN}`,
 							Authorization: `Bearer ${apiAccessToken}`,
 						},
 					},
 				},
 				data: `${process.env.NEXT_PUBLIC_API_HOSTNAME_TILE}/registered_${year}/tiles.json`,
+				onError(error) {
+					if (error.message.startsWith('loading TileJSON')) {
+						setAlertInfo({ open: true, severity: 'error', message: t('error.somethingWrong') })
+					}
+				},
 				filled: true,
 				lineWidthUnits: 'pixels',
 				pickable: true,
@@ -289,8 +272,9 @@ const RegistrationMain: React.FC = () => {
 						}
 					} else {
 						if (
-							String(admCode) === String(d.properties.admCode).substring(0, 2) ||
-							String(tableAdmCode) === String(d.properties.admCode).substring(0, 2)
+							(String(admCode) === String(d.properties.admCode).substring(0, 2) && tableAdmCode === 0) ||
+							String(tableAdmCode) === String(d.properties.admCode).substring(0, 2) ||
+							String(tableAdmCode) === String(d.properties.admCode).substring(0, 4)
 						) {
 							if (d.properties.status === RegisterType.Registered) {
 								const array = hexRgb(RegisterTypeColor.registered, { format: 'array' })
@@ -315,8 +299,9 @@ const RegistrationMain: React.FC = () => {
 						}
 					} else {
 						if (
-							String(admCode) === String(d.properties.admCode).substring(0, 2) ||
-							String(tableAdmCode) === String(d.properties.admCode).substring(0, 2)
+							(String(admCode) === String(d.properties.admCode).substring(0, 2) && tableAdmCode === 0) ||
+							String(tableAdmCode) === String(d.properties.admCode).substring(0, 2) ||
+							String(tableAdmCode) === String(d.properties.admCode).substring(0, 4)
 						) {
 							if (d.properties.status === RegisterType.Registered) {
 								const array = hexRgb(RegisterTypeColor.registered, { format: 'array' })
@@ -343,17 +328,17 @@ const RegistrationMain: React.FC = () => {
 						}
 						setMapInfoWindow({
 							positon: {
-								x: info.x,
-								y: info.y,
+								x: 520,
+								y: 265,
 							},
 							children: <MapInfoWindowContent data={data} />,
 						})
 					}
 				},
 				updateTriggers: {
-					getFillColor: [admCode, year],
-					getLineColor: [admCode, year],
-					getLineWidth: [admCode, year],
+					getFillColor: [admCode, year, tableAdmCode],
+					getLineColor: [admCode, year, tableAdmCode],
+					getLineWidth: [admCode, year, tableAdmCode],
 				},
 			}),
 			new MVTLayer({
@@ -363,12 +348,16 @@ const RegistrationMain: React.FC = () => {
 					fetch: {
 						headers: {
 							'content-type': 'application/json',
-							//Authorization: `Bearer ${MOCK_TOKEN}`,
 							Authorization: `Bearer ${apiAccessToken}`,
 						},
 					},
 				},
 				data: `${process.env.NEXT_PUBLIC_API_HOSTNAME_TILE}/registered_${year}/tiles.json`,
+				onError(error) {
+					if (error.message.startsWith('loading TileJSON')) {
+						setAlertInfo({ open: true, severity: 'error', message: t('error.somethingWrong') })
+					}
+				},
 				filled: true,
 				lineWidthUnits: 'pixels',
 				pickable: true,
@@ -383,8 +372,9 @@ const RegistrationMain: React.FC = () => {
 						}
 					} else {
 						if (
-							String(admCode) === String(d.properties.admCode).substring(0, 2) ||
-							String(tableAdmCode) === String(d.properties.admCode).substring(0, 2)
+							(String(admCode) === String(d.properties.admCode).substring(0, 2) && tableAdmCode === 0) ||
+							String(tableAdmCode) === String(d.properties.admCode).substring(0, 2) ||
+							String(tableAdmCode) === String(d.properties.admCode).substring(0, 4)
 						) {
 							if (d.properties.status === RegisterType.NonRegistered) {
 								const array = hexRgb(RegisterTypeColor.nonRegistered, { format: 'array' })
@@ -409,8 +399,9 @@ const RegistrationMain: React.FC = () => {
 						}
 					} else {
 						if (
-							String(admCode) === String(d.properties.admCode).substring(0, 2) ||
-							String(tableAdmCode) === String(d.properties.admCode).substring(0, 2)
+							(String(admCode) === String(d.properties.admCode).substring(0, 2) && tableAdmCode === 0) ||
+							String(tableAdmCode) === String(d.properties.admCode).substring(0, 2) ||
+							String(tableAdmCode) === String(d.properties.admCode).substring(0, 4)
 						) {
 							if (d.properties.status === RegisterType.NonRegistered) {
 								const array = hexRgb(RegisterTypeColor.nonRegistered, { format: 'array' })
@@ -437,8 +428,8 @@ const RegistrationMain: React.FC = () => {
 						}
 						setMapInfoWindow({
 							positon: {
-								x: info.x,
-								y: info.y,
+								x: 520,
+								y: 265,
 							},
 							children: <MapInfoWindowContent data={data} />,
 						})
@@ -451,7 +442,7 @@ const RegistrationMain: React.FC = () => {
 				},
 			}),
 		]
-	}, [setMapInfoWindow, year, admCode, tableAdmCode])
+	}, [setMapInfoWindow, year, admCode, tableAdmCode, t])
 
 	const mapLayers: MapLayer[] | undefined = useMemo(() => {
 		return [
@@ -486,11 +477,21 @@ const RegistrationMain: React.FC = () => {
 					},
 				},
 			},
-			data: admCode !== 0 || tableAdmCode !== 0 ? layerDistrict : layerProvince,
+			data:
+				admCode !== 0 || tableAdmCode !== 0
+					? String(tableAdmCode).length === 4
+						? layerSubDistrict
+						: layerDistrict
+					: layerProvince,
+			onError(error) {
+				if (error.message.startsWith('loading TileJSON')) {
+					setAlertInfo({ open: true, severity: 'error', message: t('error.somethingWrong') })
+				}
+			},
 			filled: true,
 			lineWidthUnits: 'pixels',
 			pickable: true,
-			getFillColor(d: any) {
+			getFillColor(d) {
 				if (admCode === 0 && tableAdmCode === 0) {
 					if (mapBoundaryAdmCodes?.includes(d.properties.provinceCode)) {
 						return [226, 226, 226, 100]
@@ -498,7 +499,11 @@ const RegistrationMain: React.FC = () => {
 						return [0, 0, 0, 0]
 					}
 				} else {
-					if (admCode === d.properties.provinceCode || tableAdmCode === d.properties.provinceCode) {
+					if (
+						(admCode === d.properties.provinceCode && tableAdmCode === 0) ||
+						tableAdmCode === d.properties.provinceCode ||
+						tableAdmCode === d.properties.districtCode
+					) {
 						return [226, 226, 226, 100]
 					} else {
 						return [0, 0, 0, 0]
@@ -506,7 +511,6 @@ const RegistrationMain: React.FC = () => {
 				}
 			},
 			getLineColor(d) {
-				console.log(d)
 				if (admCode === 0 && tableAdmCode === 0) {
 					if (mapBoundaryAdmCodes?.includes(d.properties.provinceCode)) {
 						return [0, 0, 0, 255]
@@ -514,7 +518,11 @@ const RegistrationMain: React.FC = () => {
 						return [0, 0, 0, 0]
 					}
 				} else {
-					if (admCode === d.properties.provinceCode || tableAdmCode === d.properties.provinceCode) {
+					if (
+						(admCode === d.properties.provinceCode && tableAdmCode === 0) ||
+						tableAdmCode === d.properties.provinceCode ||
+						tableAdmCode === d.properties.districtCode
+					) {
 						return [0, 0, 0, 255]
 					} else {
 						return [0, 0, 0, 0]
@@ -559,10 +567,6 @@ const RegistrationMain: React.FC = () => {
 			})
 		}
 	}, [tableAdmCode, admCode, setExtent])
-
-	useEffect(() => {
-		// initTileLayer()
-	}, [])
 
 	useEffect(() => {
 		if (layers && registeredData) {
@@ -660,7 +664,7 @@ const RegistrationMain: React.FC = () => {
 										</p>
 									}
 								>
-									<InfoIcon fontSize='small' className='text-tooltip' />
+									<InfoIcon fontSize='small' className='text-tooltip hover:cursor-pointer' />
 								</StyledTooltip>
 							</div>
 						</div>
@@ -740,18 +744,18 @@ const RegistrationMain: React.FC = () => {
 									? t('registration:provincialRegistrationData')
 									: tableAdmCode === 0
 										? language === Languages.TH
-											? `${t('registration:registrationData')}จ.${selectedAdm?.[language] ?? ''}`
+											? `${t('registration:registrationData')} จ.${selectedAdm?.[language] ?? ''}`
 											: `${selectedAdm?.[language] ?? ''} Province ${t('registration:registrationData')}`
 										: admCode === 0
 											? String(tableAdmCode).length === 4
 												? language === Languages.TH
-													? `${t('registration:registrationData')}อ.${district?.[language] ?? ''}`
+													? `${t('registration:registrationData')} อ.${district?.[language] ?? ''}`
 													: `${district?.[language] ?? ''} District ${t('registration:registrationData')}`
 												: language === Languages.TH
-													? `${t('registration:registrationData')}จ.${selectedTableAdm?.[language] ?? ''}`
+													? `${t('registration:registrationData')} จ.${selectedTableAdm?.[language] ?? ''}`
 													: `${selectedTableAdm?.[language] ?? ''} Province ${t('registration:registrationData')}`
 											: language === Languages.TH
-												? `${t('registration:registrationData')}อ.${selectedTableAdm?.[language] ?? ''}`
+												? `${t('registration:registrationData')} อ.${selectedTableAdm?.[language] ?? ''}`
 												: `${selectedTableAdm?.[language] ?? ''} District ${t('registration:registrationData')}`}
 							</div>
 						</p>
@@ -772,6 +776,21 @@ const RegistrationMain: React.FC = () => {
 					</div>
 				</div>
 			</div>
+			<Snackbar
+				anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+				open={alertInfo.open}
+				autoHideDuration={6000}
+				onClose={() => setAlertInfo({ ...alertInfo, open: false })}
+				className='w-[300px]'
+			>
+				<Alert
+					onClose={() => setAlertInfo({ ...alertInfo, open: false })}
+					severity={alertInfo.severity}
+					className='w-full'
+				>
+					{alertInfo.message}
+				</Alert>
+			</Snackbar>
 		</div>
 	)
 }

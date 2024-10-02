@@ -94,5 +94,9 @@
         "street":"Street",
         "satellite":"Satellite",
         "hybrid":"Hybrid"
-    }
+    },
+
+    "error": {
+		"somethingWrong": "Something went wrong. Please check the information again."
+	}
 }
