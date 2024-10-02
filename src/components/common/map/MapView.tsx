@@ -5,7 +5,7 @@ import MapGoogle from './MapGoogle'
 import MapLibre from './MapLibre'
 import MapTools from './MapTools'
 import { useMap } from './context/map'
-import { Button, Paper } from '@mui/material'
+import { Paper } from '@mui/material'
 import { PropsWithChildren, useEffect } from 'react'
 import useLayerStore from './store/map'
 import MapPin from './layer/MapPin'
@@ -14,6 +14,7 @@ import { BASEMAP } from '@deck.gl/carto'
 import { IconLayer } from '@deck.gl/layers'
 import { MVTLayer } from '@deck.gl/geo-layers'
 import { Layer } from '@deck.gl/core'
+import useResponsive from '@/hook/responsive'
 
 const CURRENT_LOCATION_ZOOM = 14
 const DEFAULT = {
@@ -134,9 +135,15 @@ export interface InfoWindowProps extends MapInfoWindow, PropsWithChildren {
 }
 
 const InfoWindow: React.FC<InfoWindowProps> = ({ positon, children, onClose }) => {
-	if (!positon) return null
+	const { isDesktop } = useResponsive()
+
 	return (
-		<Paper className={classNames('absolute z-10 !rounded-[8px]')} style={{ left: positon.x, top: positon.y }}>
+		<Paper
+			className={classNames(
+				'absolute top-12 z-10 !rounded-[8px]',
+				isDesktop ? 'right-20' : 'left-[50%] -translate-x-1/2',
+			)}
+		>
 			{children}
 		</Paper>
 	)
