@@ -1,11 +1,10 @@
 import { create } from 'zustand'
 import { Layer, LayersList } from '@deck.gl/core'
 import type { MapboxOverlay } from '@deck.gl/mapbox'
-import type { GoogleMapsOverlay } from '@deck.gl/google-maps'
 
 export type LayerStore = {
-	overlay?: MapboxOverlay | GoogleMapsOverlay
-	setOverlay: (overlay: MapboxOverlay | GoogleMapsOverlay) => void
+	overlay?: MapboxOverlay
+	setOverlay: (overlay: MapboxOverlay) => void
 	layers: LayersList
 	addLayer: (layer: Layer | undefined) => void
 	setLayers: (layers: Layer[] | undefined) => void

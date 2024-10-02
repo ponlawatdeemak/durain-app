@@ -1,21 +1,13 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import {
-	Box,
-	ToggleButton,
-	ToggleButtonGroup,
-	Typography,
-	IconButton,
-	Popover,
-	Button,
-	styled,
-	Switch,
-} from '@mui/material'
+import React, { useCallback, useEffect, useState } from 'react'
+import { Box, ToggleButton, ToggleButtonGroup, Typography, IconButton, Popover, styled, Switch } from '@mui/material'
 import { useTranslation } from 'next-i18next'
-import { BaseMap, BasemapType, MapLayer } from './interface/map'
-import useLayerStore from './store/map'
-import { layerIdConfig } from '@/config/app.config'
+
 import { Layer } from '@deck.gl/core'
 import { MapLayerIcon, MapMeasureIcon, MapPinIcon, MapZoomInIcon, MapZoomOutIcon } from '@/components/svg/MenuIcon'
+import { BaseMap, BasemapType, MapLayer } from '../interface/map'
+import useLayerStore from '../store/map'
+import Measurement from './measurement'
+import { useMap } from '../context/map'
 import classNames from 'classnames'
 
 const basemapList: BaseMap[] = [
@@ -27,8 +19,6 @@ const basemapList: BaseMap[] = [
 interface MapToolsProps {
 	layerList?: MapLayer[]
 	onBasemapChanged?: (basemap: BasemapType) => void
-	onZoomIn?: () => void
-	onZoomOut?: () => void
 	onGetLocation?: (coords: GeolocationCoordinates) => void
 	currentBaseMap: BasemapType
 	legendSelectorLabel?: string
@@ -37,17 +27,18 @@ interface MapToolsProps {
 const MapTools: React.FC<MapToolsProps> = ({
 	layerList,
 	onBasemapChanged,
-	onZoomIn,
-	onZoomOut,
 	onGetLocation,
 	currentBaseMap,
 	legendSelectorLabel,
 }) => {
 	const { t } = useTranslation()
-	const { layers, getLayer, getLayers, setLayers, removeLayer } = useLayerStore()
+	const { getLayer, getLayers, setLayers, removeLayer } = useLayerStore()
+	const { mapLibreInstance } = useMap()
+
 	const [basemap, setBasemap] = useState<BasemapType | null>(currentBaseMap ?? null)
 	const [anchorBasemap, setAnchorBasemap] = useState<HTMLButtonElement | null>(null)
 	const [anchorLegend, setAnchorLegend] = useState<HTMLButtonElement | null>(null)
+	const [showMeasure, setShowMeasure] = useState(false)
 	const [switchState, setSwichState] = useState(
 		layerList!.map((item) => {
 			return { id: item.id, isOn: true }
@@ -63,8 +54,6 @@ const MapTools: React.FC<MapToolsProps> = ({
 			}
 		})
 	}, [getLayer, layerList, removeLayer])
-
-	const currentLocationIsActive = useMemo(() => !!getLayer(layerIdConfig.toolCurrentLocation), [layers, getLayer])
 
 	const onToggleLayer = useCallback(
 		(layerId: string) => {
@@ -158,6 +147,18 @@ const MapTools: React.FC<MapToolsProps> = ({
 		},
 	}))
 
+	const onMeasure = () => {
+		setShowMeasure((prev) => !prev)
+	}
+
+	const onZoomIn = () => {
+		mapLibreInstance?.zoomIn()
+	}
+
+	const onZoomOut = () => {
+		mapLibreInstance?.zoomOut()
+	}
+
 	return (
 		<>
 			{/* Zoom Controls */}
@@ -168,7 +169,7 @@ const MapTools: React.FC<MapToolsProps> = ({
 				<IconButton className='box-shadow rounded-lg bg-white' onClick={onZoomOut}>
 					<MapZoomOutIcon />
 				</IconButton>
-				<IconButton className='box-shadow rounded-lg bg-white'>
+				<IconButton className='box-shadow rounded-lg bg-white' onClick={onMeasure}>
 					<MapMeasureIcon />
 				</IconButton>
 				<IconButton className='box-shadow rounded-lg bg-white' onClick={handleGetLocation}>
@@ -300,6 +301,8 @@ const MapTools: React.FC<MapToolsProps> = ({
 					</Popover>
 				</>
 			)}
+
+			{mapLibreInstance && <Measurement map={mapLibreInstance} open={showMeasure} setOpen={setShowMeasure} />}
 		</>
 	)
 }
