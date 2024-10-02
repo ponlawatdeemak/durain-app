@@ -252,7 +252,7 @@ const RegistrationMain: React.FC = () => {
 						},
 					},
 				},
-				data: `${process.env.NEXT_PUBLIC_API_HOSTNAME_TILE}/registered_${year}/tiles.json`,
+				data: tileLayer.registerLayer(year),
 				onError(error) {
 					if (error.message.startsWith('loading TileJSON')) {
 						setAlertInfo({ open: true, severity: 'error', message: t('error.somethingWrong') })
@@ -352,7 +352,7 @@ const RegistrationMain: React.FC = () => {
 						},
 					},
 				},
-				data: `${process.env.NEXT_PUBLIC_API_HOSTNAME_TILE}/registered_${year}/tiles.json`,
+				data: tileLayer.registerLayer(year),
 				onError(error) {
 					if (error.message.startsWith('loading TileJSON')) {
 						setAlertInfo({ open: true, severity: 'error', message: t('error.somethingWrong') })

@@ -88,7 +88,7 @@ const OverviewMain: React.FC = () => {
 						},
 					},
 				},
-				data: `${process.env.NEXT_PUBLIC_API_HOSTNAME_TILE}/durian_${year}/tiles.json`,
+				data: tileLayer.durianLayer(year),
 				filled: true,
 				lineWidthUnits: 'pixels',
 				pickable: true,
