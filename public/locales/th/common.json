@@ -88,14 +88,14 @@
 	"durianPlantationData": "ข้อมูลพื้นที่ปลูกทุเรียน",
 	"plantationArea": "พื้นที่ปลูก",
 
-    "map":{
-        "mapType":"ประเภทแผนที่",
-        "street":"เส้นถนน",
-        "satellite":"ภูมิประเทศ",
-        "hybrid":"ผสม"
-    },
+	"map": {
+		"mapType": "ประเภทแผนที่",
+		"street": "เส้นถนน",
+		"satellite": "มืด",
+		"hybrid": "ภูมิประเทศ"
+	},
 
-    "error": {
+	"error": {
 		"somethingWrong": "เกิดข้อผิดพลาด กรุณาตรวจสอบข้อมูลอีกครั้ง"
 	}
 }
