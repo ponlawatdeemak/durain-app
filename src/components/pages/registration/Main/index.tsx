@@ -804,7 +804,7 @@ const RegistrationMain: React.FC = () => {
 							isDesktop ? 'flex-grow p-[24px]' : 'px-[16px] py-[24px]',
 						)}
 					>
-						<p className='flex w-full items-center text-[18px] font-medium'>
+						<div className='flex w-full items-center text-[18px] font-medium'>
 							<div className='flex h-full items-start pt-[3px]'>
 								<IconButton className='w-[24px] !p-0' onClick={handleBackClick}>
 									{showBack && <RegistrationTableBackIcon width={24} />}
@@ -829,7 +829,7 @@ const RegistrationMain: React.FC = () => {
 												? `${t('registration:registrationData')} อ.${selectedTableAdmName?.[language] ?? ''}`
 												: `${selectedTableAdmName?.[language] ?? ''} District ${t('registration:registrationData')}`}
 							</div>
-						</p>
+						</div>
 						<div
 							className={classNames(
 								'my-[16px] box-border flex w-full flex-grow',
