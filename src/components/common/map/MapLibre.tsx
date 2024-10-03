@@ -16,11 +16,17 @@ const DeckGLOverlay: FC = () => {
 	useEffect(() => {
 		if (overlay instanceof MapboxOverlay) {
 			const temp = layers.map((item) => {
+				const newProp = {
+					...item.props,
+					beforeId: 'custom-referer-layer',
+				} as any
+
 				if (item instanceof IconLayer) {
-					return new IconLayer({ ...item.props })
+					newProp.data = item.props.data
+					return new IconLayer(newProp)
 				}
 				if (item instanceof MVTLayer) {
-					return new MVTLayer({ ...item.props })
+					return new MVTLayer(newProp)
 				}
 				return item
 			})
@@ -44,7 +50,7 @@ interface MapLibreProps extends MapInterface {
 }
 
 const MapLibre: FC<MapLibreProps> = ({ viewState, mapStyle, onViewStateChange }) => {
-	const { setMapLibre } = useMapStore()
+	const { setMapLibre, mapLibre } = useMapStore()
 
 	// initial google basemap style
 	useEffect(() => {
@@ -86,7 +92,7 @@ const MapLibre: FC<MapLibreProps> = ({ viewState, mapStyle, onViewStateChange })
 			onMove={(e) => onViewStateChange?.(e.viewState)}
 			onLoad={onLoad}
 		>
-			<DeckGLOverlay />
+			{mapLibre && <DeckGLOverlay />}
 		</Map>
 	)
 }

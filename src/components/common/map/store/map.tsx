@@ -11,9 +11,9 @@ export type MapStore = {
 
 	overlay?: MapboxOverlay
 	setOverlay: (value: MapboxOverlay) => void
-	layers: LayersList
-	addLayer: (value: Layer | undefined) => void
-	setLayers: (value: Layer[] | undefined) => void
+	layers: Layer[]
+	addLayer: (value: Layer) => void
+	setLayers: (value: Layer[]) => void
 	getLayer: (value: string) => Layer | undefined
 	removeLayer: (value: string) => void
 }
