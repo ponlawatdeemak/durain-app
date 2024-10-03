@@ -242,7 +242,12 @@ const RegistrationMain: React.FC = () => {
 			setTableAdmCode(rowAdmCode)
 			setShowBack(true)
 		} else {
-			return
+			setSubDistrictCode(rowAdmCode)
+			service.overview.locationExtent(rowAdmCode).then((res) => {
+				if (res.data) {
+					setExtent(res.data.extent)
+				}
+			})
 		}
 	}
 
@@ -647,10 +652,57 @@ const RegistrationMain: React.FC = () => {
 				}
 			})
 
-			const province = getInitialLayer().find((item) => item.id === 'boundary')!.layer
-			setLayers([province, ...(layers as any[])])
+			const reload = getInitialLayer().map((item) => item.layer)
+			setLayers(reload)
+			setSubDistrictCode(0)
 		}
 	}, [admCode, getInitialLayer, getLayer, layers, mapLayers, registeredData, removeLayer, setLayers, year])
+
+	useEffect(() => {
+		const layer = getLayer('subDistrict')
+		if (layer) {
+			removeLayer('subDistrict')
+		}
+
+		const subDistrictLayer = new MVTLayer({
+			id: 'subDistrict',
+			name: 'subDistrict',
+			loadOptions: {
+				fetch: {
+					headers: {
+						'content-type': 'application/json',
+						Authorization: `Bearer ${apiAccessToken}`,
+					},
+				},
+			},
+			data: tileLayer.subDistrict,
+
+			onError(error) {
+				if (error.message.startsWith('loading TileJSON')) {
+					setAlertInfo({ open: true, severity: 'error', message: t('error.somethingWrong') })
+				}
+			},
+			filled: true,
+			lineWidthUnits: 'pixels',
+			pickable: false,
+			getFillColor(d) {
+				return [0, 0, 0, 0]
+			},
+			getLineColor(d) {
+				if (d.properties.subDistrictCode === subDistrictCode) {
+					return [255, 0, 0, 255]
+				} else {
+					return [0, 0, 0, 0]
+				}
+			},
+			updateTriggers: {
+				getFillColor: subDistrictCode,
+				getLineColor: subDistrictCode,
+				getLineWidth: subDistrictCode,
+			},
+		})
+		addLayer(subDistrictLayer)
+	}, [addLayer, getLayer, removeLayer, subDistrictCode, t])
 
 	return (
 		<div
