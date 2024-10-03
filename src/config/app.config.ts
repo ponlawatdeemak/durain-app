@@ -1,3 +1,5 @@
+import { LngLatBoundsLike } from 'maplibre-gl'
+
 export enum AppPath {
 	Overview = '/overview',
 	Analyze = '/analyze',
@@ -25,3 +27,5 @@ export const layerIdConfig = {
 	toolCurrentLocation: 'tool-current-layer',
 	toolMeasurement: 'tool-measurement-layer',
 }
+
+export const thaiExtent: LngLatBoundsLike = [97.3758964376, 5.69138418215, 105.589038527, 20.4178496363]
