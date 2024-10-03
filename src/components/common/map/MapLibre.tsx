@@ -1,25 +1,33 @@
 import 'maplibre-gl/dist/maplibre-gl.css'
-import React, { useEffect } from 'react'
+import React, { FC, memo, useCallback, useEffect } from 'react'
 import { Map, useControl } from 'react-map-gl/maplibre'
 import { MapboxOverlay } from '@deck.gl/mapbox'
-import useLayerStore from './store/map'
+import useMapStore from './store/map'
 import { MapInterface } from './interface/map'
-import { useMap } from './context/map'
-import { StyleSpecification } from 'maplibre-gl'
+import maplibregl, { MapLibreEvent, StyleSpecification } from 'maplibre-gl'
+import { googleProtocol } from '@/utils/google'
+import { IconLayer } from '@deck.gl/layers'
+import { MVTLayer } from '@deck.gl/geo-layers'
 
-interface MapLibreProps extends MapInterface {
-	mapStyle: string | StyleSpecification
-}
-
-const DeckGLOverlay = () => {
-	const layers = useLayerStore((state) => state.layers)
-	const setOverlay = useLayerStore((state) => state.setOverlay)
-	const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay({}))
+const DeckGLOverlay: FC = () => {
+	const { layers } = useMapStore()
+	const setOverlay = useMapStore((state) => state.setOverlay)
+	const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay({ interleaved: true }))
 	useEffect(() => {
 		if (overlay instanceof MapboxOverlay) {
-			overlay.setProps({ layers })
+			const temp = layers.map((item) => {
+				if (item instanceof IconLayer) {
+					return new IconLayer({ ...item.props })
+				}
+				if (item instanceof MVTLayer) {
+					return new MVTLayer({ ...item.props })
+				}
+				return item
+			})
+			overlay.setProps({ layers: temp })
 		}
 	}, [layers, overlay])
+
 	useEffect(() => {
 		if (overlay instanceof MapboxOverlay) {
 			setOverlay(overlay)
@@ -31,21 +39,43 @@ const DeckGLOverlay = () => {
 	return null
 }
 
-export default function MapLibre({ viewState, mapStyle, onViewStateChange }: MapLibreProps) {
-	const overlay = useLayerStore((state) => state.overlay)
-	const { setMapLibreInstance } = useMap()
+interface MapLibreProps extends MapInterface {
+	mapStyle: string | StyleSpecification
+}
 
+const MapLibre: FC<MapLibreProps> = ({ viewState, mapStyle, onViewStateChange }) => {
+	const { setMapLibre } = useMapStore()
+
+	// initial google basemap style
+	useEffect(() => {
+		maplibregl.addProtocol('google', googleProtocol)
+	}, [])
+
+	// remove map instance in context
 	useEffect(() => {
 		return () => {
-			overlay?.setProps({ layers: [] })
+			setMapLibre(null)
 		}
-	}, [overlay])
+	}, [setMapLibre])
 
-	useEffect(() => {
-		return () => {
-			setMapLibreInstance(null)
-		}
-	}, [setMapLibreInstance])
+	const onLoad = useCallback(
+		(event: MapLibreEvent) => {
+			// add reference layer for all deck.gl layer under this layer and display draw layer to top
+			const map = event.target
+			map.addSource('custom-referer-source', {
+				type: 'geojson',
+				data: { type: 'FeatureCollection', features: [] },
+			})
+			map.addLayer({
+				id: 'custom-referer-layer',
+				type: 'symbol',
+				source: 'custom-referer-source',
+				layout: { visibility: 'none' },
+			})
+			setMapLibre(map)
+		},
+		[setMapLibre],
+	)
 
 	return (
 		<Map
@@ -54,9 +84,11 @@ export default function MapLibre({ viewState, mapStyle, onViewStateChange }: Map
 			preserveDrawingBuffer={true}
 			zoom={viewState?.zoom}
 			onMove={(e) => onViewStateChange?.(e.viewState)}
-			ref={(ref) => setMapLibreInstance(ref?.getMap() || null)}
+			onLoad={onLoad}
 		>
 			<DeckGLOverlay />
 		</Map>
 	)
 }
+
+export default memo(MapLibre)

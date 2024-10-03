@@ -24,10 +24,9 @@ import classNames from 'classnames'
 import { useQuery } from '@tanstack/react-query'
 import { Languages, RegisterType } from '@/enum'
 import RegistrationTable from './Table'
-import { useMap } from '@/components/common/map/context/map'
-import useLayerStore from '@/components/common/map/store/map'
+import useMapStore from '@/components/common/map/store/map'
 import { MVTLayer } from '@deck.gl/geo-layers'
-import { tileLayer } from '@/config/app.config'
+import { thaiExtent, tileLayer } from '@/config/app.config'
 import { MapLayer } from '@/components/common/map/interface/map.jsx'
 import MapView from '@/components/common/map/MapView'
 import hexRgb from 'hex-rgb'
@@ -38,6 +37,7 @@ import { AlertInfoType } from '@/components/shared/ProfileForm/interface'
 
 import { IconLayer } from '@deck.gl/layers'
 import { getPin } from '@/utils/pin'
+import { PickingInfo } from '@deck.gl/core'
 
 interface MapInfoWindowContentProp {
 	provinceTH: string
@@ -54,14 +54,14 @@ const selectPinId = 'selected-pin'
 const MapInfoWindowContent: React.FC<{ data: MapInfoWindowContentProp }> = ({ data }) => {
 	const { t, i18n } = useTranslation()
 	const language = i18n.language as keyof ResponseLanguage
-	const { setMapInfoWindow } = useMap()
-	const { removeLayer } = useLayerStore()
+
+	const { removeLayer, setInfoWindow } = useMapStore()
 
 	return (
 		<div className='flex h-[145px] w-[315px] flex-col items-end rounded-[8px] bg-green-light p-1'>
 			<IconButton
 				onClick={() => {
-					setMapInfoWindow(null)
+					setInfoWindow(null)
 					removeLayer(selectPinId)
 				}}
 				className='self-right flex h-[25px] w-[25px]'
@@ -125,8 +125,7 @@ const RegistrationMain: React.FC = () => {
 		message: '',
 	})
 
-	const { setExtent, setMapInfoWindow, setCenter, mapInfoWindow } = useMap()
-	const { setLayers, getLayer, removeLayer, addLayer } = useLayerStore()
+	const { setLayers, getLayer, removeLayer, addLayer, mapLibre, setInfoWindow } = useMapStore()
 
 	const { data: availabilityData } = useQuery({
 		queryKey: ['availabilityRegistered'],
@@ -147,7 +146,7 @@ const RegistrationMain: React.FC = () => {
 		queryKey: ['overviewRegistered', year, admCode],
 		queryFn: async () => {
 			try {
-				setMapInfoWindow(null)
+				setInfoWindow(null)
 				setTableAdmCode(0)
 				const res = await service.registration.overviewRegistered({
 					year: year,
@@ -156,11 +155,11 @@ const RegistrationMain: React.FC = () => {
 				if (admCode !== 0) {
 					service.overview.locationExtent(admCode).then((res) => {
 						if (res.data) {
-							setExtent(res.data.extent)
+							mapLibre?.fitBounds(res.data.extent)
 						}
 					})
 				} else {
-					setExtent([97.3758964376, 5.69138418215, 105.589038527, 20.4178496363])
+					mapLibre?.fitBounds(thaiExtent)
 				}
 				return res.data
 			} catch {
@@ -173,7 +172,7 @@ const RegistrationMain: React.FC = () => {
 		queryKey: ['overviewRegisteredTable', tableAdmCode],
 		queryFn: async () => {
 			try {
-				setMapInfoWindow(null)
+				setInfoWindow(null)
 				const res = await service.registration.overviewRegistered({
 					year: year,
 					admCode: tableAdmCode ?? undefined,
@@ -254,6 +253,52 @@ const RegistrationMain: React.FC = () => {
 		}
 	}
 
+	const onLayerClick = useCallback(
+		(info: PickingInfo) => {
+			if (info.object) {
+				const data = {
+					provinceTH: info.object.properties.ADM1_TH,
+					districtTH: info.object.properties.ADM2_TH,
+					subDistrictTH: info.object.properties.ADM3_TH,
+					provinceEN: info.object.properties.ADM1_EN,
+					districtEN: info.object.properties.ADM2_EN,
+					subDistrictEN: info.object.properties.ADM3_EN,
+					status: info.object.properties.status,
+				}
+				setInfoWindow({
+					children: <MapInfoWindowContent data={data} />,
+				})
+			}
+			if (info.coordinate) {
+				const lng = info.coordinate![0]
+				const lat = info.coordinate![1]
+
+				const coordinates: [number, number] = [lng, lat]
+				removeLayer(selectPinId)
+				const iconLayer = new IconLayer({
+					id: selectPinId,
+					data: [{ coordinates }],
+					visible: true,
+					getIcon: () => {
+						return {
+							url: getPin('#F03E3E'),
+							anchorY: 69,
+							width: 58,
+							height: 69,
+							mask: false,
+						}
+					},
+					sizeScale: 1,
+					getPosition: (d) => d.coordinates,
+					getSize: 40,
+				})
+				addLayer(iconLayer)
+				mapLibre?.setCenter({ lat, lng })
+			}
+		},
+		[addLayer, mapLibre, removeLayer, setInfoWindow],
+	)
+
 	const layers = useMemo(() => {
 		return [
 			new MVTLayer({
@@ -332,51 +377,7 @@ const RegistrationMain: React.FC = () => {
 						}
 					}
 				},
-				onClick: (info) => {
-					if (info.object) {
-						const data = {
-							provinceTH: info.object.properties.ADM1_TH,
-							districtTH: info.object.properties.ADM2_TH,
-							subDistrictTH: info.object.properties.ADM3_TH,
-							provinceEN: info.object.properties.ADM1_EN,
-							districtEN: info.object.properties.ADM2_EN,
-							subDistrictEN: info.object.properties.ADM3_EN,
-							status: info.object.properties.status,
-						}
-						setMapInfoWindow({
-							children: <MapInfoWindowContent data={data} />,
-						})
-					}
-					if (info.coordinate) {
-						const lng = info.coordinate![0]
-						const lat = info.coordinate![1]
-
-						const coordinates: [number, number] = [lng, lat]
-						removeLayer(selectPinId)
-						const iconLayer = new IconLayer({
-							id: selectPinId,
-							data: [{ coordinates }],
-							visible: true,
-							getIcon: () => {
-								return {
-									url: getPin('#F03E3E'),
-									anchorY: 69,
-									width: 58,
-									height: 69,
-									mask: false,
-								}
-							},
-							sizeScale: 1,
-							getPosition: (d) => d.coordinates,
-							getSize: 40,
-						})
-						addLayer(iconLayer)
-						setCenter({
-							latitude: lat,
-							longitude: lng,
-						})
-					}
-				},
+				onClick: onLayerClick,
 				updateTriggers: {
 					getFillColor: [admCode, year, tableAdmCode],
 					getLineColor: [admCode, year, tableAdmCode],
@@ -459,51 +460,7 @@ const RegistrationMain: React.FC = () => {
 						}
 					}
 				},
-				onClick: (info) => {
-					if (info.object) {
-						const data = {
-							provinceTH: info.object.properties.ADM1_TH,
-							districtTH: info.object.properties.ADM2_TH,
-							subDistrictTH: info.object.properties.ADM3_TH,
-							provinceEN: info.object.properties.ADM1_EN,
-							districtEN: info.object.properties.ADM2_EN,
-							subDistrictEN: info.object.properties.ADM3_EN,
-							status: info.object.properties.status,
-						}
-						setMapInfoWindow({
-							children: <MapInfoWindowContent data={data} />,
-						})
-					}
-					if (info.coordinate) {
-						const lng = info.coordinate![0]
-						const lat = info.coordinate![1]
-
-						const coordinates: [number, number] = [lng, lat]
-						removeLayer(selectPinId)
-						const iconLayer = new IconLayer({
-							id: selectPinId,
-							data: [{ coordinates }],
-							visible: true,
-							getIcon: () => {
-								return {
-									url: getPin('#F03E3E'),
-									anchorY: 69,
-									width: 58,
-									height: 69,
-									mask: false,
-								}
-							},
-							sizeScale: 1,
-							getPosition: (d) => d.coordinates,
-							getSize: 40,
-						})
-						addLayer(iconLayer)
-						setCenter({
-							latitude: lat,
-							longitude: lng,
-						})
-					}
-				},
+				onClick: onLayerClick,
 				updateTriggers: {
 					getFillColor: [admCode, year, tableAdmCode],
 					getLineColor: [admCode, year, tableAdmCode],
@@ -511,7 +468,7 @@ const RegistrationMain: React.FC = () => {
 				},
 			}),
 		]
-	}, [year, admCode, tableAdmCode, t, setMapInfoWindow, removeLayer, addLayer, setCenter])
+	}, [year, admCode, tableAdmCode, t, onLayerClick])
 
 	const mapLayers: MapLayer[] | undefined = useMemo(() => {
 		return [
@@ -530,7 +487,7 @@ const RegistrationMain: React.FC = () => {
 		]
 	}, [layers, t])
 
-	const getInitialLayer = useCallback((): MapLayer[] => {
+	const initialLayer = useMemo((): MapLayer[] => {
 		const layerProvince = tileLayer.province
 		const layerDistrict = tileLayer.district
 		const layerSubDistrict = tileLayer.subDistrict
@@ -623,34 +580,27 @@ const RegistrationMain: React.FC = () => {
 			if (admCode !== allprovinceCode) {
 				service.overview.locationExtent(admCode).then((res) => {
 					if (res.data) {
-						setExtent(res.data.extent)
+						mapLibre?.fitBounds(res.data.extent)
 					}
 				})
 			} else {
-				setExtent([97.3758964376, 5.69138418215, 105.589038527, 20.4178496363])
+				mapLibre?.fitBounds(thaiExtent)
 			}
 		} else {
 			service.overview.locationExtent(tableAdmCode).then((res) => {
 				if (res.data) {
-					setExtent(res.data.extent)
+					mapLibre?.fitBounds(res.data.extent)
 				}
 			})
 		}
-	}, [tableAdmCode, admCode, setExtent])
+	}, [tableAdmCode, admCode, mapLibre])
 
 	useEffect(() => {
 		if (layers && registeredData) {
-			mapLayers.forEach((item) => {
-				const layer = getLayer(item.id)
-				if (layer) {
-					removeLayer(item.id)
-				}
-			})
-
-			const province = getInitialLayer().find((item) => item.id === 'boundary')!.layer
+			const province = initialLayer.find((item) => item.id === 'boundary')!.layer
 			setLayers([province, ...(layers as any[])])
 		}
-	}, [admCode, getInitialLayer, getLayer, layers, mapLayers, registeredData, removeLayer, setLayers, year])
+	}, [admCode, initialLayer, getLayer, layers, mapLayers, registeredData, removeLayer, setLayers, year])
 
 	return (
 		<div
@@ -676,7 +626,7 @@ const RegistrationMain: React.FC = () => {
 				>
 					{year !== 0 ? (
 						<MapView
-							initialLayer={getInitialLayer()}
+							initialLayer={initialLayer}
 							legendSelectorLabel={t('registration:farmerRegistration')}
 						/>
 					) : (

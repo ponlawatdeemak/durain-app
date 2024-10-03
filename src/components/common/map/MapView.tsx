@@ -1,22 +1,17 @@
 import { useCallback, useMemo, useState } from 'react'
 import classNames from 'classnames'
-import { BasemapType, MapInfoWindow, MapLayer, LatLng, MapViewState } from './interface/map'
-
+import { BasemapType, MapInfoWindow, MapLayer, MapViewState } from './interface/map'
 import MapLibre from './MapLibre'
-
-import { useMap } from './context/map'
 import { Paper } from '@mui/material'
 import { PropsWithChildren, useEffect } from 'react'
-import useLayerStore from './store/map'
-import MapPin from './layer/MapPin'
+import useMapStore from './store/map'
 import { layerIdConfig } from '@/config/app.config'
 import { BASEMAP } from '@deck.gl/carto'
 import { IconLayer } from '@deck.gl/layers'
-import { MVTLayer } from '@deck.gl/geo-layers'
-import { Layer } from '@deck.gl/core'
 import useResponsive from '@/hook/responsive'
 import { createGoogleStyle } from '@/utils/google'
 import MapTools from './tools'
+import { getPin } from '@/utils/pin'
 
 const CURRENT_LOCATION_ZOOM = 14
 const DEFAULT = {
@@ -36,12 +31,10 @@ export interface MapViewProps extends PropsWithChildren {
 }
 
 export default function MapView({ className = '', initialLayer, legendSelectorLabel }: MapViewProps) {
-	const { mapInfoWindow, setCenter, setMapInfoWindow } = useMap()
-	const { getLayer, getLayers, setLayers } = useLayerStore()
+	const { getLayer, addLayer, removeLayer, setLayers, infoWindow, setInfoWindow, mapLibre } = useMapStore()
 
 	const [viewState, setViewState] = useState<MapViewState>(DEFAULT.viewState)
 	const [basemap, setBasemap] = useState(DEFAULT.basemap)
-	const [currentLocation, setCurrentLocation] = useState<LatLng | null>(null)
 
 	const mapStyle = useMemo(() => {
 		if (basemap === BasemapType.CartoLight) {
@@ -57,33 +50,16 @@ export default function MapView({ className = '', initialLayer, legendSelectorLa
 
 	useEffect(() => {
 		return () => {
-			setMapInfoWindow(null)
+			setInfoWindow(null)
 		}
-	}, [setMapInfoWindow])
+	}, [setInfoWindow])
 
 	useEffect(() => {
 		if (initialLayer && initialLayer.length) {
 			const layers = initialLayer.map((item) => item.layer)
 			setLayers(layers)
 		}
-	}, [setLayers])
-
-	useEffect(() => {
-		const recreateLayers = () => {
-			const layers = getLayers()
-			const newLayers = layers.map((layer) => {
-				if (layer instanceof IconLayer) {
-					return new IconLayer({ ...layer.props })
-				}
-				if (layer instanceof MVTLayer) {
-					return new MVTLayer({ ...layer.props })
-				}
-				return layer
-			})
-			setLayers(newLayers as Layer[])
-		}
-		recreateLayers()
-	}, [setLayers, getLayers])
+	}, [setLayers, initialLayer])
 
 	const onViewStateChange = useCallback((viewState: MapViewState) => {
 		setViewState(viewState)
@@ -97,15 +73,32 @@ export default function MapView({ className = '', initialLayer, legendSelectorLa
 		(coords: GeolocationCoordinates) => {
 			const layer = getLayer(layerIdConfig.toolCurrentLocation)
 			if (layer) {
-				setCurrentLocation(null)
+				removeLayer(layerIdConfig.toolCurrentLocation)
 			} else {
 				const { latitude, longitude } = coords
-				setCurrentLocation({ latitude, longitude })
-				setCenter({ latitude, longitude })
+				const iconLayer = new IconLayer({
+					id: layerIdConfig.toolCurrentLocation,
+					data: [{ coordinates: [longitude, latitude] }],
+					pickable: true,
+					getIcon: () => {
+						return {
+							url: getPin('#3fb0ff'),
+							anchorY: 69,
+							width: 58,
+							height: 69,
+							mask: false,
+						}
+					},
+					getPosition: (d: any) => d.coordinates,
+					getSize: 40,
+					getColor: [255, 0, 0],
+				})
+				addLayer(iconLayer)
+				mapLibre?.setCenter({ lat: latitude, lng: longitude })
 				setViewState({ longitude, latitude, zoom: CURRENT_LOCATION_ZOOM })
 			}
 		},
-		[getLayer, setCurrentLocation, setCenter],
+		[getLayer, mapLibre, addLayer, removeLayer],
 	)
 
 	return (
@@ -119,12 +112,11 @@ export default function MapView({ className = '', initialLayer, legendSelectorLa
 			/>
 			<MapLibre viewState={viewState} mapStyle={mapStyle} onViewStateChange={onViewStateChange} />
 
-			{mapInfoWindow && (
-				<InfoWindow positon={mapInfoWindow.positon} onClose={() => setMapInfoWindow(null)}>
-					{mapInfoWindow.children}
+			{infoWindow && (
+				<InfoWindow positon={infoWindow.positon} onClose={() => setInfoWindow(null)}>
+					{infoWindow.children}
 				</InfoWindow>
 			)}
-			{currentLocation && <MapPin coords={currentLocation} />}
 		</div>
 	)
 }
@@ -133,7 +125,7 @@ export interface InfoWindowProps extends MapInfoWindow, PropsWithChildren {
 	onClose?: () => void
 }
 
-const InfoWindow: React.FC<InfoWindowProps> = ({ positon, children, onClose }) => {
+const InfoWindow: React.FC<InfoWindowProps> = ({ children }) => {
 	const { isDesktop } = useResponsive()
 
 	return (

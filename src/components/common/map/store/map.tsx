@@ -1,34 +1,38 @@
 import { create } from 'zustand'
 import { Layer, LayersList } from '@deck.gl/core'
 import type { MapboxOverlay } from '@deck.gl/mapbox'
+import { MapInfoWindow } from '../interface/map'
 
-export type LayerStore = {
+export type MapStore = {
+	mapLibre: maplibregl.Map | null
+	setMapLibre: (value: maplibregl.Map | null) => void
+	infoWindow: MapInfoWindow | null
+	setInfoWindow: (value: MapInfoWindow | null) => void
+
 	overlay?: MapboxOverlay
-	setOverlay: (overlay: MapboxOverlay) => void
+	setOverlay: (value: MapboxOverlay) => void
 	layers: LayersList
-	addLayer: (layer: Layer | undefined) => void
-	setLayers: (layers: Layer[] | undefined) => void
-	getLayer: (layerId: string) => Layer | undefined
-	getLayers: () => LayersList
-	removeLayer: (layerId: string) => void
+	addLayer: (value: Layer | undefined) => void
+	setLayers: (value: Layer[] | undefined) => void
+	getLayer: (value: string) => Layer | undefined
+	removeLayer: (value: string) => void
 }
 
-export const useLayerStore = create<LayerStore>()((set, get) => ({
+export const useMapStore = create<MapStore>()((set, get) => ({
+	mapLibre: null,
+	setMapLibre: (value) => set((state) => ({ ...state, mapLibre: value })),
+	infoWindow: null,
+	setInfoWindow: (value) => set((state) => ({ ...state, infoWindow: value })),
 	overlay: undefined,
 	setOverlay: (overlay) => set((state) => ({ ...state, overlay })),
 	layers: [],
 	addLayer: (layer) => set((state) => ({ ...state, layers: [...state.layers, layer] })),
-	setLayers: (layers) =>
-		set((state) => {
-			return { ...state, layers }
-		}),
+	setLayers: (layers) => set((state) => ({ ...state, layers })),
 	getLayer: (layerId: string): Layer | undefined => {
 		const layer = get().layers.find((layer) => layer instanceof Layer && layer.id === layerId)
 		return layer instanceof Layer ? layer : undefined
 	},
-	getLayers: (): LayersList => {
-		return get().layers
-	},
+
 	removeLayer: (layerId) =>
 		set((state) => ({
 			...state,
@@ -36,4 +40,4 @@ export const useLayerStore = create<LayerStore>()((set, get) => ({
 		})),
 }))
 
-export default useLayerStore
+export default useMapStore
