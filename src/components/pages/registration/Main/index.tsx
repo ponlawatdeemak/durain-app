@@ -113,6 +113,9 @@ const RegistrationMain: React.FC = () => {
 	const districtCodeLength = 4
 	const allprovinceCode = 0
 	const initialTableAdmCode = 0
+	const thailandExtent: [number, number, number, number] = [
+		97.3758964376, 5.69138418215, 105.589038527, 20.4178496363,
+	]
 
 	const [year, setYear] = useState(0)
 	const [admCode, setAdmCode] = useState(0)
@@ -124,6 +127,7 @@ const RegistrationMain: React.FC = () => {
 		severity: 'success',
 		message: '',
 	})
+	const [subDistrictCode, setSubDistrictCode] = useState(0)
 
 	const { setLayers, getLayer, removeLayer, addLayer, mapLibre, setInfoWindow } = useMapStore()
 
@@ -197,7 +201,7 @@ const RegistrationMain: React.FC = () => {
 		return selectedYearObj?.availableAdm.find((item: any) => item.admCode === admCode)?.admName
 	}, [selectedYearObj?.availableAdm, admCode])
 
-	const selectedTableAdm = useMemo(() => {
+	const selectedTableAdmName = useMemo(() => {
 		if (registeredData) {
 			return registeredData?.adms.find((item: any) => item.admCode === tableAdmCode)?.admName
 		}
@@ -241,7 +245,12 @@ const RegistrationMain: React.FC = () => {
 			setTableAdmCode(rowAdmCode)
 			setShowBack(true)
 		} else {
-			return
+			setSubDistrictCode(rowAdmCode)
+			service.overview.locationExtent(rowAdmCode).then((res) => {
+				if (res.data) {
+					mapLibre?.fitBounds(res.data.extent)
+				}
+			})
 		}
 	}
 
@@ -601,6 +610,52 @@ const RegistrationMain: React.FC = () => {
 		}
 	}, [admCode, initialLayer, getLayer, layers, mapLayers, registeredData, removeLayer, setLayers, year])
 
+	useEffect(() => {
+		const layer = getLayer('subDistrict')
+		if (layer) {
+			removeLayer('subDistrict')
+		}
+
+		const subDistrictLayer = new MVTLayer({
+			id: 'subDistrict',
+			name: 'subDistrict',
+			loadOptions: {
+				fetch: {
+					headers: {
+						'content-type': 'application/json',
+						Authorization: `Bearer ${apiAccessToken}`,
+					},
+				},
+			},
+			data: tileLayer.subDistrict,
+
+			onError(error) {
+				if (error.message.startsWith('loading TileJSON')) {
+					setAlertInfo({ open: true, severity: 'error', message: t('error.somethingWrong') })
+				}
+			},
+			filled: true,
+			lineWidthUnits: 'pixels',
+			pickable: false,
+			getFillColor(d) {
+				return [0, 0, 0, 0]
+			},
+			getLineColor(d) {
+				if (d.properties.subDistrictCode === subDistrictCode) {
+					return [255, 0, 0, 255]
+				} else {
+					return [0, 0, 0, 0]
+				}
+			},
+			updateTriggers: {
+				getFillColor: subDistrictCode,
+				getLineColor: subDistrictCode,
+				getLineWidth: subDistrictCode,
+			},
+		})
+		addLayer(subDistrictLayer)
+	}, [addLayer, getLayer, removeLayer, subDistrictCode, t])
+
 	return (
 		<div
 			className={classNames(
@@ -749,7 +804,7 @@ const RegistrationMain: React.FC = () => {
 							isDesktop ? 'flex-grow p-[24px]' : 'px-[16px] py-[24px]',
 						)}
 					>
-						<p className='flex w-full items-center text-[18px] font-medium'>
+						<div className='flex w-full items-center text-[18px] font-medium'>
 							<div className='flex h-full items-start pt-[3px]'>
 								<IconButton className='w-[24px] !p-0' onClick={handleBackClick}>
 									{showBack && <RegistrationTableBackIcon width={24} />}
@@ -768,13 +823,13 @@ const RegistrationMain: React.FC = () => {
 													? `${t('registration:registrationData')} อ.${district?.[language] ?? ''}`
 													: `${district?.[language] ?? ''} District ${t('registration:registrationData')}`
 												: language === Languages.TH
-													? `${t('registration:registrationData')} จ.${selectedTableAdm?.[language] ?? ''}`
-													: `${selectedTableAdm?.[language] ?? ''} Province ${t('registration:registrationData')}`
+													? `${t('registration:registrationData')} จ.${selectedTableAdmName?.[language] ?? ''}`
+													: `${selectedTableAdmName?.[language] ?? ''} Province ${t('registration:registrationData')}`
 											: language === Languages.TH
-												? `${t('registration:registrationData')} อ.${selectedTableAdm?.[language] ?? ''}`
-												: `${selectedTableAdm?.[language] ?? ''} District ${t('registration:registrationData')}`}
+												? `${t('registration:registrationData')} อ.${selectedTableAdmName?.[language] ?? ''}`
+												: `${selectedTableAdmName?.[language] ?? ''} District ${t('registration:registrationData')}`}
 							</div>
-						</p>
+						</div>
 						<div
 							className={classNames(
 								'my-[16px] box-border flex w-full flex-grow',

@@ -284,7 +284,6 @@ const MapTools: React.FC<MapToolsProps> = ({
 												<p className='text-[14px] font-light'>{item.label}</p>
 											</div>
 											<ToggleSwitch
-												defaultChecked
 												checked={switchState!.find((sw) => sw.id === item.id)!.isOn}
 												onChange={() => {
 													onToggleLayer(item.id)
