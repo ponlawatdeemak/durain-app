@@ -30,15 +30,15 @@ spec:
         - name: NEXT_PUBLIC_API_HOSTNAME
           value: "https://durian-api.earthinsights.net"
         - name: NEXT_PUBLIC_API_KEY
-          value: "m7DLPr1DHklzeiHzNeTFzEaDHQGjZKkV"
+          value: "9pssGTjwmZbRnP27uvXQH0BZcqHGxrrT"
         - name: NEXT_PUBLIC_API_HOSTNAME_DATA
           value: "https://durian-api-data.earthinsights.net"
         - name: NEXT_PUBLIC_API_KEY_DATA
-          value: "sO48AEgPp5JWDd36FdU6ZLtFgPe8caY0"
+          value: "OnaGOp4Rxi6YiVHDbtdIb2ZSSgImp7Nl8IKZwncq"
         - name: NEXT_PUBLIC_API_HOSTNAME_TILE
           value: "https://durian-api-tile.earthinsights.net"
         - name: NEXT_PUBLIC_API_KEY_TILE
-          value: "dsfNw8ueP7cO3o7Pk23zd6b8siqsGNve"
+          value: "OnaGOp4Rxi6YiVHDbtdIb2ZSSgImp7Nl8IKZwncq"
         - name: COGNITO_CLIENT_ID
           value: "5k3traomj2qt1burh5jtgjg446"
         - name: COGNITO_CLIENT_SECRET
