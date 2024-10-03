@@ -248,7 +248,7 @@ const RegistrationMain: React.FC = () => {
 			setSubDistrictCode(rowAdmCode)
 			service.overview.locationExtent(rowAdmCode).then((res) => {
 				if (res.data) {
-					setExtent(res.data.extent)
+					mapLibre?.fitBounds(res.data.extent)
 				}
 			})
 		}
