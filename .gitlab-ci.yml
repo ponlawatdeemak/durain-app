@@ -75,10 +75,11 @@ container_scanning:
   stage: container-scan
   only:
     refs:
+      - dev
       - main
   tags:
     - docker-runner
-  when: manual
+  # when: manual
   services:
     - name: rome.thaicom.io/docker:24.0.5-dind
       alias: docker

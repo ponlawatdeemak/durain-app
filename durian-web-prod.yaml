@@ -30,23 +30,26 @@ spec:
         - name: NEXT_PUBLIC_API_HOSTNAME
           value: "https://durian-api.earthinsights.net"
         - name: NEXT_PUBLIC_API_KEY
-          value: "m7DLPr1DHklzeiHzNeTFzEaDHQGjZKkV"
+          value: "9pssGTjwmZbRnP27uvXQH0BZcqHGxrrT"
         - name: NEXT_PUBLIC_API_HOSTNAME_DATA
           value: "https://durian-api-data.earthinsights.net"
         - name: NEXT_PUBLIC_API_KEY_DATA
-          value: "sO48AEgPp5JWDd36FdU6ZLtFgPe8caY0"
+          value: "OnaGOp4Rxi6YiVHDbtdIb2ZSSgImp7Nl8IKZwncq"
         - name: NEXT_PUBLIC_API_HOSTNAME_TILE
-          value: "https://durian-tileserver.earthinsights.net"
+          value: "https://durian-api-tile.earthinsights.net"
         - name: NEXT_PUBLIC_API_KEY_TILE
-          value: "dsfNw8ueP7cO3o7Pk23zd6b8siqsGNve"
+          value: "OnaGOp4Rxi6YiVHDbtdIb2ZSSgImp7Nl8IKZwncq"
         - name: COGNITO_CLIENT_ID
-          value: "7qvd7mjul8vqkjr5njijqg5ub5"
+          value: "5k3traomj2qt1burh5jtgjg446"
         - name: COGNITO_CLIENT_SECRET
-          value: "14c78vhfjfpahmceu4chhqs9epshmhe8an20s1el20kpcdmnkvg3"
+          valueFrom:
+            secretKeyRef:
+              name: durian-secrets
+              key: cognito_client_secret
         - name: COGNITO_WELLKNOWN
-          value: "https://sso-dev.thaicom.io/.well-known/openid-configuration"
+          value: "https://sso.thaicom.io/.well-known/openid-configuration"
         - name: COGNITO_ISSUER
-          value: "https://cognito-idp.ap-southeast-1.amazonaws.com/ap-southeast-1_NAEINCie8"
+          value: "https://cognito-idp.ap-southeast-1.amazonaws.com/ap-southeast-1_rctC9Goaf"
       imagePullSecrets:
       - name: rome
 
