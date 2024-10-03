@@ -50,7 +50,7 @@ const MapTools: React.FC<MapToolsProps> = ({
 				}
 			}
 		})
-	}, [getLayer, layerList, removeLayer, switchState])
+	}, [getLayer, layerList, removeLayer, switchState, layers])
 
 	const onToggleLayer = useCallback(
 		(layerId: string) => {
