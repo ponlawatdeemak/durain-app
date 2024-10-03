@@ -293,10 +293,9 @@ const RegistrationMain: React.FC = () => {
 					getSize: 40,
 				})
 				addLayer(iconLayer)
-				mapLibre?.setCenter({ lat, lng })
 			}
 		},
-		[addLayer, mapLibre, removeLayer, setInfoWindow],
+		[addLayer, removeLayer, setInfoWindow],
 	)
 
 	const layers = useMemo(() => {
