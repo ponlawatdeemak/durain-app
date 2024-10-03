@@ -371,10 +371,10 @@ const RegistrationMain: React.FC = () => {
 							getSize: 40,
 						})
 						addLayer(iconLayer)
-						setCenter({
-							latitude: lat,
-							longitude: lng,
-						})
+						// setCenter({
+						// 	latitude: lat,
+						// 	longitude: lng,
+						// })
 					}
 				},
 				updateTriggers: {
@@ -498,10 +498,10 @@ const RegistrationMain: React.FC = () => {
 							getSize: 40,
 						})
 						addLayer(iconLayer)
-						setCenter({
-							latitude: lat,
-							longitude: lng,
-						})
+						// setCenter({
+						// 	latitude: lat,
+						// 	longitude: lng,
+						// })
 					}
 				},
 				updateTriggers: {
