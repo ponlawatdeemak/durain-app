@@ -98,5 +98,26 @@
 
 	"error": {
 		"somethingWrong": "Something went wrong. Please check the information again."
+	},
+	"measurement": {
+		"title": "Measurement Tool",
+		"guide": "Use double-click for measure.",
+		"unit": {
+			"squareMeters": "Square Meters",
+			"squareKilometers": "Square Kilometers",
+			"meters": "Meters",
+			"kilometers": "Kilometers",
+			"degree": "Degree"
+		},
+		"measure": {
+			"area": "Area Measurement",
+			"length": "Distance Measurement",
+			"location": "Location Measurement"
+		},
+		"delete": "Delete",
+		"unitlabel": "Unit",
+		"resultLabel": "Measure Result",
+		"latitude": "Latitude",
+		"longitude": "Longitude"
 	}
 }
