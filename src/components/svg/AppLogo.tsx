@@ -3,11 +3,19 @@ import React from 'react'
 interface AppLogoProps {
 	width?: number
 	height?: number
+	onClick?: () => void
 }
 
-const AppLogo: React.FC<AppLogoProps> = ({ width = 59, height = 45 }) => {
+const AppLogo: React.FC<AppLogoProps> = ({ width = 59, height = 45, onClick }) => {
 	return (
-		<svg width={width} height={height} viewBox='0 0 59 45' fill='none' xmlns='http://www.w3.org/2000/svg'>
+		<svg
+			width={width}
+			height={height}
+			viewBox='0 0 59 45'
+			fill='none'
+			xmlns='http://www.w3.org/2000/svg'
+			onClick={onClick}
+		>
 			<path
 				d='M30.3639 28.0855C30.2775 28.0855 30.1897 28.0521 30.1285 27.9878L24.6277 23.0981C24.5093 22.9769 24.5213 22.7902 24.6516 22.6814C24.7819 22.5714 24.9827 22.5825 25.0997 22.7037L30.6006 27.5934C30.7189 27.7146 30.7069 27.9013 30.5766 28.0101C30.5141 28.0595 30.4397 28.0855 30.3639 28.0855Z'
 				fill='black'

@@ -15,10 +15,9 @@ import Chart from './Chart'
 import { Languages } from '@/enum'
 import MapView from '@/components/common/map/MapView'
 import { MVTLayer } from '@deck.gl/geo-layers'
-import { tileLayer } from '@/config/app.config'
+import { thaiExtent, tileLayer } from '@/config/app.config'
 import { MapLayer } from '@/components/common/map/interface/map.jsx'
-import { useMap } from '@/components/common/map/context/map'
-import useLayerStore from '@/components/common/map/store/map'
+import useMapStore from '@/components/common/map/store/map'
 import { apiAccessToken } from '@/api/core'
 import hexRgb from 'hex-rgb'
 import clsx from 'clsx'
@@ -32,8 +31,7 @@ const OverviewMain: React.FC = () => {
 	const [admCode, setAdmCode] = useState(0)
 	const [availabilityData, setAvailabilityData] = useState<availabilityDurianDtoOut[]>()
 	const [overviewData, setOverviewData] = useState<OverviewSummaryDtoOut>()
-	const { setExtent } = useMap()
-	const { setLayers, addLayer, getLayer, removeLayer } = useLayerStore()
+	const { setLayers, getLayer, removeLayer, mapLibre } = useMapStore()
 
 	const availableAdm = useMemo(() => {
 		return availabilityData?.find((item: availabilityDurianDtoOut) => item.year === year)?.availableAdm
@@ -64,7 +62,7 @@ const OverviewMain: React.FC = () => {
 				{children}
 			</Tooltip>
 		),
-	)(({ theme }) => ({
+	)(() => ({
 		[`& .MuiTooltip-tooltip`]: {
 			backgroundColor: 'white',
 			color: 'black',
@@ -163,7 +161,7 @@ const OverviewMain: React.FC = () => {
 		})
 	}, [overviewData?.overall.ageClass, t, language, layers])
 
-	const getInitialLayer = useCallback((): MapLayer[] => {
+	const initialLayer = useMemo((): MapLayer[] => {
 		const layerProvince = tileLayer.province
 		const provinceLayer = new MVTLayer({
 			id: 'province',
@@ -252,27 +250,20 @@ const OverviewMain: React.FC = () => {
 		if (admCode !== 0) {
 			service.overview.locationExtent(admCode).then((res) => {
 				if (res.data) {
-					setExtent(res.data.extent)
+					mapLibre?.fitBounds(res.data.extent)
 				}
 			})
 		} else {
-			setExtent([97.3758964376, 5.69138418215, 105.589038527, 20.4178496363])
+			mapLibre?.fitBounds(thaiExtent)
 		}
-	}, [year, admCode, setExtent])
+	}, [year, admCode, mapLibre])
 
 	useEffect(() => {
 		if (layers && overviewData) {
-			overviewData?.overall.ageClass?.forEach((item) => {
-				const layer = getLayer(item.id)
-				if (layer) {
-					removeLayer(item.id)
-				}
-			})
-
-			const reload = getInitialLayer().map((item) => item.layer)
+			const reload = initialLayer.map((item) => item.layer)
 			setLayers(reload)
 		}
-	}, [admCode, getInitialLayer, getLayer, layers, overviewData, removeLayer, setLayers, year])
+	}, [admCode, initialLayer, getLayer, layers, overviewData, removeLayer, setLayers, year])
 
 	return (
 		<div
@@ -298,7 +289,7 @@ const OverviewMain: React.FC = () => {
 				>
 					{mapLayers && year !== 0 ? (
 						<MapView
-							initialLayer={getInitialLayer()}
+							initialLayer={initialLayer}
 							legendSelectorLabel={t('overview:ageRangeOfDurianPlantationAreas')}
 						/>
 					) : (

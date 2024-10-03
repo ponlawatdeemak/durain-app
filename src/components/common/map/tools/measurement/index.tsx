@@ -25,6 +25,7 @@ import PointMeasure from './PointMeasure'
 import PolygonMeasure from './PolygonMeasure'
 
 import 'mapbox-gl/dist/mapbox-gl.css'
+import { useTranslation } from 'react-i18next'
 
 enum MeasureMode {
 	Polygon,
@@ -40,18 +41,6 @@ enum Unit {
 	Kilometer = 'kilometers',
 }
 
-const lutPolygonUnit = [
-	{ id: 1, label: 'ตารางเมตร', value: 'square-meters' },
-	{ id: 2, label: 'ตารางกิโลเมตร', value: 'square-kilometers' },
-]
-
-const lutLintUnit = [
-	{ id: 1, label: 'เมตร', value: 'meters' },
-	{ id: 2, label: 'กิโลเมตร', value: 'kilometers' },
-]
-
-const lutPointUnit = [{ id: 1, label: 'องศา', value: 'degree' }]
-
 const Measurement = ({
 	map,
 	open,
@@ -61,6 +50,7 @@ const Measurement = ({
 	open: boolean
 	setOpen: (value: boolean) => void
 }) => {
+	const { t, i18n } = useTranslation('common')
 	const [mode, setMode] = useState<MeasureMode>(MeasureMode.Polygon)
 	const [totalDistance, setTotalDistance] = useState<number>()
 	const [coordinateValue, setCoordinatesValue] = useState<{
@@ -73,9 +63,27 @@ const Measurement = ({
 
 	const [selectdUnit, setSelectUnit] = useState<{ id: number; label: string; value: string }>({
 		id: 1,
-		label: 'ตารางเมตร',
+		label: t('measurement.unit.squareMeters'),
 		value: 'square-meters',
 	})
+
+	const lutPolygonUnit = useMemo(
+		() => [
+			{ id: 1, label: t('measurement.unit.squareMeters'), value: 'square-meters' },
+			{ id: 2, label: t('measurement.unit.squareKilometers'), value: 'square-kilometers' },
+		],
+		[t],
+	)
+
+	const lutLintUnit = useMemo(
+		() => [
+			{ id: 1, label: t('measurement.unit.meters'), value: 'meters' },
+			{ id: 2, label: t('measurement.unit.kilometers'), value: 'kilometers' },
+		],
+		[t],
+	)
+
+	const lutPointUnit = useMemo(() => [{ id: 1, label: t('measurement.unit.degree'), value: 'degree' }], [t])
 
 	const draw = useMemo(() => {
 		return new MapboxDraw({
@@ -123,75 +131,6 @@ const Measurement = ({
 			],
 		})
 	}, [])
-
-	useEffect(() => {
-		if (!map || !draw) return
-		// return
-		setTotalDistance(0)
-
-		if (map.hasControl(draw as any)) {
-			map.removeControl(draw as any)
-		}
-
-		if (map.getLayer('points')) {
-			map.removeLayer('points')
-			map.removeSource('sourcePoints')
-		}
-
-		map.off('click', onMouseClickPointMode)
-		map.off('mousemove', onMouseMovePointMode)
-		map.off('draw.create', updateArea)
-		map.off('draw.delete', updateArea)
-		map.off('draw.update', updateArea)
-		map.off('draw.render', updateArea)
-		map.off('draw.create', updateRoute)
-		map.off('draw.update', updateRoute)
-		map.off('draw.delete', updateRoute)
-		map.off('draw.render', updateRoute)
-
-		if (open) {
-			map.addControl(draw as any, 'top-left')
-			map.getCanvasContainer().style.cursor = 'default'
-			map.getCanvas().style.cursor = 'default'
-
-			if (mode === MeasureMode.Polygon) {
-				draw.changeMode('draw_polygon')
-				setSelectUnit({
-					id: 1,
-					label: 'ตารางเมตร',
-					value: 'square-meters',
-				})
-				map.on('draw.create', updateArea)
-				map.on('draw.delete', updateArea)
-				map.on('draw.update', updateArea)
-				map.on('draw.render', updateArea)
-			} else if (mode === MeasureMode.Line) {
-				setSelectUnit({
-					id: 1,
-					label: 'เมตร',
-					value: 'meters',
-				})
-				draw.changeMode('draw_line_string')
-				map.on('draw.create', updateRoute)
-				map.on('draw.update', updateRoute)
-				map.on('draw.delete', updateRoute)
-				map.on('draw.render', updateRoute)
-			} else if (mode === MeasureMode.Point) {
-				setSelectUnit({
-					id: 1,
-					label: 'องศา',
-					value: 'degree',
-				})
-				draw.changeMode('simple_select')
-				setCoordinatesValue({ pinned: [0, 0], current: [0, 0] })
-
-				map.on('mousemove', onMouseMovePointMode)
-
-				map.on('click', onMouseClickPointMode)
-				map.on('touchend', onMouseClickPointMode)
-			}
-		}
-	}, [map, mode, open])
 
 	const updateRoute = useCallback(
 		(e: any) => {
@@ -288,6 +227,75 @@ const Measurement = ({
 		[map],
 	)
 
+	useEffect(() => {
+		if (!map || !draw) return
+		// return
+		setTotalDistance(0)
+
+		if (map.hasControl(draw as any)) {
+			map.removeControl(draw as any)
+		}
+
+		if (map.getLayer('points')) {
+			map.removeLayer('points')
+			map.removeSource('sourcePoints')
+		}
+
+		map.off('click', onMouseClickPointMode)
+		map.off('mousemove', onMouseMovePointMode)
+		map.off('draw.create', updateArea)
+		map.off('draw.delete', updateArea)
+		map.off('draw.update', updateArea)
+		map.off('draw.render', updateArea)
+		map.off('draw.create', updateRoute)
+		map.off('draw.update', updateRoute)
+		map.off('draw.delete', updateRoute)
+		map.off('draw.render', updateRoute)
+
+		if (open) {
+			map.addControl(draw as any, 'top-left')
+			map.getCanvasContainer().style.cursor = 'default'
+			map.getCanvas().style.cursor = 'default'
+
+			if (mode === MeasureMode.Polygon) {
+				draw.changeMode('draw_polygon')
+				setSelectUnit(lutPolygonUnit[0])
+				map.on('draw.create', updateArea)
+				map.on('draw.delete', updateArea)
+				map.on('draw.update', updateArea)
+				map.on('draw.render', updateArea)
+			} else if (mode === MeasureMode.Line) {
+				setSelectUnit(lutLintUnit[0])
+				draw.changeMode('draw_line_string')
+				map.on('draw.create', updateRoute)
+				map.on('draw.update', updateRoute)
+				map.on('draw.delete', updateRoute)
+				map.on('draw.render', updateRoute)
+			} else if (mode === MeasureMode.Point) {
+				setSelectUnit(lutPointUnit[0])
+				draw.changeMode('simple_select')
+				setCoordinatesValue({ pinned: [0, 0], current: [0, 0] })
+
+				map.on('mousemove', onMouseMovePointMode)
+
+				map.on('click', onMouseClickPointMode)
+				map.on('touchend', onMouseClickPointMode)
+			}
+		}
+	}, [
+		map,
+		mode,
+		open,
+		lutPolygonUnit,
+		lutLintUnit,
+		lutPointUnit,
+		draw,
+		onMouseClickPointMode,
+		onMouseMovePointMode,
+		updateArea,
+		updateRoute,
+	])
+
 	const handleChangeMode = useCallback((value: number) => {
 		setMode(value)
 	}, [])
@@ -303,7 +311,7 @@ const Measurement = ({
 
 	const onClickClose = useCallback(() => {
 		setOpen(false)
-	}, [])
+	}, [setOpen])
 
 	const handleChangeUnit = (event: SelectChangeEvent<number>) => {
 		const temp = event.target?.value
@@ -322,7 +330,7 @@ const Measurement = ({
 			case MeasureMode.Point:
 				return lutPointUnit
 		}
-	}, [mode])
+	}, [mode, lutPolygonUnit, lutLintUnit, lutPointUnit])
 
 	const displayValue = useMemo(() => {
 		if (totalDistance) {
@@ -351,7 +359,7 @@ const Measurement = ({
 			{open && (mode === MeasureMode.Line || mode === MeasureMode.Polygon) && (
 				<Box className='absolute left-2 top-2 z-10'>
 					<IconButton aria-label='delete' onClick={onClickTrash} className='!bg-[#2F7A59]'>
-						<Icon title={'ลบ'} path={mdiTrashCan} size={1} className='text-white' />
+						<Icon title={t('measurement.delete')} path={mdiTrashCan} size={1} className='text-white' />
 					</IconButton>
 				</Box>
 			)}
@@ -368,7 +376,7 @@ const Measurement = ({
 			>
 				<>
 					<div className='flex items-center justify-between'>
-						<Typography className=''>เครื่องมือวัดแผนที่</Typography>
+						<Typography className=''>{t('measurement.title')}</Typography>
 
 						<IconButton aria-label='close' onClick={onClickClose}>
 							<Icon path={mdiClose} size={'24px'} />
@@ -379,10 +387,10 @@ const Measurement = ({
 					<div
 						className={classNames(
 							'max-h-[170px] overflow-y-auto lg:max-h-full lg:overflow-y-hidden',
-							'max-h-[270px] lg:!overflow-y-auto',
+							'lg:max-h-[270px] lg:!overflow-y-auto',
 						)}
 					>
-						<div className='label my-2'>กำหนดตำแหน่งการวัดระยะด้วยการ Double Click</div>
+						<div className='label my-2'>{t('measurement.guide')}</div>
 						<ToggleButtonGroup
 							className='mb-4'
 							size='large'
@@ -400,27 +408,25 @@ const Measurement = ({
 							<ToggleButton className='flex flex-col rounded-none border-none' value={MeasureMode.Line}>
 								<LineMeasure />
 							</ToggleButton>
-							<ToggleButton className='flex flex-col rounded-none border-none' value={MeasureMode.Point}>
+							{/* <ToggleButton className='flex flex-col rounded-none border-none' value={MeasureMode.Point}>
 								<PointMeasure />
-							</ToggleButton>
+							</ToggleButton> */}
 						</ToggleButtonGroup>
 
 						<Divider />
 						<div className='my-4 text-sm'>
 							{mode === MeasureMode.Polygon
-								? 'วัดขนาดพื้นที่'
+								? t('measurement.measure.area')
 								: mode === MeasureMode.Line
-									? 'วัดระยะทาง'
-									: mode === MeasureMode.Point
-										? 'วัดตำแหน่ง'
-										: 'วัดระยะร่น'}
+									? t('measurement.measure.length')
+									: t('measurement.measure.location')}
 						</div>
 
 						<FormControl sx={{ minWidth: 150 }} size='small'>
-							<InputLabel id='measurement-unit-label'>หน่วย</InputLabel>
+							<InputLabel id='measurement-unit-label'>{t('measurement.unitlabel')}</InputLabel>
 							<Select
 								labelId='measurement-unit-label'
-								label='หน่วย'
+								label={t('measurement.unitlabel')}
 								id='measurement-unit-id'
 								value={selectdUnit.id}
 								onChange={handleChangeUnit}
@@ -437,12 +443,12 @@ const Measurement = ({
 
 						{mode === MeasureMode.Point ? (
 							<div className='mt-4 text-sm'>
-								<div className='label w-[110px]'>ผลลัพธ์จากการวัด:</div>
+								<div className='label w-[110px]'>{t('measurement.resultLabel')}:</div>
 								<div className='mt-2'>
 									<div className='my-2 flex'>
 										<div className='flex-1'></div>
-										<div className='flex-1'>ละติจูด</div>
-										<div className='flex-1'>ลองจิจูด</div>
+										<div className='flex-1'>{t('measurement.latitude')}</div>
+										<div className='flex-1'>{t('measurement.longitude')}</div>
 									</div>
 									<Divider />
 									<div className='my-2 flex'>
@@ -466,7 +472,7 @@ const Measurement = ({
 						) : (
 							<div className='mt-4 flex gap-4 text-sm'>
 								<div>
-									<div className='label w-[110px]'>ผลลัพธ์จากการวัด:</div>
+									<div className='label w-[110px]'>{t('measurement.resultLabel')}:</div>
 								</div>
 								<div>
 									<div>{displayValue}</div>

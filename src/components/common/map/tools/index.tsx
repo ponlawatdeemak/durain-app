@@ -1,13 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Box, ToggleButton, ToggleButtonGroup, Typography, IconButton, Popover, styled, Switch } from '@mui/material'
 import { useTranslation } from 'next-i18next'
-
 import { Layer } from '@deck.gl/core'
 import { MapLayerIcon, MapMeasureIcon, MapPinIcon, MapZoomInIcon, MapZoomOutIcon } from '@/components/svg/MenuIcon'
 import { BaseMap, BasemapType, MapLayer } from '../interface/map'
-import useLayerStore from '../store/map'
+import useMapStore from '../store/map'
 import Measurement from './measurement'
-import { useMap } from '../context/map'
 import classNames from 'classnames'
 
 const basemapList: BaseMap[] = [
@@ -32,8 +30,7 @@ const MapTools: React.FC<MapToolsProps> = ({
 	legendSelectorLabel,
 }) => {
 	const { t } = useTranslation()
-	const { getLayer, getLayers, setLayers, removeLayer } = useLayerStore()
-	const { mapLibreInstance } = useMap()
+	const { getLayer, layers, setLayers, removeLayer, mapLibre } = useMapStore()
 
 	const [basemap, setBasemap] = useState<BasemapType | null>(currentBaseMap ?? null)
 	const [anchorBasemap, setAnchorBasemap] = useState<HTMLButtonElement | null>(null)
@@ -53,7 +50,7 @@ const MapTools: React.FC<MapToolsProps> = ({
 				}
 			}
 		})
-	}, [getLayer, layerList, removeLayer])
+	}, [getLayer, layerList, removeLayer, switchState, layers])
 
 	const onToggleLayer = useCallback(
 		(layerId: string) => {
@@ -63,7 +60,7 @@ const MapTools: React.FC<MapToolsProps> = ({
 			} else {
 				const item = layerList?.find((item) => item.id === layerId)
 				if (item) {
-					const updatedLayers = [...getLayers(), item.layer]
+					const updatedLayers = [...layers, item.layer]
 					setLayers(updatedLayers as Layer[])
 				}
 			}
@@ -72,7 +69,7 @@ const MapTools: React.FC<MapToolsProps> = ({
 			state[objIndex].isOn = !switchState[objIndex].isOn
 			setSwichState([...state])
 		},
-		[layerList, getLayer, getLayers, setLayers, removeLayer, switchState],
+		[layerList, getLayer, layers, setLayers, removeLayer, switchState],
 	)
 
 	const handleBasemapChanged = useCallback(
@@ -152,11 +149,11 @@ const MapTools: React.FC<MapToolsProps> = ({
 	}
 
 	const onZoomIn = () => {
-		mapLibreInstance?.zoomIn()
+		mapLibre?.zoomIn()
 	}
 
 	const onZoomOut = () => {
-		mapLibreInstance?.zoomOut()
+		mapLibre?.zoomOut()
 	}
 
 	return (
@@ -287,7 +284,6 @@ const MapTools: React.FC<MapToolsProps> = ({
 												<p className='text-[14px] font-light'>{item.label}</p>
 											</div>
 											<ToggleSwitch
-												defaultChecked
 												checked={switchState!.find((sw) => sw.id === item.id)!.isOn}
 												onChange={() => {
 													onToggleLayer(item.id)
@@ -302,7 +298,7 @@ const MapTools: React.FC<MapToolsProps> = ({
 				</>
 			)}
 
-			{mapLibreInstance && <Measurement map={mapLibreInstance} open={showMeasure} setOpen={setShowMeasure} />}
+			{mapLibre && <Measurement map={mapLibre} open={showMeasure} setOpen={setShowMeasure} />}
 		</>
 	)
 }

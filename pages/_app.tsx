@@ -9,7 +9,6 @@ import { SSRConfig, appWithTranslation } from 'next-i18next'
 import type { AppProps } from 'next/app'
 import '../src/styles/globals.css'
 import theme from '../src/styles/theme'
-import { MapProvider } from '@/components/common/map/context/map'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 function MyApp({ Component, pageProps }: AppProps<{ session: Session } & SSRConfig>) {
@@ -30,9 +29,7 @@ function MyApp({ Component, pageProps }: AppProps<{ session: Session } & SSRConf
 					<PageManager>
 						<IdentityProvider>
 							<MainLayout>
-								<MapProvider>
-									<Component {...pageProps} />
-								</MapProvider>
+								<Component {...pageProps} />
 							</MainLayout>
 						</IdentityProvider>
 					</PageManager>

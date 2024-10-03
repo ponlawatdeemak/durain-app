@@ -97,5 +97,26 @@
 
 	"error": {
 		"somethingWrong": "เกิดข้อผิดพลาด กรุณาตรวจสอบข้อมูลอีกครั้ง"
+	},
+	"measurement": {
+		"title": "เครื่องมือวัดแผนที่",
+		"guide": "กำหนดตำแหน่งการวัดระยะด้วยการ Double Click",
+		"unit": {
+			"squareMeters": "ตารางเมตร",
+			"squareKilometers": "ตารางกิโลเมตร",
+			"meters": "เมตร",
+			"kilometers": "กิโลเมตร",
+			"degree": "องศา"
+		},
+		"measure": {
+			"area": "วัดขนาดพื้นที่",
+			"length": "วัดระยะทาง",
+			"location": "วัดตำแหน่ง"
+		},
+		"delete": "ลบ",
+		"unitlabel": "หน่วย",
+		"resultLabel": "ผลลัพธ์จากการวัด",
+		"latitude": "ละติจูด",
+		"longitude": "ลองจิจูด"
 	}
 }

@@ -35,7 +35,8 @@ export default function RegistrationTable({
 				isDesktop ? 'absolute px-[3px]' : '',
 			)}
 		>
-			<Table stickyHeader>
+			{/* stickyHeader */}
+			<Table>
 				<TableHead
 					className={classNames(
 						'[&_.MuiTableCell-root]:border-none [&_.MuiTableCell-root]:px-[16px] [&_.MuiTableCell-root]:py-[12px]',

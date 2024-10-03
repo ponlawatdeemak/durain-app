@@ -10,6 +10,8 @@ import classNames from 'classnames'
 import { useEffect, useState } from 'react'
 import MenuList from './MenuList'
 import ThaicomLogo from '../svg/ThaicomLogo'
+import getConfig from 'next/config'
+const { publicRuntimeConfig } = getConfig()
 
 interface AppBarProps {
 	className?: string
@@ -19,6 +21,7 @@ const AppBar: React.FC<AppBarProps> = ({ className = '' }) => {
 	const { data: session } = useSession()
 	const { t } = useTranslation('common')
 	const { isDesktop } = useResponsive()
+	const [count, setCount] = useState<number>(0)
 
 	const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
 
@@ -42,6 +45,7 @@ const AppBar: React.FC<AppBarProps> = ({ className = '' }) => {
 					)}
 				>
 					<AppLogo />
+					{count >= 5 && <p className='text-[10px]'>Version {publicRuntimeConfig?.version}</p>}
 					<IconButton onClick={() => setIsMenuOpen(!isMenuOpen)}>
 						{isMenuOpen ? <CloseOutlined className='!h-8 !w-8' /> : <MenuOutlined className='!h-8 !w-8' />}
 					</IconButton>
@@ -80,10 +84,15 @@ const AppBar: React.FC<AppBarProps> = ({ className = '' }) => {
 	return (
 		<div className='flex h-[86px] flex-row items-center justify-between border-0 border-b border-solid border-[#e9ecee] bg-white px-[30px]'>
 			<div className='flex items-center gap-4'>
-				<AppLogo />
+				<AppLogo
+					onClick={() => {
+						setCount(count + 1)
+					}}
+				/>
 				<Typography variant='header24' className='ml-5 text-center'>
 					{t('appName')}
 				</Typography>
+				{count >= 5 && <p className='pt-[10px] text-[10px]'>Version {publicRuntimeConfig?.version}</p>}
 			</div>
 			<div className='flex items-center gap-4'>
 				{session?.user ? (
