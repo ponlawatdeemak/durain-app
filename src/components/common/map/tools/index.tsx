@@ -1,21 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import {
-	Box,
-	ToggleButton,
-	ToggleButtonGroup,
-	Typography,
-	IconButton,
-	Popover,
-	Button,
-	styled,
-	Switch,
-} from '@mui/material'
+import React, { useCallback, useEffect, useState } from 'react'
+import { Box, ToggleButton, ToggleButtonGroup, Typography, IconButton, Popover, styled, Switch } from '@mui/material'
 import { useTranslation } from 'next-i18next'
-import { BaseMap, BasemapType, MapLayer } from './interface/map'
-import useLayerStore from './store/map'
-import { layerIdConfig } from '@/config/app.config'
 import { Layer } from '@deck.gl/core'
 import { MapLayerIcon, MapMeasureIcon, MapPinIcon, MapZoomInIcon, MapZoomOutIcon } from '@/components/svg/MenuIcon'
+import { BaseMap, BasemapType, MapLayer } from '../interface/map'
+import useMapStore from '../store/map'
+import Measurement from './measurement'
 import classNames from 'classnames'
 
 const basemapList: BaseMap[] = [
@@ -27,8 +17,6 @@ const basemapList: BaseMap[] = [
 interface MapToolsProps {
 	layerList?: MapLayer[]
 	onBasemapChanged?: (basemap: BasemapType) => void
-	onZoomIn?: () => void
-	onZoomOut?: () => void
 	onGetLocation?: (coords: GeolocationCoordinates) => void
 	currentBaseMap: BasemapType
 	legendSelectorLabel?: string
@@ -37,17 +25,17 @@ interface MapToolsProps {
 const MapTools: React.FC<MapToolsProps> = ({
 	layerList,
 	onBasemapChanged,
-	onZoomIn,
-	onZoomOut,
 	onGetLocation,
 	currentBaseMap,
 	legendSelectorLabel,
 }) => {
 	const { t } = useTranslation()
-	const { layers, getLayer, getLayers, setLayers, removeLayer } = useLayerStore()
+	const { getLayer, layers, setLayers, removeLayer, mapLibre } = useMapStore()
+
 	const [basemap, setBasemap] = useState<BasemapType | null>(currentBaseMap ?? null)
 	const [anchorBasemap, setAnchorBasemap] = useState<HTMLButtonElement | null>(null)
 	const [anchorLegend, setAnchorLegend] = useState<HTMLButtonElement | null>(null)
+	const [showMeasure, setShowMeasure] = useState(false)
 	const [switchState, setSwichState] = useState(
 		layerList!.map((item) => {
 			return { id: item.id, isOn: true }
@@ -62,9 +50,7 @@ const MapTools: React.FC<MapToolsProps> = ({
 				}
 			}
 		})
-	}, [getLayer, layerList, removeLayer])
-
-	const currentLocationIsActive = useMemo(() => !!getLayer(layerIdConfig.toolCurrentLocation), [layers, getLayer])
+	}, [getLayer, layerList, removeLayer, switchState])
 
 	const onToggleLayer = useCallback(
 		(layerId: string) => {
@@ -74,7 +60,7 @@ const MapTools: React.FC<MapToolsProps> = ({
 			} else {
 				const item = layerList?.find((item) => item.id === layerId)
 				if (item) {
-					const updatedLayers = [...getLayers(), item.layer]
+					const updatedLayers = [...layers, item.layer]
 					setLayers(updatedLayers as Layer[])
 				}
 			}
@@ -83,7 +69,7 @@ const MapTools: React.FC<MapToolsProps> = ({
 			state[objIndex].isOn = !switchState[objIndex].isOn
 			setSwichState([...state])
 		},
-		[layerList, getLayer, getLayers, setLayers, removeLayer, switchState],
+		[layerList, getLayer, layers, setLayers, removeLayer, switchState],
 	)
 
 	const handleBasemapChanged = useCallback(
@@ -158,6 +144,18 @@ const MapTools: React.FC<MapToolsProps> = ({
 		},
 	}))
 
+	const onMeasure = () => {
+		setShowMeasure((prev) => !prev)
+	}
+
+	const onZoomIn = () => {
+		mapLibre?.zoomIn()
+	}
+
+	const onZoomOut = () => {
+		mapLibre?.zoomOut()
+	}
+
 	return (
 		<>
 			{/* Zoom Controls */}
@@ -168,7 +166,7 @@ const MapTools: React.FC<MapToolsProps> = ({
 				<IconButton className='box-shadow rounded-lg bg-white' onClick={onZoomOut}>
 					<MapZoomOutIcon />
 				</IconButton>
-				<IconButton className='box-shadow rounded-lg bg-white'>
+				<IconButton className='box-shadow rounded-lg bg-white' onClick={onMeasure}>
 					<MapMeasureIcon />
 				</IconButton>
 				<IconButton className='box-shadow rounded-lg bg-white' onClick={handleGetLocation}>
@@ -300,6 +298,8 @@ const MapTools: React.FC<MapToolsProps> = ({
 					</Popover>
 				</>
 			)}
+
+			{mapLibre && <Measurement map={mapLibre} open={showMeasure} setOpen={setShowMeasure} />}
 		</>
 	)
 }

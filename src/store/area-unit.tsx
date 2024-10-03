@@ -17,7 +17,7 @@ const useAreaUnit = create(
 				}),
 		}),
 		{
-			name: 'areaUnit', // name of the item in the storage (must be unique)
+			name: 'durainAreaUnit', // name of the item in the storage (must be unique)
 			storage: createJSONStorage(() => localStorage), // (optional) by default, 'localStorage' is used
 		},
 	),
