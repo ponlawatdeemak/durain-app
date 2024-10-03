@@ -5,9 +5,10 @@ import { MapboxOverlay } from '@deck.gl/mapbox'
 import useLayerStore from './store/map'
 import { MapInterface } from './interface/map'
 import { useMap } from './context/map'
+import { StyleSpecification } from 'maplibre-gl'
 
 interface MapLibreProps extends MapInterface {
-	mapStyle: string
+	mapStyle: string | StyleSpecification
 }
 
 const DeckGLOverlay = () => {

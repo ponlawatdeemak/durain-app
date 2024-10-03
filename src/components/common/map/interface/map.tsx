@@ -43,11 +43,6 @@ export interface MapLegend {
 	color: string
 }
 
-export enum MapType {
-	Libre,
-	Google,
-}
-
 export enum BasemapType {
 	CartoLight,
 	CartoDark,

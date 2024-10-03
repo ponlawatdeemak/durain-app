@@ -1,9 +1,9 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import classNames from 'classnames'
-import { BasemapType, MapType, MapInfoWindow, MapLayer, LatLng, MapViewState } from './interface/map'
-import MapGoogle from './MapGoogle'
+import { BasemapType, MapInfoWindow, MapLayer, LatLng, MapViewState } from './interface/map'
+
 import MapLibre from './MapLibre'
-import MapTools from './MapTools'
+
 import { useMap } from './context/map'
 import { Paper } from '@mui/material'
 import { PropsWithChildren, useEffect } from 'react'
@@ -15,6 +15,8 @@ import { IconLayer } from '@deck.gl/layers'
 import { MVTLayer } from '@deck.gl/geo-layers'
 import { Layer } from '@deck.gl/core'
 import useResponsive from '@/hook/responsive'
+import { createGoogleStyle } from '@/utils/google'
+import MapTools from './tools'
 
 const CURRENT_LOCATION_ZOOM = 14
 const DEFAULT = {
@@ -23,7 +25,7 @@ const DEFAULT = {
 		latitude: 13,
 		zoom: 5,
 	},
-	mapType: MapType.Libre,
+
 	basemap: BasemapType.CartoLight,
 }
 
@@ -36,10 +38,22 @@ export interface MapViewProps extends PropsWithChildren {
 export default function MapView({ className = '', initialLayer, legendSelectorLabel }: MapViewProps) {
 	const { mapInfoWindow, setCenter, setMapInfoWindow } = useMap()
 	const { getLayer, getLayers, setLayers } = useLayerStore()
-	const [mapType, setMapType] = useState<MapType>(DEFAULT.mapType)
+
 	const [viewState, setViewState] = useState<MapViewState>(DEFAULT.viewState)
 	const [basemap, setBasemap] = useState(DEFAULT.basemap)
 	const [currentLocation, setCurrentLocation] = useState<LatLng | null>(null)
+
+	const mapStyle = useMemo(() => {
+		if (basemap === BasemapType.CartoLight) {
+			return BASEMAP.VOYAGER
+		} else if (basemap === BasemapType.CartoDark) {
+			return BASEMAP.DARK_MATTER
+		} else if (basemap === BasemapType.Google) {
+			return createGoogleStyle('google', 'satellite', process.env.GOOGLE_MAPS_API_KEY)
+		} else {
+			return BASEMAP.VOYAGER
+		}
+	}, [basemap])
 
 	useEffect(() => {
 		return () => {
@@ -69,7 +83,7 @@ export default function MapView({ className = '', initialLayer, legendSelectorLa
 			setLayers(newLayers as Layer[])
 		}
 		recreateLayers()
-	}, [mapType, setLayers, getLayers])
+	}, [setLayers, getLayers])
 
 	const onViewStateChange = useCallback((viewState: MapViewState) => {
 		setViewState(viewState)
@@ -77,11 +91,6 @@ export default function MapView({ className = '', initialLayer, legendSelectorLa
 
 	const onBasemapChanged = useCallback((basemap: BasemapType) => {
 		setBasemap(basemap)
-		if (basemap === BasemapType.Google) {
-			setMapType(MapType.Google)
-		} else {
-			setMapType(MapType.Libre)
-		}
 	}, [])
 
 	const onGetLocation = useCallback(
@@ -103,29 +112,19 @@ export default function MapView({ className = '', initialLayer, legendSelectorLa
 		<div className={classNames('relative flex flex-1 overflow-hidden', className)}>
 			<MapTools
 				layerList={initialLayer}
-				onZoomIn={() => setViewState({ ...viewState, zoom: viewState.zoom + 1 })}
-				onZoomOut={() => setViewState({ ...viewState, zoom: viewState.zoom - 1 })}
 				onBasemapChanged={onBasemapChanged}
 				onGetLocation={onGetLocation}
 				currentBaseMap={basemap}
 				legendSelectorLabel={legendSelectorLabel}
 			/>
-			{mapType === MapType.Libre ? (
-				<MapLibre
-					viewState={viewState}
-					mapStyle={basemap === BasemapType.CartoLight ? BASEMAP.VOYAGER : BASEMAP.DARK_MATTER}
-					onViewStateChange={onViewStateChange}
-				/>
-			) : (
-				<MapGoogle viewState={viewState} onViewStateChange={onViewStateChange} />
-			)}
+			<MapLibre viewState={viewState} mapStyle={mapStyle} onViewStateChange={onViewStateChange} />
+
 			{mapInfoWindow && (
 				<InfoWindow positon={mapInfoWindow.positon} onClose={() => setMapInfoWindow(null)}>
 					{mapInfoWindow.children}
 				</InfoWindow>
 			)}
-			{currentLocation && mapType === MapType.Libre && <MapPin coords={currentLocation} />}
-			{currentLocation && mapType === MapType.Google && <MapPin coords={currentLocation} />}
+			{currentLocation && <MapPin coords={currentLocation} />}
 		</div>
 	)
 }
