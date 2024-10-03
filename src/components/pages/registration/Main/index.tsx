@@ -85,7 +85,7 @@ const MapInfoWindowContent: React.FC<{ data: MapInfoWindowContentProp }> = ({ da
 						) : (
 							<>
 								<PopupRegistrationCross />
-								<p className='text-registerType-nonRegistered text-[16px] font-medium'>
+								<p className='text-[16px] font-medium text-registerType-nonRegistered'>
 									{t('registration:unregisteredArea')}
 								</p>
 							</>
@@ -706,7 +706,7 @@ const RegistrationMain: React.FC = () => {
 							<div className='flex items-center'>
 								{`${t('registration:durianPlantationRegistration')} ${t('registration:year')} ${selectedYearObj?.yearName[language] ?? ''}`}
 								<StyledTooltip
-									className='hover:text-tooltip-hover ml-1 w-max'
+									className='ml-1 w-max hover:text-tooltip-hover'
 									title={<p className='text-xs'>{t('registration:tooltip')}</p>}
 								>
 									<InfoIcon fontSize='small' className='text-tooltip hover:cursor-pointer' />
@@ -737,12 +737,12 @@ const RegistrationMain: React.FC = () => {
 									<div className='flex pb-[6px]'>
 										<CheckedIcon />
 									</div>
-									<p className='text-registerType-registered text-[18px] font-normal'>
+									<p className='text-[18px] font-normal text-registerType-registered'>
 										{t('registration:registered')}
 									</p>
 								</div>
 								<p className='pt-[8px] text-base font-medium'>{t(`registration:${areaUnit}`)}</p>
-								<p className='text-registerType-registered text-[24px] font-medium leading-none'>
+								<p className='text-[24px] font-medium leading-none text-registerType-registered'>
 									{registeredData?.overall.nonRegisteredArea
 										? Math.round(
 												registeredData?.overall.registeredArea?.[areaUnit],
@@ -757,12 +757,12 @@ const RegistrationMain: React.FC = () => {
 									<div className='flex pb-[6px]'>
 										<CrossIcon />
 									</div>
-									<p className='text-registerType-nonRegistered text-[18px] font-normal'>
+									<p className='text-[18px] font-normal text-registerType-nonRegistered'>
 										{t('registration:unregistered')}
 									</p>
 								</div>
 								<p className='pt-[8px] text-base font-medium'>{t(`registration:${areaUnit}`)}</p>
-								<p className='text-registerType-nonRegistered text-[24px] font-medium leading-none'>
+								<p className='text-[24px] font-medium leading-none text-registerType-nonRegistered'>
 									{registeredData?.overall.registeredArea
 										? Math.round(
 												registeredData?.overall.nonRegisteredArea?.[areaUnit],
