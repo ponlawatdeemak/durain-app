@@ -34,6 +34,9 @@ const OverviewMain: React.FC = () => {
 	const [overviewData, setOverviewData] = useState<OverviewSummaryDtoOut>()
 	const { setExtent } = useMap()
 	const { setLayers, addLayer, getLayer, removeLayer } = useLayerStore()
+	const thailandExtent: [number, number, number, number] = [
+		97.3758964376, 5.69138418215, 105.589038527, 20.4178496363,
+	]
 
 	const availableAdm = useMemo(() => {
 		return availabilityData?.find((item: availabilityDurianDtoOut) => item.year === year)?.availableAdm
@@ -244,7 +247,7 @@ const OverviewMain: React.FC = () => {
 				}
 			})
 		} else {
-			setExtent([97.3758964376, 5.69138418215, 105.589038527, 20.4178496363])
+			setExtent(thailandExtent)
 		}
 	}, [year, admCode, setExtent])
 

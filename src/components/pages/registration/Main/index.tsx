@@ -113,6 +113,9 @@ const RegistrationMain: React.FC = () => {
 	const districtCodeLength = 4
 	const allprovinceCode = 0
 	const initialTableAdmCode = 0
+	const thailandExtent: [number, number, number, number] = [
+		97.3758964376, 5.69138418215, 105.589038527, 20.4178496363,
+	]
 
 	const [year, setYear] = useState(0)
 	const [admCode, setAdmCode] = useState(0)
@@ -124,6 +127,7 @@ const RegistrationMain: React.FC = () => {
 		severity: 'success',
 		message: '',
 	})
+	const [subDistrictCode, setSubDistrictCode] = useState(0)
 
 	const { setExtent, setMapInfoWindow, setCenter, mapInfoWindow } = useMap()
 	const { setLayers, getLayer, removeLayer, addLayer } = useLayerStore()
@@ -160,7 +164,7 @@ const RegistrationMain: React.FC = () => {
 						}
 					})
 				} else {
-					setExtent([97.3758964376, 5.69138418215, 105.589038527, 20.4178496363])
+					setExtent(thailandExtent)
 				}
 				return res.data
 			} catch {
@@ -198,7 +202,7 @@ const RegistrationMain: React.FC = () => {
 		return selectedYearObj?.availableAdm.find((item: any) => item.admCode === admCode)?.admName
 	}, [selectedYearObj?.availableAdm, admCode])
 
-	const selectedTableAdm = useMemo(() => {
+	const selectedTableAdmName = useMemo(() => {
 		if (registeredData) {
 			return registeredData?.adms.find((item: any) => item.admCode === tableAdmCode)?.admName
 		}
@@ -632,7 +636,7 @@ const RegistrationMain: React.FC = () => {
 					}
 				})
 			} else {
-				setExtent([97.3758964376, 5.69138418215, 105.589038527, 20.4178496363])
+				setExtent(thailandExtent)
 			}
 		} else {
 			service.overview.locationExtent(tableAdmCode).then((res) => {
@@ -871,11 +875,11 @@ const RegistrationMain: React.FC = () => {
 													? `${t('registration:registrationData')} อ.${district?.[language] ?? ''}`
 													: `${district?.[language] ?? ''} District ${t('registration:registrationData')}`
 												: language === Languages.TH
-													? `${t('registration:registrationData')} จ.${selectedTableAdm?.[language] ?? ''}`
-													: `${selectedTableAdm?.[language] ?? ''} Province ${t('registration:registrationData')}`
+													? `${t('registration:registrationData')} จ.${selectedTableAdmName?.[language] ?? ''}`
+													: `${selectedTableAdmName?.[language] ?? ''} Province ${t('registration:registrationData')}`
 											: language === Languages.TH
-												? `${t('registration:registrationData')} อ.${selectedTableAdm?.[language] ?? ''}`
-												: `${selectedTableAdm?.[language] ?? ''} District ${t('registration:registrationData')}`}
+												? `${t('registration:registrationData')} อ.${selectedTableAdmName?.[language] ?? ''}`
+												: `${selectedTableAdmName?.[language] ?? ''} District ${t('registration:registrationData')}`}
 							</div>
 						</p>
 						<div
