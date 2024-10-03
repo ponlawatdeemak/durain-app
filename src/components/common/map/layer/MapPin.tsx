@@ -4,6 +4,7 @@ import useLayerStore from '../store/map'
 import { Layer } from '@deck.gl/core'
 import { layerIdConfig } from '@/config/app.config'
 import { LatLng } from '../interface/map'
+import { getPin } from '@/utils/pin'
 
 interface MapPinProps {
 	coords: LatLng
@@ -17,11 +18,15 @@ export default function MapPin({ coords }: MapPinProps) {
 			id: layerIdConfig.toolCurrentLocation,
 			data: [{ coordinates: [coords.longitude, coords.latitude] }],
 			pickable: true,
-			iconAtlas: '/images/map/icon-atlas.png',
-			iconMapping: {
-				marker: { x: 0, y: 0, width: 128, height: 128, anchorX: 64, anchorY: 64, mask: true },
+			getIcon: () => {
+				return {
+					url: getPin('#3fb0ff'),
+					anchorY: 69,
+					width: 58,
+					height: 69,
+					mask: false,
+				}
 			},
-			getIcon: () => 'marker',
 			getPosition: (d: any) => d.coordinates,
 			getSize: 40,
 			getColor: [255, 0, 0],
