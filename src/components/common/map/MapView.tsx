@@ -14,6 +14,7 @@ import { BASEMAP } from '@deck.gl/carto'
 import { IconLayer } from '@deck.gl/layers'
 import { MVTLayer } from '@deck.gl/geo-layers'
 import { Layer } from '@deck.gl/core'
+import useResponsive from '@/hook/responsive'
 import { createGoogleStyle } from '@/utils/google'
 import MapTools from './tools'
 
@@ -133,9 +134,15 @@ export interface InfoWindowProps extends MapInfoWindow, PropsWithChildren {
 }
 
 const InfoWindow: React.FC<InfoWindowProps> = ({ positon, children, onClose }) => {
-	if (!positon) return null
+	const { isDesktop } = useResponsive()
+
 	return (
-		<Paper className={classNames('absolute z-10 !rounded-[8px]')} style={{ left: positon.x, top: positon.y }}>
+		<Paper
+			className={classNames(
+				'absolute top-12 z-10 !rounded-[8px]',
+				isDesktop ? 'right-20' : 'left-[50%] -translate-x-1/2',
+			)}
+		>
 			{children}
 		</Paper>
 	)

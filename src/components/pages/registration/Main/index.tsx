@@ -49,14 +49,23 @@ interface MapInfoWindowContentProp {
 	status: string
 }
 
+const selectPinId = 'selected-pin'
+
 const MapInfoWindowContent: React.FC<{ data: MapInfoWindowContentProp }> = ({ data }) => {
 	const { t, i18n } = useTranslation()
 	const language = i18n.language as keyof ResponseLanguage
 	const { setMapInfoWindow } = useMap()
+	const { removeLayer } = useLayerStore()
 
 	return (
 		<div className='flex h-[145px] w-[315px] flex-col items-end rounded-[8px] bg-green-light p-1'>
-			<IconButton onClick={() => setMapInfoWindow(null)} className='self-right flex h-[25px] w-[25px]'>
+			<IconButton
+				onClick={() => {
+					setMapInfoWindow(null)
+					removeLayer(selectPinId)
+				}}
+				className='self-right flex h-[25px] w-[25px]'
+			>
 				<CloseIcon fontSize='small' className='text-white' />
 			</IconButton>
 			<div className={`flex h-full w-full gap-2 px-4 py-1 text-[14px] font-medium`}>
@@ -116,47 +125,8 @@ const RegistrationMain: React.FC = () => {
 		message: '',
 	})
 
-	const { mapLibreInstance, setExtent, setMapInfoWindow, setCenter } = useMap()
+	const { setExtent, setMapInfoWindow, setCenter, mapInfoWindow } = useMap()
 	const { setLayers, getLayer, removeLayer, addLayer } = useLayerStore()
-
-	const selectPinId = 'selected-pin'
-
-	useEffect(() => {
-		console.log('mapLibreInstance init')
-		mapLibreInstance?.on('click', (evt) => {
-			const lngLat = evt.lngLat
-
-			console.log('lngLat 1', lngLat)
-
-			if (lngLat) {
-				const coordinates: [number, number] = [lngLat.lng, lngLat.lat]
-				removeLayer(selectPinId)
-				const iconLayer = new IconLayer({
-					id: selectPinId,
-					// beforeId: "road-exit-shield",
-					data: [{ coordinates }],
-					visible: true,
-					getIcon: () => {
-						return {
-							url: getPin('#F03E3E'),
-							anchorY: 69,
-							width: 58,
-							height: 69,
-							mask: false,
-						}
-					},
-					sizeScale: 1,
-					getPosition: (d) => d.coordinates,
-					getSize: 40,
-				})
-				addLayer(iconLayer)
-				setCenter({
-					latitude: lngLat.lat,
-					longitude: lngLat.lng,
-				})
-			}
-		})
-	}, [addLayer, mapLibreInstance, removeLayer, setCenter])
 
 	const { data: availabilityData } = useQuery({
 		queryKey: ['availabilityRegistered'],
@@ -177,6 +147,7 @@ const RegistrationMain: React.FC = () => {
 		queryKey: ['overviewRegistered', year, admCode],
 		queryFn: async () => {
 			try {
+				setMapInfoWindow(null)
 				setTableAdmCode(0)
 				const res = await service.registration.overviewRegistered({
 					year: year,
@@ -202,6 +173,7 @@ const RegistrationMain: React.FC = () => {
 		queryKey: ['overviewRegisteredTable', tableAdmCode],
 		queryFn: async () => {
 			try {
+				setMapInfoWindow(null)
 				const res = await service.registration.overviewRegistered({
 					year: year,
 					admCode: tableAdmCode ?? undefined,
@@ -372,11 +344,36 @@ const RegistrationMain: React.FC = () => {
 							status: info.object.properties.status,
 						}
 						setMapInfoWindow({
-							positon: {
-								x: 520,
-								y: 265,
-							},
 							children: <MapInfoWindowContent data={data} />,
+						})
+					}
+					if (info.coordinate) {
+						const lng = info.coordinate![0]
+						const lat = info.coordinate![1]
+
+						const coordinates: [number, number] = [lng, lat]
+						removeLayer(selectPinId)
+						const iconLayer = new IconLayer({
+							id: selectPinId,
+							data: [{ coordinates }],
+							visible: true,
+							getIcon: () => {
+								return {
+									url: getPin('#F03E3E'),
+									anchorY: 69,
+									width: 58,
+									height: 69,
+									mask: false,
+								}
+							},
+							sizeScale: 1,
+							getPosition: (d) => d.coordinates,
+							getSize: 40,
+						})
+						addLayer(iconLayer)
+						setCenter({
+							latitude: lat,
+							longitude: lng,
 						})
 					}
 				},
@@ -474,11 +471,36 @@ const RegistrationMain: React.FC = () => {
 							status: info.object.properties.status,
 						}
 						setMapInfoWindow({
-							positon: {
-								x: 520,
-								y: 265,
-							},
 							children: <MapInfoWindowContent data={data} />,
+						})
+					}
+					if (info.coordinate) {
+						const lng = info.coordinate![0]
+						const lat = info.coordinate![1]
+
+						const coordinates: [number, number] = [lng, lat]
+						removeLayer(selectPinId)
+						const iconLayer = new IconLayer({
+							id: selectPinId,
+							data: [{ coordinates }],
+							visible: true,
+							getIcon: () => {
+								return {
+									url: getPin('#F03E3E'),
+									anchorY: 69,
+									width: 58,
+									height: 69,
+									mask: false,
+								}
+							},
+							sizeScale: 1,
+							getPosition: (d) => d.coordinates,
+							getSize: 40,
+						})
+						addLayer(iconLayer)
+						setCenter({
+							latitude: lat,
+							longitude: lng,
 						})
 					}
 				},
@@ -489,7 +511,7 @@ const RegistrationMain: React.FC = () => {
 				},
 			}),
 		]
-	}, [setMapInfoWindow, year, admCode, tableAdmCode, t])
+	}, [year, admCode, tableAdmCode, t, setMapInfoWindow, removeLayer, addLayer, setCenter])
 
 	const mapLayers: MapLayer[] | undefined = useMemo(() => {
 		return [
@@ -625,8 +647,8 @@ const RegistrationMain: React.FC = () => {
 				}
 			})
 
-			const reload = getInitialLayer().map((item) => item.layer)
-			setLayers(reload)
+			const province = getInitialLayer().find((item) => item.id === 'boundary')!.layer
+			setLayers([province, ...(layers as any[])])
 		}
 	}, [admCode, getInitialLayer, getLayer, layers, mapLayers, registeredData, removeLayer, setLayers, year])
 
@@ -663,7 +685,7 @@ const RegistrationMain: React.FC = () => {
 						</div>
 					)}
 				</div>
-				<div className={classNames('flex flex-col gap-[24px]', isDesktop ? 'h-full w-[350px]' : 'w-full')}>
+				<div className={classNames('flex flex-col gap-[8px]', isDesktop ? 'h-full w-[350px]' : 'w-full')}>
 					<div className='flex w-full flex-col items-center justify-center gap-[16px] rounded-[8px] bg-white p-[24px] shadow'>
 						<p className='text-xl font-medium'>{t('registration:farmerRegistration')}</p>
 						<div className='flex w-full flex-row gap-3'>
