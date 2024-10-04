@@ -79,7 +79,7 @@ container_scanning:
       - main
   tags:
     - docker-runner
-  # when: manual
+ # when: manual
   services:
     - name: rome.thaicom.io/docker:24.0.5-dind
       alias: docker
