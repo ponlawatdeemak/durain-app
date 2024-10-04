@@ -4,7 +4,7 @@ import { Map, useControl } from 'react-map-gl/maplibre'
 import { MapboxOverlay } from '@deck.gl/mapbox'
 import useMapStore from './store/map'
 import { MapInterface } from './interface/map'
-import maplibregl, { MapLibreEvent, StyleSpecification } from 'maplibre-gl'
+import maplibregl, { MapLibreEvent, MapStyleDataEvent, StyleSpecification } from 'maplibre-gl'
 import { googleProtocol } from '@/utils/google'
 import { IconLayer } from '@deck.gl/layers'
 import { MVTLayer } from '@deck.gl/geo-layers'
@@ -66,32 +66,36 @@ const MapLibre: FC<MapLibreProps> = ({ viewState, mapStyle, onViewStateChange })
 
 	const onLoad = useCallback(
 		(event: MapLibreEvent) => {
-			// add reference layer for all deck.gl layer under this layer and display draw layer to top
 			const map = event.target
+			setMapLibre(map)
+		},
+		[setMapLibre],
+	)
+
+	const onStyleData = (event: MapStyleDataEvent) => {
+		// add reference layer for all deck.gl layer under this layer and display draw layer to top
+		const map = event.target
+
+		const refSource = map.getSource('custom-referer-source')
+		if (!refSource) {
 			map.addSource('custom-referer-source', {
 				type: 'geojson',
 				data: { type: 'FeatureCollection', features: [] },
 			})
+		}
+		const refLayer = map.getLayer('custom-referer-layer')
+		if (!refLayer) {
 			map.addLayer({
 				id: 'custom-referer-layer',
 				type: 'symbol',
 				source: 'custom-referer-source',
 				layout: { visibility: 'none' },
 			})
-			setMapLibre(map)
-		},
-		[setMapLibre],
-	)
+		}
+	}
 
 	return (
-		<Map
-			initialViewState={viewState}
-			mapStyle={mapStyle}
-			preserveDrawingBuffer={true}
-			zoom={viewState?.zoom}
-			onMove={(e) => onViewStateChange?.(e.viewState)}
-			onLoad={onLoad}
-		>
+		<Map initialViewState={viewState} mapStyle={mapStyle} onLoad={onLoad} onStyleData={onStyleData}>
 			{mapLibre && <DeckGLOverlay />}
 		</Map>
 	)

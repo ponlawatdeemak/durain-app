@@ -149,11 +149,11 @@ const MapTools: React.FC<MapToolsProps> = ({
 	}
 
 	const onZoomIn = () => {
-		mapLibre?.zoomIn()
+		mapLibre?.zoomIn({ duration: 200 })
 	}
 
 	const onZoomOut = () => {
-		mapLibre?.zoomOut()
+		mapLibre?.zoomOut({ duration: 200 })
 	}
 
 	return (

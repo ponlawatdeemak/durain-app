@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { Layer, LayersList } from '@deck.gl/core'
+import { Layer } from '@deck.gl/core'
 import type { MapboxOverlay } from '@deck.gl/mapbox'
 import { MapInfoWindow } from '../interface/map'
 
