@@ -346,7 +346,7 @@ const OverviewMain: React.FC = () => {
 								{t('overview:durianPlantationData')} {t('overview:year')}{' '}
 								{selectedYearObj?.yearName[language]}
 								<StyledTooltip
-									className='ml-1 hover:cursor-pointer hover:text-tooltip-hover'
+									className='ml-1'
 									title={
 										<div className='flex flex-row items-center gap-2'>
 											<p className='text-xs'>
@@ -360,7 +360,10 @@ const OverviewMain: React.FC = () => {
 										</div>
 									}
 								>
-									<InfoIcon fontSize='small' className='text-tooltip' />
+									<InfoIcon
+										fontSize='small'
+										className='text-tooltip hover:cursor-pointer hover:text-tooltip-hover'
+									/>
 								</StyledTooltip>
 							</div>
 							<p className='pt-[8px] text-[22px] font-semibold'>
