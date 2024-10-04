@@ -246,7 +246,7 @@ const MapTools: React.FC<MapToolsProps> = ({
 			{/* Layer Legend */}
 			{layerList && (
 				<>
-					<Box className='absolute bottom-2 left-2 z-10'>
+					<Box className='absolute bottom-10 left-2 z-10 md:bottom-2'>
 						<IconButton
 							onClick={(event) => setAnchorLegend(event.currentTarget)}
 							className='box-shadow rounded-lg bg-white'
