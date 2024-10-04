@@ -1,7 +1,17 @@
 import service from '@/api'
 import { ResponseLanguage } from '@/api/interface'
 import { AnalyzeIcon } from '@/components/svg/MenuIcon'
-import { Box, Divider, FormControl, MenuItem, Paper, Select, SelectChangeEvent, Typography } from '@mui/material'
+import {
+	Box,
+	CircularProgress,
+	Divider,
+	FormControl,
+	MenuItem,
+	Paper,
+	Select,
+	SelectChangeEvent,
+	Typography,
+} from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'next-i18next'
 import React, { useEffect, useState } from 'react'
@@ -77,9 +87,9 @@ const AnalyzeSummary = () => {
 								{durianAvailabilityData?.data?.map((data) => {
 									return (
 										<MenuItem
-											key={data.year}
-											value={data.year}
-										>{`${data.yearName[language]}`}</MenuItem>
+											key={data?.year}
+											value={data?.year}
+										>{`${data?.yearName?.[language]}`}</MenuItem>
 									)
 								})}
 							</Select>
@@ -90,50 +100,59 @@ const AnalyzeSummary = () => {
 			<Box className='flex w-full flex-col items-center gap-4 xl:flex-row'>
 				<Paper className='shadow-[0_3px_8px_0_rgba(212, 220, 230, 1)] flex w-full flex-col items-center !rounded-lg border border-solid border-[#E9ECEE] py-8 lg:h-[368px] xl:w-[66.3%] xl:max-w-[950px]'>
 					<Box className='flex h-full w-[86.9%] max-w-[800px] flex-col justify-between max-lg:gap-6 lg:min-w-[650px]'>
-						<Box className='flex w-full items-center justify-between max-lg:flex-col max-lg:gap-6'>
-							<Box className='relative flex items-center justify-center'>
-								<SummaryChart
-									summaryOverviewData={summaryOverviewData?.data}
-									year={
-										durianAvailabilityData?.data?.find((data) => data.year === year)?.yearName[
-											language
-										]
-									}
-								/>
-							</Box>
-							<Box className='flex w-full shrink-0 flex-col items-center gap-4 lg:w-[360px]'>
-								<span className='text-lg font-medium text-[#333333]'>{`${t('analyze:durianPlantationArea')} ${t('year')} ${durianAvailabilityData?.data?.find((data) => data.year === year)?.yearName[language] || ''}`}</span>
-								<span className='text-3xl font-medium text-[#333333]'>{`${summaryOverviewData?.data?.overall?.area?.[areaUnit] || ''} ${t(AreaUnitText[areaUnit])}`}</span>
-								<Box className='flex w-full items-center text-sm font-medium text-[#5C5C5C]'>
-									<span className='w-full pl-4'>{t('age')}</span>
-									<span className='w-full text-center'>{`${t('analyze:amount')}%`}</span>
-									<span className='w-full text-right'>{t('area')}</span>
-								</Box>
-								<Box className='flex w-full flex-col gap-1'>
-									{summaryOverviewData?.data?.overall.ageClass.map((item, index) => {
-										return (
-											<div className='flex w-full flex-col gap-1' key={index}>
-												{index > 0 && (
-													<Divider className='!border !border-dashed !border-[#DEE2E6]' />
-												)}
-												<Box className='flex w-full items-center text-sm font-medium text-[#333333]'>
-													<div className='flex w-full items-center gap-2'>
-														<Box
-															className='h-2.5 w-2.5 rounded-full'
-															sx={{ backgroundColor: item.color }}
-														></Box>
-														<span>{item.name[language]}</span>
+						{isSummaryOverviewDataLoading ? (
+							<div className='flex h-[550px] flex-col items-center justify-center bg-transparent lg:h-full lg:bg-white'>
+								<CircularProgress size={80} color='primary' />
+							</div>
+						) : (
+							<>
+								<Box className='flex w-full items-center justify-between max-lg:flex-col max-lg:gap-6'>
+									<Box className='relative flex items-center justify-center'>
+										<SummaryChart
+											summaryOverviewData={summaryOverviewData?.data}
+											year={
+												durianAvailabilityData?.data?.find((data) => data?.year === year)
+													?.yearName?.[language]
+											}
+										/>
+									</Box>
+									<Box className='flex w-full shrink-0 flex-col items-center gap-4 lg:w-[360px]'>
+										<span className='text-lg font-medium text-[#333333]'>{`${t('analyze:durianPlantationArea')} ${t('year')} ${durianAvailabilityData?.data?.find((data) => data?.year === year)?.yearName?.[language] || ''}`}</span>
+										<span className='text-3xl font-medium text-[#333333]'>{`${Number(summaryOverviewData?.data?.overall?.area?.[areaUnit]?.toFixed(2) || 0)?.toLocaleString() || '-'} ${t(AreaUnitText[areaUnit])}`}</span>
+										<Box className='flex w-full items-center text-sm font-medium text-[#5C5C5C]'>
+											<span className='w-full pl-4'>{t('age')}</span>
+											<span className='w-full text-center'>{`${t('analyze:amount')}%`}</span>
+											<span className='w-full text-right'>{t('area')}</span>
+										</Box>
+										<Box className='flex w-full flex-col gap-1'>
+											{summaryOverviewData?.data?.overall?.ageClass?.map((item, index) => {
+												return (
+													<div className='flex w-full flex-col gap-1' key={index}>
+														{index > 0 && (
+															<Divider className='!border !border-dashed !border-[#DEE2E6]' />
+														)}
+														<Box className='flex w-full items-center text-sm font-medium text-[#333333]'>
+															<div className='flex w-full items-center gap-2'>
+																<Box
+																	className='h-2.5 w-2.5 rounded-full'
+																	sx={{ backgroundColor: item.color }}
+																></Box>
+																<span>{item?.name?.[language] || '-'}</span>
+															</div>
+															<span className='w-full text-center'>
+																{item?.percent ? `${item.percent?.toFixed(2)}%` : '-'}
+															</span>
+															<span className='w-full text-right'>{`${item?.area?.[areaUnit] ? Number(item.area[areaUnit]?.toFixed(2))?.toLocaleString() : '-'} ${t(AreaUnitText[areaUnit])}`}</span>
+														</Box>
 													</div>
-													<span className='w-full text-center'>{`${item.percent}%`}</span>
-													<span className='w-full text-right'>{`${item.area[areaUnit]} ${t(AreaUnitText[areaUnit])}`}</span>
-												</Box>
-											</div>
-										)
-									})}
+												)
+											})}
+										</Box>
+									</Box>
 								</Box>
-							</Box>
-						</Box>
-						<span className='text-[10px] font-medium text-[#333333]'>{`${t('areaUnit')} : ${t(AreaUnitText[areaUnit])}`}</span>
+								<span className='text-[10px] font-medium text-[#333333]'>{`${t('areaUnit')} : ${t(AreaUnitText[areaUnit])}`}</span>
+							</>
+						)}
 					</Box>
 				</Paper>
 				<Paper className='shadow-[0_3px_8px_0_rgba(212, 220, 230, 1)] flex h-[368px] flex-auto flex-col gap-2 !rounded-lg border border-solid border-[#E9ECEE] px-8 py-6 max-xl:w-full xl:min-w-[385px]'>
@@ -141,7 +160,13 @@ const AnalyzeSummary = () => {
 						{t('analyze:historicalDurianPlantation')}
 					</Typography>
 					<Box className='flex h-full w-full flex-col items-center justify-between'>
-						<HistoryChart historyOverviewData={historyOverviewData?.data} />
+						{isHistoryOverviewDataLoading ? (
+							<div className='flex h-full flex-col items-center justify-center bg-transparent lg:bg-white'>
+								<CircularProgress size={60} color='primary' />
+							</div>
+						) : (
+							<HistoryChart historyOverviewData={historyOverviewData?.data} />
+						)}
 					</Box>
 				</Paper>
 			</Box>
