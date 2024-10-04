@@ -16,8 +16,12 @@ const DeckGLOverlay: FC = () => {
 	useEffect(() => {
 		if (overlay instanceof MapboxOverlay) {
 			const temp = layers.map((item) => {
+				const spliter = '-----'
+				let id = item.id?.split(spliter)?.[0] || ''
+				id = `${id}${spliter}${new Date().getTime()}`
 				const newProp = {
 					...item.props,
+					id,
 					beforeId: 'custom-referer-layer',
 				} as any
 
