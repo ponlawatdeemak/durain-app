@@ -297,7 +297,9 @@ const Measurement = ({
 	])
 
 	const handleChangeMode = useCallback((value: number) => {
-		setMode(value)
+		if (value) {
+			setMode(value || MeasureMode.Polygon)
+		}
 	}, [])
 
 	const onClickTrash = useCallback(() => {

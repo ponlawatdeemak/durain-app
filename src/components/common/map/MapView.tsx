@@ -94,8 +94,7 @@ export default function MapView({ className = '', initialLayer, legendSelectorLa
 					getColor: [255, 0, 0],
 				})
 				addLayer(iconLayer)
-				mapLibre?.setCenter({ lat: latitude, lng: longitude })
-				setViewState({ longitude, latitude, zoom: CURRENT_LOCATION_ZOOM })
+				mapLibre?.flyTo({ center: [longitude, latitude], zoom: CURRENT_LOCATION_ZOOM, duration: 500 })
 			}
 		},
 		[getLayer, mapLibre, addLayer, removeLayer],

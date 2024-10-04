@@ -1,20 +1,20 @@
-# Docker compose file for test docker image/container on localhost
-services:
-    app:
-        build: .
-        ports:
-            - 3000:3000
-        environment:
-            - NODE_ENV=production
+# # Docker compose file for test docker image/container on localhost
+# services:
+#     app:
+#         build: .
+#         ports:
+#             - 3000:3000
+#         environment:
+#             - NODE_ENV=production
 
-            - WEB_HOSTNAME="http://localhost:3000"
-            - NEXT_PUBLIC_API_HOSTNAME="https://durian-api-dev.thaicom.io"
-            - NEXT_PUBLIC_API_KEY="ng4Uz54h41PJvflDhDSz5qELkqp7hj8H"
+#             - WEB_HOSTNAME="http://localhost:3000"
+#             - NEXT_PUBLIC_API_HOSTNAME="https://durian-api-dev.thaicom.io"
+#             - NEXT_PUBLIC_API_KEY="ng4Uz54h41PJvflDhDSz5qELkqp7hj8H"
 
-            - NEXTAUTH_URL=http://localhost:3000
-            - NEXTAUTH_SECRET=TI4j8FMO44Jlo60VLjAa8L335ndcsKkMT1WgkbkZS6Y=
+#             - NEXTAUTH_URL=http://localhost:3000
+#             - NEXTAUTH_SECRET=TI4j8FMO44Jlo60VLjAa8L335ndcsKkMT1WgkbkZS6Y=
 
-            - COGNITO_CLIENT_ID="7qvd7mjul8vqkjr5njijqg5ub5"
-            - COGNITO_CLIENT_SECRET="14c78vhfjfpahmceu4chhqs9epshmhe8an20s1el20kpcdmnkvg3"
-            - COGNITO_WELLKNOWN="https://sso-dev.thaicom.io/.well-known/openid-configuration"
-            - COGNITO_ISSUER="https://cognito-idp.ap-southeast-1.amazonaws.com/ap-southeast-1_NAEINCie8"
+#             - COGNITO_CLIENT_ID="7qvd7mjul8vqkjr5njijqg5ub5"
+#             - COGNITO_CLIENT_SECRET="14c78vhfjfpahmceu4chhqs9epshmhe8an20s1el20kpcdmnkvg3"
+#             - COGNITO_WELLKNOWN="https://sso-dev.thaicom.io/.well-known/openid-configuration"
+#             - COGNITO_ISSUER="https://cognito-idp.ap-southeast-1.amazonaws.com/ap-southeast-1_NAEINCie8"

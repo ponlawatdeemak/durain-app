@@ -127,7 +127,8 @@ const OverviewMain: React.FC = () => {
 							return [0, 0, 0, 0]
 						}
 					} else {
-						if (admCode === d.properties.admCode.substring(0, 2)) {
+						const strAdmCode = String(d.properties.admCode).substring(0, 2)
+						if (String(admCode) === strAdmCode) {
 							if (item.id === d.properties.ageClass_id) {
 								const array = hexRgb(item.color, { format: 'array' })
 								array[3] = 255
