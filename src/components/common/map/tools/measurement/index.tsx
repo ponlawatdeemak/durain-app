@@ -296,9 +296,9 @@ const Measurement = ({
 		updateRoute,
 	])
 
-	const handleChangeMode = useCallback((value: number) => {
-		if (value) {
-			setMode(value || MeasureMode.Polygon)
+	const handleChangeMode = useCallback((value: MeasureMode) => {
+		if (value || value === MeasureMode.Polygon) {
+			setMode(value)
 		}
 	}, [])
 
