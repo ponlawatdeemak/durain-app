@@ -35,17 +35,17 @@ const SummaryChart: React.FC<SummaryChartProps> = ({ summaryOverviewData, year }
 
 	const summaryChartData = useMemo(() => {
 		const summaryChartData: SummaryDataType = {}
-		summaryOverviewData?.overall?.ageClass.forEach((ageClass) => {
-			if (!summaryChartData[ageClass.name[language]]) {
-				summaryChartData[ageClass.name[language]] = {}
+		summaryOverviewData?.overall?.ageClass?.forEach((ageClass) => {
+			if (!summaryChartData[ageClass?.name?.[language]]) {
+				summaryChartData[ageClass?.name?.[language]] = {}
 			}
-			if (!summaryChartData[ageClass.name[language]].color) {
-				summaryChartData[ageClass.name[language]].color = ageClass.color
+			if (!summaryChartData[ageClass?.name?.[language]].color) {
+				summaryChartData[ageClass?.name?.[language]].color = ageClass?.color
 			}
-			if (!summaryChartData[ageClass.name[language]].columns) {
-				summaryChartData[ageClass.name[language]].columns = [ageClass.name[language]]
+			if (!summaryChartData[ageClass?.name?.[language]].columns) {
+				summaryChartData[ageClass?.name?.[language]].columns = [ageClass?.name?.[language]]
 			}
-			summaryChartData[ageClass.name[language]].columns?.push(ageClass.area[areaUnit])
+			summaryChartData[ageClass?.name?.[language]].columns?.push(ageClass?.area?.[areaUnit])
 		})
 		return summaryChartData
 	}, [summaryOverviewData, language, areaUnit])
@@ -97,8 +97,8 @@ const SummaryChart: React.FC<SummaryChartProps> = ({ summaryOverviewData, year }
 					return `<div style='box-shadow:0px 5px 11px 0px #AFAFAF80' class='rounded border border-solid border-[#EDEDED] bg-white px-2.5 py-1.5'>
                                 <div class='flex flex-col items-center gap-1'>
                                     <span class='text-[10px] font-medium text-[#F1A90B]'>ปี 2567</span>
-                                    <span style='color:${color(d[0])}' class='text-sm text-center font-medium'>ทุเรียนอายุ ${d[0].name}</span>
-                                    <span class='text-sm text-center font-medium text-[#5C5C5C]'>${d[0].value} ${t(AreaUnitText[areaUnit])}</span>
+                                    <span style='color:${color(d[0])}' class='text-sm text-center font-medium'>ทุเรียนอายุ ${d[0]?.name}</span>
+                                    <span class='text-sm text-center font-medium text-[#5C5C5C]'>${Number(d[0]?.value?.toFixed(2) || 0).toLocaleString()} ${t(AreaUnitText?.[areaUnit])}</span>
                                 </div>
 						    </div>`
 				},
@@ -123,7 +123,7 @@ const SummaryChart: React.FC<SummaryChartProps> = ({ summaryOverviewData, year }
 			<div className='absolute flex w-[204px] flex-col items-center gap-2 [&_svg]:!h-[42px] [&_svg]:!w-[48px] [&_svg]:fill-[#F1A90B]'>
 				<OverviewIcon />
 				<span className='text-center text-xl font-medium text-[#0C5D52]'>{`${t('analyze:durianPlantationArea')} ${t('year')} ${year || ''}`}</span>
-				<span className='text-center text-2xl font-medium text-[#333333]'>{`${summaryOverviewData?.overall?.area?.[areaUnit] || ''} ${t(AreaUnitText[areaUnit])}`}</span>
+				<span className='text-center text-2xl font-medium text-[#333333]'>{`${Number(summaryOverviewData?.overall?.area?.[areaUnit]?.toFixed(2) || 0)?.toLocaleString() || ''} ${t(AreaUnitText[areaUnit])}`}</span>
 			</div>
 			<BillboardJS bb={bb} options={donutOption} ref={summaryDonutChart} className={'z-10 h-[275px] w-[275px]'} />
 		</>
