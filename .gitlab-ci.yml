@@ -1,156 +1,51 @@
-stages:
-  - build-dev
-  - deploy-dev
-  - source-scan
-  - container-scan
-  - build-prod
-  - deploy-prod
+include:
+    - project: 'internal/auto-devops'
+      file: '/templates/auto-devops.gitlab-ci.yml'
 
-source-code-scan:
-  stage: source-scan
-  tags:
-    - docker-runner
-  image: sonarsource/sonar-scanner-cli:latest
-  variables:
-    DOCKER_DRIVER: overlay2
-    DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ""
-  only:
-    refs:
-      - main
-  script: 
-    - sonar-scanner -Dsonar.projectKey=$CI_PROJECT_NAMESPACE--$CI_PROJECT_NAME -Dsonar.sources=. -Dsonar.host.url=https://madrid.thaicom.io/sonar -Dsonar.login=$SONAR_ID
+variables:
+    COMPILE_IMAGE: node:20-alpine
+    COMPILE_TARGET_DIR: '.next'
+    DEPLOY_AUTO: 'false'
+    DOMAIN: durian.tc.app.mapboss.co.th
 
-docker_build_dev:
-  stage: build-dev
-  tags:
-    - docker-runner
-  only:
-    refs:
-      - dev
-  image: rome.thaicom.io/docker:24.0.5
-  services:
-    - name: rome.thaicom.io/docker:24.0.5-dind
-      alias: docker
-  variables:
-    ENV_VAR: "dev"
-    DOCKER_DRIVER: overlay2
-    DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ""
-    NEXTAUTH_SECRET: $NEXTAUTH_SECRET_DEV
-    COGNITO_CLIENT_SECRET: $COGNITO_CLIENT_SECRET_DEV
-
-  before_script:
-    - docker login ${CI_REGISTRY} -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD}
-    - cp $ENV_DEV_FILE .env.dev
-    - sed -ri -e "s|NEXTAUTH_SECRET_DEV|$NEXTAUTH_SECRET_DEV|" -e "s|COGNITO_CLIENT_SECRET_DEV|$COGNITO_CLIENT_SECRET_DEV|" .env.dev
-  script:
-    - cp .env.dev .env.production
-    - docker build -t ${CI_REGISTRY}/${CI_PROJECT_PATH}:latest .
-    - docker tag ${CI_REGISTRY}/${CI_PROJECT_PATH}:latest ${CI_REGISTRY}/${CI_PROJECT_PATH}:${CI_COMMIT_TIMESTAMP:0:10}-$CI_COMMIT_SHORT_SHA
-    - docker push ${CI_REGISTRY}/${CI_PROJECT_PATH}:${CI_COMMIT_TIMESTAMP:0:10}-$CI_COMMIT_SHORT_SHA
-    - docker push ${CI_REGISTRY}/${CI_PROJECT_PATH}:latest
-
-deploy_dev:
-  stage: deploy-dev
-  tags:
-    - shell
-  only:
-    refs:
-      - dev
-  script:
-    - echo deploy_dev
-    - kubectl --insecure-skip-tls-verify --kubeconfig=/kubeconfig/durian-dev-aws apply -f durian-web-dev.yaml -n durian-dev
-    - kubectl --insecure-skip-tls-verify --kubeconfig=/kubeconfig/durian-dev-aws rollout restart deployments durian-web -n durian-dev
-
-container_scanning:
-  image:
-    name: docker.io/aquasec/trivy:latest
-    entrypoint: [""]
-  variables:
-    DOCKER_DRIVER: overlay2
-    DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ""
-  allow_failure: true
-  stage: container-scan
-  only:
-    refs:
-      - main
-  tags:
-    - docker-runner
-  when: manual
-  services:
-    - name: rome.thaicom.io/docker:24.0.5-dind
-      alias: docker
-  variables:
-    GIT_STRATEGY: none
-    TRIVY_USERNAME: "$CI_REGISTRY_USER"
-    TRIVY_PASSWORD: "$CI_REGISTRY_PASSWORD"
-    TRIVY_AUTH_URL: "$CI_REGISTRY"
-    TRIVY_NO_PROGRESS: "true"
-    TRIVY_CACHE_DIR: ".trivycache/"
-    ENV_VAR: "dev"
-    FULL_IMAGE_NAME: ${CI_REGISTRY}/${CI_PROJECT_PATH}:latest
-  before_script:
-    - echo $FULL_IMAGE_NAME
-  script:
-    - trivy --version
-    - time trivy image --download-db-only
-    - time trivy image --exit-code 0 --format template --template "@/contrib/gitlab.tpl" --scanners vuln --output "$CI_PROJECT_DIR/container-scanning-report.json" "$FULL_IMAGE_NAME"
-    - time trivy image --exit-code 0 --severity HIGH,CRITICAL --scanners vuln "$FULL_IMAGE_NAME"
-  cache:
+cache:
+    key: ${CI_COMMIT_REF_SLUG}
     paths:
-      - .trivycache/
-  artifacts:
-    when: always
-    reports:
-      container_scanning: container-scanning-report.json
+        - .npm/
+        # - .next/cache/
 
-docker_build_prod:
-  stage: build-prod
-  tags:
-    - docker-runner
-  only:
-    refs:
-      - main
-  image: rome.thaicom.io/docker:24.0.5
-  services:
-    - name: rome.thaicom.io/docker:24.0.5-dind
-      alias: docker
-  variables:
-    ENV_VAR: "prod"
-    DOCKER_DRIVER: overlay2
-    DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ""
-    NEXTAUTH_SECRET: $NEXTAUTH_SECRET_DEV
-    COGNITO_CLIENT_SECRET: $COGNITO_CLIENT_SECRET_DEV
+compile:
+    before_script:
+        - cp $ENV ./
+    after_script:
+        - rm -rf ./.next/cache
+        - ls -a
+        - rm .env
 
-  before_script:
-    - docker login ${CI_REGISTRY} -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD}
-    - cp $ENV_PROD_FILE .env.prod
-  script:
-    - cp .env.prod .env.production
-    - docker build -t ${CI_REGISTRY}/${CI_PROJECT_PATH}-${ENV_VAR}:latest .
-    - docker tag ${CI_REGISTRY}/${CI_PROJECT_PATH}-${ENV_VAR}:latest ${CI_REGISTRY}/${CI_PROJECT_PATH}-${ENV_VAR}:${CI_COMMIT_TIMESTAMP:0:10}-$CI_COMMIT_SHORT_SHA
-    - docker push ${CI_REGISTRY}/${CI_PROJECT_PATH}-${ENV_VAR}:${CI_COMMIT_TIMESTAMP:0:10}-$CI_COMMIT_SHORT_SHA
-    - docker push ${CI_REGISTRY}/${CI_PROJECT_PATH}-${ENV_VAR}:latest
-deploy_prod:
-  stage: deploy-prod
-  tags:
-    - shell
-  when: manual
-  allow_failure: false
-  only:
-    refs:
-      - main
-  variables:
-    ENV_VAR: "prod"
-  before_script:
-    - docker login ${CI_REGISTRY} -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD}
-    - docker pull ${CI_REGISTRY}/${CI_PROJECT_PATH}-${ENV_VAR}:${CI_COMMIT_TIMESTAMP:0:10}-$CI_COMMIT_SHORT_SHA
-    - docker tag ${CI_REGISTRY}/${CI_PROJECT_PATH}-${ENV_VAR}:${CI_COMMIT_TIMESTAMP:0:10}-$CI_COMMIT_SHORT_SHA ${CI_REGISTRY}/${CI_PROJECT_PATH}-${ENV_VAR}:${ENV_VAR}
-    - docker push ${CI_REGISTRY}/${CI_PROJECT_PATH}-${ENV_VAR}:${ENV_VAR}
-  script:
-    - echo deploy_prod
-    - kubectl --insecure-skip-tls-verify --kubeconfig=/kubeconfig/durian-prod-aws apply -f durian-web-prod.yaml -n durian
-    - kubectl --insecure-skip-tls-verify --kubeconfig=/kubeconfig/durian-prod-aws rollout restart deployments durian-web -n durian
+    rules:
+        - if: $CI_COMMIT_BRANCH == "qa"
+        - when: never
+    artifacts:
+        paths:
+            - ${COMPILE_TARGET_DIR}
+    cache:
+        paths:
+            - .npm/
+            # - .next/cache/
+
+build:
+    variables:
+        DOCKERFILE_PATH: Dockerfile
+    rules:
+        - if: $CI_COMMIT_BRANCH == "qa"
+        - when: never
+
+deploy:
+    rules:
+        - if: $CI_COMMIT_BRANCH == "qa"
+        - when: never
+
+stop_deploy:
+    rules:
+        - if: $CI_COMMIT_BRANCH == "qa"
+        - when: never
