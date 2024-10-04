@@ -1,5 +1,14 @@
 import useAreaUnit from '@/store/area-unit'
-import { Box, FormControl, MenuItem, Paper, Select, SelectChangeEvent, Typography } from '@mui/material'
+import {
+	Box,
+	CircularProgress,
+	FormControl,
+	MenuItem,
+	Paper,
+	Select,
+	SelectChangeEvent,
+	Typography,
+} from '@mui/material'
 import classNames from 'classnames'
 import React, { useEffect, useState } from 'react'
 import useSearchAnalyze from '../Main/context'
@@ -157,7 +166,13 @@ const CompareFilter: React.FC<CompareFilterProps> = ({ orderBy }) => {
 						<Typography className='!text-lg !font-medium !text-[#333333]'>
 							{t('analyze:durianPlantationAllAreas')}
 						</Typography>
-						<CompareTable compareOverviewData={compareProvinceData?.data} />
+						{isCompareProvinceDataLoading ? (
+							<div className='flex h-[274px] flex-col items-center justify-center bg-transparent lg:bg-white'>
+								<CircularProgress size={60} color='primary' />
+							</div>
+						) : (
+							<CompareTable compareOverviewData={compareProvinceData?.data} />
+						)}
 					</Box>
 					<span className='text-[10px] font-medium text-[#333333]'>{`${t('areaUnit')} : ${t(AreaUnitText[areaUnit])}`}</span>
 				</Box>
@@ -166,7 +181,13 @@ const CompareFilter: React.FC<CompareFilterProps> = ({ orderBy }) => {
 						<Typography className='!text-lg !font-medium !text-[#333333]'>
 							{`${language === 'en' ? `${t('analyze:changesIn')} ` : ' '}${t('durianPlantationData')}${language === 'th' ? t('province') : ' '}${compareProvinceData?.data?.adms.find((province) => Number(province.admCode) === queryParams.provinceId)?.admName[language] || ''}${language === 'en' ? ` ${t('province')}` : ''}${language === 'th' ? t('analyze:changesIn') : ''}`}
 						</Typography>
-						<CompareTable compareOverviewData={compareDistrictData?.data} />
+						{isCompareDistrictDataLoading ? (
+							<div className='flex h-[274px] flex-col items-center justify-center bg-transparent lg:bg-white'>
+								<CircularProgress size={60} color='primary' />
+							</div>
+						) : (
+							<CompareTable compareOverviewData={compareDistrictData?.data} />
+						)}
 					</Box>
 					<span className='text-[10px] font-medium text-[#333333]'>{`${t('areaUnit')} : ${t(AreaUnitText[areaUnit])}`}</span>
 				</Box>
@@ -175,7 +196,13 @@ const CompareFilter: React.FC<CompareFilterProps> = ({ orderBy }) => {
 						<Typography className='!text-lg !font-medium !text-[#333333]'>
 							{`${language === 'en' ? `${t('analyze:changesIn')} ` : ' '}${t('durianPlantationData')}${language === 'th' ? t('district') : ' '}${compareDistrictData?.data?.adms.find((district) => Number(district.admCode) === queryParams.districtId)?.admName[language] || ''}${language === 'en' ? ` ${t('district')}` : ''}${language === 'th' ? t('analyze:changesIn') : ''}`}
 						</Typography>
-						<CompareTable compareOverviewData={compareSubDistrictData?.data} />
+						{isCompareSubDistrictDataLoading ? (
+							<div className='flex h-[274px] flex-col items-center justify-center bg-transparent lg:bg-white'>
+								<CircularProgress size={60} color='primary' />
+							</div>
+						) : (
+							<CompareTable compareOverviewData={compareSubDistrictData?.data} />
+						)}
 					</Box>
 					<span className='text-[10px] font-medium text-[#333333]'>{`${t('areaUnit')} : ${t(AreaUnitText[areaUnit])}`}</span>
 				</Box>

@@ -1,7 +1,7 @@
 import service from '@/api'
 import { ResponseLanguage } from '@/api/interface'
 import useAreaUnit from '@/store/area-unit'
-import { Box, Paper, Typography } from '@mui/material'
+import { Box, CircularProgress, Paper, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import classNames from 'classnames'
 import { useTranslation } from 'next-i18next'
@@ -56,7 +56,13 @@ const SummaryFilter: React.FC<SummaryFilterProps> = ({ orderBy }) => {
 					<Typography className='!text-lg !font-medium text-[#333333]'>
 						{t('analyze:durianPlantationAllAreas')}
 					</Typography>
-					<SummaryTable summaryOverviewData={summaryProvinceData?.data} />
+					{isSummaryProvinceDataLoading ? (
+						<div className='flex h-[274px] flex-col items-center justify-center bg-transparent lg:bg-white'>
+							<CircularProgress size={60} color='primary' />
+						</div>
+					) : (
+						<SummaryTable summaryOverviewData={summaryProvinceData?.data} />
+					)}
 				</Box>
 				<span className='text-[10px] font-medium text-[#333333]'>{`${t('areaUnit')} : ${t(AreaUnitText[areaUnit])}`}</span>
 			</Box>
@@ -65,7 +71,13 @@ const SummaryFilter: React.FC<SummaryFilterProps> = ({ orderBy }) => {
 					<Typography className='!text-lg !font-medium text-[#333333]'>
 						{`${t('durianPlantationData')}${language === 'th' ? t('province') : ' '}${summaryProvinceData?.data?.adms.find((province) => Number(province.admCode) === queryParams.provinceId)?.admName[language] || ''} ${language === 'en' ? t('province') : ''}`}
 					</Typography>
-					<SummaryTable summaryOverviewData={summaryDistrictData?.data} />
+					{isSummaryDistrictDataLoading ? (
+						<div className='flex h-[274px] flex-col items-center justify-center bg-transparent lg:bg-white'>
+							<CircularProgress size={60} color='primary' />
+						</div>
+					) : (
+						<SummaryTable summaryOverviewData={summaryDistrictData?.data} />
+					)}
 				</Box>
 				<span className='text-[10px] font-medium text-[#333333]'>{`${t('areaUnit')} : ${t(AreaUnitText[areaUnit])}`}</span>
 			</Box>
@@ -74,7 +86,13 @@ const SummaryFilter: React.FC<SummaryFilterProps> = ({ orderBy }) => {
 					<Typography className='!text-lg !font-medium text-[#333333]'>
 						{`${t('durianPlantationData')}${language === 'th' ? t('district') : ' '}${summaryDistrictData?.data?.adms.find((district) => Number(district.admCode) === queryParams.districtId)?.admName[language] || ''} ${language === 'en' ? t('district') : ' '}`}
 					</Typography>
-					<SummaryTable summaryOverviewData={summarySubDistrictData?.data} />
+					{isSummarySubDistrictDataLoading ? (
+						<div className='flex h-[274px] flex-col items-center justify-center bg-transparent lg:bg-white'>
+							<CircularProgress size={60} color='primary' />
+						</div>
+					) : (
+						<SummaryTable summaryOverviewData={summarySubDistrictData?.data} />
+					)}
 				</Box>
 				<span className='text-[10px] font-medium text-[#333333]'>{`${t('areaUnit')} : ${t(AreaUnitText[areaUnit])}`}</span>
 			</Box>
