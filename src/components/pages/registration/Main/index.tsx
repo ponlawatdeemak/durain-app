@@ -113,9 +113,6 @@ const RegistrationMain: React.FC = () => {
 	const districtCodeLength = 4
 	const allprovinceCode = 0
 	const initialTableAdmCode = 0
-	const thailandExtent: [number, number, number, number] = [
-		97.3758964376, 5.69138418215, 105.589038527, 20.4178496363,
-	]
 
 	const [year, setYear] = useState(0)
 	const [admCode, setAdmCode] = useState(0)
@@ -307,10 +304,12 @@ const RegistrationMain: React.FC = () => {
 		[addLayer, removeLayer, setInfoWindow],
 	)
 
+	useEffect(() => {}, [])
+
 	const layers = useMemo(() => {
 		return [
 			new MVTLayer({
-				id: 'registered',
+				id: 'registered' + `-${new Date().getTime()}`,
 				name: 'registered',
 				loadOptions: {
 					fetch: {
@@ -394,7 +393,7 @@ const RegistrationMain: React.FC = () => {
 				},
 			}),
 			new MVTLayer({
-				id: 'unregistered',
+				id: 'unregistered' + `-${new Date().getTime()}`,
 				name: 'unregistered',
 				loadOptions: {
 					fetch: {
@@ -502,7 +501,7 @@ const RegistrationMain: React.FC = () => {
 		const layerSubDistrict = tileLayer.subDistrict
 
 		const provinceLayer = new MVTLayer({
-			id: 'boundary',
+			id: 'boundary' + `-${new Date().getTime()}`,
 			name: 'boundary',
 			loadOptions: {
 				fetch: {

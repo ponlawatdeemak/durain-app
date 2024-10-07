@@ -17,12 +17,13 @@ const DeckGLOverlay: FC = () => {
 		if (overlay instanceof MapboxOverlay) {
 			const isSelectPin = !!layers?.find((item) => item?.id === 'selected-pin')
 			const temp = layers.map((item) => {
-				const spliter = '-----'
-				let id = item.id?.split(spliter)?.[0] || ''
-				id = `${id}${spliter}${new Date().getTime()}`
+				// const spliter = '-----'
+				// let id = item.id?.split(spliter)?.[0] || ''
+				// id = `${id}${spliter}${new Date().getTime()}`
 				const newProp = {
 					...item.props,
-					id,
+					// id,
+					id: item.id,
 					beforeId: 'custom-referer-layer',
 				} as any
 
