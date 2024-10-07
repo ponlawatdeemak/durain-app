@@ -237,7 +237,7 @@ const OverviewMain: React.FC = () => {
 					setYear(res.data[0].year)
 				}
 			})
-			.catch((error) => console.log(error))
+			.catch((error) => console.error(error))
 	}, [year])
 
 	useEffect(() => {
@@ -246,7 +246,7 @@ const OverviewMain: React.FC = () => {
 			.then((res) => {
 				setOverviewData(res.data)
 			})
-			.catch((error) => console.log(error))
+			.catch((error) => console.error(error))
 
 		if (admCode !== 0) {
 			service.overview.locationExtent(admCode).then((res) => {

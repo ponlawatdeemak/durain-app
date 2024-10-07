@@ -33,18 +33,10 @@ const UserDialog: React.FC<UserDialogProps> = ({
 	}, [mode, userId])
 
 	const onDelete = useCallback(() => {
-		console.log('call api delete', userId)
 		onClose()
 	}, [userId])
 
 	const onSubmit = useCallback(() => {
-		// get form
-		if (mode === UserDialogMode.UserAdd) {
-			console.log('call api add')
-		} else {
-			// UserProfile | UserEdit
-			console.log('call api edit')
-		}
 		onClose()
 	}, [mode])
 

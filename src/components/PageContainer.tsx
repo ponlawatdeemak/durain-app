@@ -28,27 +28,19 @@ export default function PageContainer(props: Props) {
 			const tokens: UserAccountLoginResponse = await GuestLogin()
 			const accessToken = tokens.tokens?.accessToken ?? ''
 			setApiToken(accessToken)
-			console.log('getGuestAccessToken: userId = ' + tokens.data?.id)
-			console.log('getGuestAccessToken: accessToken = ' + accessToken)
 		} catch (err) {
-			console.log('getGuestAccessToken: ERROR!! ' + err)
+			console.error('getGuestAccessToken: ERROR!! ' + err)
 		}
 
 		setLoading(false)
 	}
 
 	useEffect(() => {
-		// console.log("authSession", authSession);
 		if (authSession === undefined) {
-			// console.log("authSession is undefined");
 		} else if (authSession === null) {
 			getGuestAccessToken()
 		}
 	}, [authSession])
-
-	// useEffect(() => {
-	// 	console.log("apiToken: ", apiToken);
-	// }, [apiToken]);
 
 	if (requireLogin && !authSession && status != 'loading') {
 		signIn(NEXTAUTH_PROVIDER_ID)

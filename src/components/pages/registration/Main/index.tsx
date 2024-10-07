@@ -321,6 +321,7 @@ const RegistrationMain: React.FC = () => {
 					},
 				},
 				data: tileLayer.registerLayer(year),
+
 				onError(error) {
 					if (error.message.startsWith('loading TileJSON')) {
 						setAlertInfo({ open: true, severity: 'error', message: t('error.somethingWrong') })
