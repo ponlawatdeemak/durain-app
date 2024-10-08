@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const { i18n } = require('./next-i18next.config')
 
+const { version } = require('./package.json')
+
 const nextConfig = {
 	reactStrictMode: true,
 
@@ -26,20 +28,11 @@ const nextConfig = {
 		GOOGLE_MAPS_API_MAP_ID: process.env.GOOGLE_MAPS_API_MAP_ID,
 	},
 
+	publicRuntimeConfig: {
+		version,
+	},
+
 	async rewrites() {
-		console.log('NODE_ENV = %o', process.env.NODE_ENV)
-
-		console.log('WEB_HOSTNAME = %o', process.env.WEB_HOSTNAME)
-		console.log('NEXT_PUBLIC_API_HOSTNAME = %o', process.env.NEXT_PUBLIC_API_HOSTNAME)
-		console.log('NEXT_PUBLIC_API_KEY = %o', process.env.NEXT_PUBLIC_API_KEY)
-
-		console.log('COGNITO_CLIENT_ID = %o', process.env.COGNITO_CLIENT_ID)
-		console.log('COGNITO_CLIENT_SECRET = %o', process.env.COGNITO_CLIENT_SECRET)
-		console.log('COGNITO_WELLKNOWN = %o', process.env.COGNITO_WELLKNOWN)
-		console.log('COGNITO_ISSUER = %o', process.env.COGNITO_ISSUER)
-
-		console.log('GOOGLE_MAPS_API_KEY = %o', process.env.GOOGLE_MAPS_API_KEY)
-		console.log('GOOGLE_MAPS_API_MAP_ID = %o', process.env.GOOGLE_MAPS_API_MAP_ID)
 		return [
 			{
 				source: '/durian-api/:path*',

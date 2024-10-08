@@ -109,7 +109,7 @@ const MapTools: React.FC<MapToolsProps> = ({
 				},
 			)
 		} else {
-			console.log('Geolocation is not supported by this browser.')
+			console.error('Geolocation is not supported by this browser.')
 		}
 	}, [onGetLocation])
 
@@ -165,11 +165,11 @@ const MapTools: React.FC<MapToolsProps> = ({
 	}
 
 	const onZoomIn = () => {
-		mapLibre?.zoomIn()
+		mapLibre?.zoomIn({ duration: 200 })
 	}
 
 	const onZoomOut = () => {
-		mapLibre?.zoomOut()
+		mapLibre?.zoomOut({ duration: 200 })
 	}
 
 	return (
@@ -262,7 +262,7 @@ const MapTools: React.FC<MapToolsProps> = ({
 			{/* Layer Legend */}
 			{layerList && (
 				<>
-					<Box className='absolute bottom-2 left-2 z-10'>
+					<Box className='absolute bottom-10 left-2 z-10 md:bottom-2'>
 						<IconButton
 							onClick={(event) => setAnchorLegend(event.currentTarget)}
 							className='box-shadow rounded-lg bg-white'

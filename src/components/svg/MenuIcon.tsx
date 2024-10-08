@@ -576,28 +576,28 @@ export const PopupReistrationLogo: React.FC<SVGProps> = ({ width = 85, height = 
 		<svg width={width} height={height} viewBox='0 0 85 85' fill='none' xmlns='http://www.w3.org/2000/svg'>
 			<g opacity='0.390044'>
 				<path
-					fill-rule='evenodd'
-					clip-rule='evenodd'
+					fillRule='evenodd'
+					clipRule='evenodd'
 					d='M42 0.5L81.9444 29.5213L66.687 76.4787H17.313L2.05563 29.5213L42 0.5Z'
 					fill='#8DB9AA'
 				/>
 				<path
-					fill-rule='evenodd'
-					clip-rule='evenodd'
+					fillRule='evenodd'
+					clipRule='evenodd'
 					d='M41.9992 11.7L71.2918 32.9822L60.103 67.4177H23.8954L12.7067 32.9822L41.9992 11.7Z'
 					fill='white'
 				/>
 				<path
-					fill-rule='evenodd'
-					clip-rule='evenodd'
+					fillRule='evenodd'
+					clipRule='evenodd'
 					d='M42.0004 22.9L60.6411 36.4433L53.521 58.3568H30.4798L23.3597 36.4433L42.0004 22.9Z'
 					fill='#8DB9AA'
 				/>
 			</g>
 			<path
 				opacity='0.590658'
-				fill-rule='evenodd'
-				clip-rule='evenodd'
+				fillRule='evenodd'
+				clipRule='evenodd'
 				d='M42.36 40.0987C41.5447 37.4265 39.2371 35.5 36.5178 35.5H33V38.3826C33 42.0973 35.7562 45.1087 39.1562 45.1087H40.0497C40.1702 43.1043 41.0408 41.3238 42.36 40.0987ZM51 41.5714V39.1957H46.8764C43.7415 39.1957 41.1711 41.7083 40.9374 44.8975L40.92 45.8478V52.5H42.7527V47.7484H45.0436C48.3334 47.7484 51 44.983 51 41.5714Z'
 				fill='white'
 			/>
@@ -610,8 +610,8 @@ export const PopupRegistrationPin: React.FC<SVGProps> = ({ width = 17, height = 
 		<svg width={width} height={height} viewBox='0 0 17 17' fill='none' xmlns='http://www.w3.org/2000/svg'>
 			<rect y='0.5' width='16' height='16' rx='8' fill='white' />
 			<path
-				fill-rule='evenodd'
-				clip-rule='evenodd'
+				fillRule='evenodd'
+				clipRule='evenodd'
 				d='M4 6.45139C4 4.26933 5.79054 2.5 7.99956 2.5C10.2086 2.5 11.9991 4.26933 12 6.45139C12 6.5274 11.9974 6.6034 11.993 6.67852C12.0435 8.80579 8.30147 14.0413 7.99173 14.4717V14.5C7.99173 14.5 7.98738 14.4947 7.98129 14.4859C7.97433 14.4947 7.97085 14.5 7.97085 14.5V14.4708C7.6994 14.089 4.79869 9.96885 4.15487 7.54375C4.05394 7.1973 4 6.83053 4 6.45139ZM5.45455 6.5C5.45455 7.90559 6.59384 9.04545 8 9.04545C9.40528 9.04545 10.5455 7.90559 10.5455 6.5C10.5455 5.09441 9.40616 3.95455 8 3.95455C6.59384 3.95455 5.45455 5.09441 5.45455 6.5Z'
 				fill='#EF5A56'
 			/>
@@ -623,14 +623,14 @@ export const PopupRegistrationChecked: React.FC<SVGProps> = ({ width = 24, heigh
 	return (
 		<svg width={width} height={height} viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
 			<path
-				fill-rule='evenodd'
-				clip-rule='evenodd'
+				fillRule='evenodd'
+				clipRule='evenodd'
 				d='M12.0008 6.0095L4.91975 11.1542L7.62447 19.4785H16.3771L19.0819 11.1542L12.0008 6.0095ZM21.5114 10.3648L12.0008 3.45496L2.49023 10.3648L6.12295 21.5451H17.8787L21.5114 10.3648Z'
 				fill='#9FC2B3'
 			/>
 			<path
-				fill-rule='evenodd'
-				clip-rule='evenodd'
+				fillRule='evenodd'
+				clipRule='evenodd'
 				d='M16.7076 10.7479C17.0981 11.1384 17.0981 11.7716 16.7076 12.1621L11.7072 17.1621C11.3167 17.5526 10.6836 17.5526 10.2931 17.1621L7.79292 14.6621C7.40238 14.2716 7.40236 13.6384 7.79287 13.2479C8.18338 12.8573 8.81655 12.8573 9.20708 13.2478L11.0002 15.0408L15.2934 10.7478C15.6839 10.3573 16.3171 10.3573 16.7076 10.7479Z'
 				fill='#9FC2B3'
 			/>
@@ -646,8 +646,8 @@ export const PopupRegistrationCross: React.FC<SVGProps> = ({ width = 24, height 
 				stroke-width='2.06667'
 			/>
 			<path
-				fill-rule='evenodd'
-				clip-rule='evenodd'
+				fillRule='evenodd'
+				clipRule='evenodd'
 				d='M9.70711 8.79289C9.31658 8.40237 8.68342 8.40237 8.29289 8.79289C7.90237 9.18342 7.90237 9.81658 8.29289 10.2071L10.5858 12.5L8.29289 14.7929C7.90237 15.1834 7.90237 15.8166 8.29289 16.2071C8.68342 16.5976 9.31658 16.5976 9.70711 16.2071L12 13.9142L14.2929 16.2071C14.6834 16.5976 15.3166 16.5976 15.7071 16.2071C16.0976 15.8166 16.0976 15.1834 15.7071 14.7929L13.4142 12.5L15.7071 10.2071C16.0976 9.81658 16.0976 9.18342 15.7071 8.79289C15.3166 8.40237 14.6834 8.40237 14.2929 8.79289L12 11.0858L9.70711 8.79289Z'
 				fill='#F8B3B1'
 			/>

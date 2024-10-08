@@ -26,10 +26,6 @@ export const UserManagementMain = () => {
 	const [page, setPage] = useState<number>(1)
 	const { isDesktop } = useResponsive()
 
-	// useEffect(() => {
-	// 	console.log('isSearch :: ', isSearch)
-	// }, [isSearch])
-
 	return (
 		<div
 			className={`flex flex-col ${isDesktop ? 'pl-[32px] pr-[32px] pt-[16px]' : 'pl-[0px] pr-[0px] pt-[12px]'} ${isDesktop ? 'w-[calc(100vw-90px)]' : 'w-[calc(100vw-50px)]'} self-center`}

@@ -69,7 +69,7 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 				'text/xlsx',
 				'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 			]
-			console.log(importFile)
+
 			if (validFileTypes.includes(fileType) && fileSize <= maxFileSize) {
 				setImportFile(importFile)
 			} else {
@@ -103,7 +103,7 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 		try {
 			setImportError([])
 			setIsLoading(true)
-			console.log(importFile?.type)
+
 			if (importFile) {
 				if (importFile?.type === 'text/csv') {
 					// case csv
@@ -114,7 +114,7 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 							data: formData,
 						}
 						const res = await um.postImportCSVUM(payload)
-						console.log(res)
+
 						setAlertInfo({
 							open: true,
 							severity: 'success',
@@ -125,11 +125,11 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 						handleCloseImport(null, 'importFinish')
 					} catch (error: any) {
 						// post service error show in local modal component rows errors
-						console.log('csv error :: ', error)
+						console.error('csv error :: ', error)
 						if (error.data) {
 							const data: PostImportCSVErrorDtoOut[] = error.data
 							setImportFile(undefined)
-							console.log('error :: ', data)
+
 							setImportError(data)
 						} else {
 							setAlertInfo({
@@ -148,7 +148,7 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 							data: formData,
 						}
 						const res = await um.postImportXLSXUM(payload)
-						console.log(res)
+
 						setAlertInfo({
 							open: true,
 							severity: 'success',
@@ -159,11 +159,10 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 						handleCloseImport(null, 'importFinish')
 					} catch (error: any) {
 						// post service error show in local modal component rows errors
-						console.log(error)
+						console.error(error)
 						if (error.data) {
 							const data: PostImportXLSXErrorDtoOut[] = error.data
 							setImportFile(undefined)
-							console.log('error :: ', data)
 							setImportError(data)
 						} else {
 							setAlertInfo({
@@ -176,7 +175,7 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 				}
 			}
 		} catch (error) {
-			console.log(error)
+			console.error(error)
 		} finally {
 			setIsSearch(true)
 			queryClient.invalidateQueries({ queryKey: ['getSearchUM'] })
@@ -189,7 +188,7 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 			let res
 			if (type === 'csv') {
 				res = await um.getTemplateCSVUM()
-				console.log(res)
+
 				const a = document.createElement('a')
 				a.download = 'users_data_csv.' + type
 				a.href = window.URL.createObjectURL(res) // blob return from res
@@ -202,7 +201,7 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 				a.remove()
 			} else {
 				res = await um.getTemplateXLSXUM()
-				console.log(res)
+				console.error(res)
 				const a = document.createElement('a')
 				a.download = 'users_data_excel.' + type
 				a.href = window.URL.createObjectURL(res) // blob return from res
@@ -215,7 +214,7 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 				a.remove()
 			}
 		} catch (error: any) {
-			console.log(error)
+			console.error(error)
 			setAlertInfo({ open: true, severity: 'error', message: t('error.somethingWrong') })
 		}
 	}

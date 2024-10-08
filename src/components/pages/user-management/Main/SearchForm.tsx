@@ -33,17 +33,12 @@ const UserManagementSearchForm: React.FC<UserManagementSearchFormProps> = ({
 	const [previousInput, setPreviousInput] = useState<string>('')
 
 	const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
-		// setSearchString(event.target.value)
-		// console.log('handleSearchChange')
-		// event.stopPropagation()
-		// event.preventDefault()
 		setSearchParams((prevSearch) => ({
 			...prevSearch,
 			offset: 0,
 			keyword: event.target.value,
 			respLang: i18n.language,
 		}))
-		//setPage(1)
 	}
 
 	const handleOnSubmint = (event: React.FormEvent<HTMLFormElement>) => {

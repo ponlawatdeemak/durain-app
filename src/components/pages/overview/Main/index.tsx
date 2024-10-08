@@ -127,7 +127,8 @@ const OverviewMain: React.FC = () => {
 							return [0, 0, 0, 0]
 						}
 					} else {
-						if (admCode === d.properties.admCode.substring(0, 2)) {
+						const strAdmCode = String(d.properties.admCode).substring(0, 2)
+						if (String(admCode) === strAdmCode) {
 							if (item.id === d.properties.ageClass_id) {
 								const array = hexRgb(item.color, { format: 'array' })
 								array[3] = 255
@@ -236,7 +237,7 @@ const OverviewMain: React.FC = () => {
 					setYear(res.data[0].year)
 				}
 			})
-			.catch((error) => console.log(error))
+			.catch((error) => console.error(error))
 	}, [year])
 
 	useEffect(() => {
@@ -245,7 +246,7 @@ const OverviewMain: React.FC = () => {
 			.then((res) => {
 				setOverviewData(res.data)
 			})
-			.catch((error) => console.log(error))
+			.catch((error) => console.error(error))
 
 		if (admCode !== 0) {
 			service.overview.locationExtent(admCode).then((res) => {
@@ -345,7 +346,7 @@ const OverviewMain: React.FC = () => {
 								{t('overview:durianPlantationData')} {t('overview:year')}{' '}
 								{selectedYearObj?.yearName[language]}
 								<StyledTooltip
-									className='ml-1 hover:cursor-pointer hover:text-tooltip-hover'
+									className='ml-1'
 									title={
 										<div className='flex flex-row items-center gap-2'>
 											<p className='text-xs'>
@@ -359,7 +360,10 @@ const OverviewMain: React.FC = () => {
 										</div>
 									}
 								>
-									<InfoIcon fontSize='small' className='text-tooltip' />
+									<InfoIcon
+										fontSize='small'
+										className='text-tooltip hover:cursor-pointer hover:text-tooltip-hover'
+									/>
 								</StyledTooltip>
 							</div>
 							<p className='pt-[8px] text-[22px] font-semibold'>

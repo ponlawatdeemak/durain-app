@@ -21,6 +21,6 @@ export enum SortType {
 }
 
 export enum RegisterType {
-    Registered = 'registeredArea',
-    NonRegistered = 'nonRegisteredArea'
+	Registered = 'registeredArea',
+	NonRegistered = 'nonRegisteredArea',
 }
