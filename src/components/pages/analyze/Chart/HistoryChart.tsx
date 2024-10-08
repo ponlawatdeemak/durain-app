@@ -32,17 +32,17 @@ const HistoryChart: React.FC<HistoryChartProps> = ({ historyOverviewData }) => {
 	const historyBarData = useMemo(() => {
 		const historyBarData: HistoryDataType = {}
 		historyOverviewData?.forEach((data) =>
-			data.ageClass.forEach((ageClass) => {
-				if (!historyBarData[ageClass.name[language]]) {
-					historyBarData[ageClass.name[language]] = {}
+			data?.ageClass?.forEach((ageClass) => {
+				if (!historyBarData[ageClass?.name?.[language]]) {
+					historyBarData[ageClass?.name?.[language]] = {}
 				}
-				if (!historyBarData[ageClass.name[language]].color) {
-					historyBarData[ageClass.name[language]].color = ageClass.color
+				if (!historyBarData[ageClass?.name?.[language]].color) {
+					historyBarData[ageClass?.name?.[language]].color = ageClass?.color
 				}
-				if (!historyBarData[ageClass.name[language]].columns) {
-					historyBarData[ageClass.name[language]].columns = [ageClass.name[language]]
+				if (!historyBarData[ageClass?.name?.[language]].columns) {
+					historyBarData[ageClass?.name?.[language]].columns = [ageClass?.name?.[language]]
 				}
-				historyBarData[ageClass.name[language]].columns?.push(ageClass.area[areaUnit])
+				historyBarData[ageClass?.name?.[language]].columns?.push(ageClass?.area?.[areaUnit])
 			}),
 		)
 		return historyBarData
@@ -126,10 +126,10 @@ const HistoryChart: React.FC<HistoryChartProps> = ({ historyOverviewData }) => {
 				show: true,
 				contents: {
 					bindto: '#legend',
-					template: function (title: any, color: any) {
-						return `<div style='display:flex;align-items:center;gap:10px'>
-								<div style='background-color:${color};width:12px;height:12px;border-radius:50%'></div>
-								<span style='font-size:14px;line-height:18px;font-weight:500;color:#333333'>${title}</span>
+					template: function (title: string, color: string) {
+						return `<div class='flex flex-row items-center gap-[10px]'>
+								<div style='background-color:${color}' class='w-3 h-3 rounded-full'></div>
+								<span class='text-sm leading-[18px] font-medium text-[#333333]'>${title}</span>
 							</div>`
 					},
 				},
@@ -145,27 +145,22 @@ const HistoryChart: React.FC<HistoryChartProps> = ({ historyOverviewData }) => {
 			},
 			tooltip: {
 				contents: function (d: any, defaultTitleFormat: any, defaultValueFormat: any, color: any) {
-					return `<div style='background-color:white;padding:8px 16px;border:1px solid #E9ECEE;box-shadow:0px 5px 11px 0px #AFAFAF80'>
-                                <div style='display:flex;flex-direction:column;align-items:center;gap:4px'>
-                                    <span style='font-size:10px;line-height:14px;font-weight:500;color:#F1A90B'>${'พื้นที่ปลูกรายปีย้อนหลัง'}</span>
-                                    <div style='display:flex;flex-direction:row;align-items:center;gap:10px'>
-                                        <div style='display:flex;flex-direction:column;align-items:center'>
-                                            <span style='font-size:10px;line-height:14px;font-weight:500;color:${color(d[0].id)}'>${d[0].name}</span>
-                                            <span style='font-size:12px;line-height:16px;font-weight:500;color:#5C5C5C'>${Math.round(d[0].ratio * 100)} %</span>
-                                        </div>
-                                        <div style='border-left:1px solid #E5E8EB;height:30px'></div>
-                                        <div style='display:flex;flex-direction:column;align-items:center'>
-                                            <span style='font-size:10px;line-height:14px;font-weight:500;color:${color(d[1].id)}'>${d[1].name}</span>
-                                            <span style='font-size:12px;line-height:16px;font-weight:500;color:#5C5C5C'>${Math.round(d[1].ratio * 100)} %</span>
-                                        </div>
-                                        <div style='border-left:1px solid #E5E8EB;height:30px'></div>
-                                        <div style='display:flex;flex-direction:column;align-items:center'>
-                                            <span style='font-size:10px;line-height:14px;font-weight:500;color:${color(d[2].id)}'>${d[2].name}</span>
-                                            <span style='font-size:12px;line-height:16px;font-weight:500;color:#5C5C5C'>${Math.round(d[2].ratio * 100)} %</span>
-                                        </div>
-                                    </div>
+					let tooltipHistory = `<div style='box-shadow:0px 5px 11px 0px #AFAFAF80' class='rounded border border-solid border-[#E9ECEE] bg-white px-4 py-2'>
+                                            <div class='flex flex-col items-center gap-1'>
+                                                <span class='text-[10px] leading-[14px] font-medium text-[#F1A90B]'>${'พื้นที่ปลูกรายปีย้อนหลัง'}</span>
+                                                <div class='flex flex-row items-center gap-[10px]'>`
+					d.forEach((item: any, index: number) => {
+						tooltipHistory += `${index !== 0 ? `<div class='h-[30px] border-0 border-l border-solid border-[#E5E8EB]'></div>` : ''}
+                                        <div class='flex flex-col items-center'>
+                                            <span style='color:${color(item.id)}' class='text-[10px] leading-[14px] font-medium'>${item.name}</span>
+                                            <span class='text-xs font-medium text-[#5C5C5C]'>${Math.round(item.ratio * 100)} %</span>
+                                        </div>`
+					})
+					tooltipHistory += `</div>
                                 </div>
                             </div>`
+
+					return tooltipHistory
 				},
 			},
 		}
@@ -178,7 +173,7 @@ const HistoryChart: React.FC<HistoryChartProps> = ({ historyOverviewData }) => {
 			chart.load({
 				columns: historyBarColumns as any,
 				colors: historyBarColors as any,
-				categories: historyOverviewData?.map((item) => item.yearName[language]),
+				categories: historyOverviewData?.map((item) => item?.yearName?.[language]),
 				unload: true,
 			})
 			chart.groups(historyBarGroup)

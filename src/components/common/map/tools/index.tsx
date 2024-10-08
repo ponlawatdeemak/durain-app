@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Box, ToggleButton, ToggleButtonGroup, Typography, IconButton, Popover, styled, Switch } from '@mui/material'
 import { useTranslation } from 'next-i18next'
 import { Layer } from '@deck.gl/core'
@@ -7,6 +7,7 @@ import { BaseMap, BasemapType, MapLayer } from '../interface/map'
 import useMapStore from '../store/map'
 import Measurement from './measurement'
 import classNames from 'classnames'
+import { layerIdConfig } from '@/config/app.config'
 
 const basemapList: BaseMap[] = [
 	{ value: BasemapType.CartoLight, image: '/images/map/basemap_street.png', label: 'map.street' },
@@ -37,12 +38,14 @@ const MapTools: React.FC<MapToolsProps> = ({
 	const [anchorLegend, setAnchorLegend] = useState<HTMLButtonElement | null>(null)
 	const [showMeasure, setShowMeasure] = useState(false)
 	const [switchState, setSwichState] = useState(
-		layerList!.map((item) => {
+		layerList?.map((item) => {
 			return { id: item.id, isOn: true }
 		}),
 	)
+
+	//sync switchState with map layer display
 	useEffect(() => {
-		switchState.forEach((item) => {
+		switchState?.forEach((item) => {
 			if (item.isOn === false) {
 				const layer = getLayer(item.id)
 				if (layer) {
@@ -52,22 +55,35 @@ const MapTools: React.FC<MapToolsProps> = ({
 		})
 	}, [getLayer, layerList, removeLayer, switchState, layers])
 
+	//reload switchState
+	useEffect(() => {
+		if (switchState?.length !== layerList?.length) {
+			setSwichState(
+				layerList?.map((item) => {
+					return { id: item.id, isOn: true }
+				}),
+			)
+		}
+	}, [layerList, switchState?.length])
+
 	const onToggleLayer = useCallback(
 		(layerId: string) => {
-			const layer = getLayer(layerId)
-			if (layer) {
-				removeLayer(layerId)
-			} else {
-				const item = layerList?.find((item) => item.id === layerId)
-				if (item) {
-					const updatedLayers = [...layers, item.layer]
-					setLayers(updatedLayers as Layer[])
+			if (switchState) {
+				const layer = getLayer(layerId)
+				if (layer) {
+					removeLayer(layerId)
+				} else {
+					const item = layerList?.find((item) => item.id === layerId)
+					if (item) {
+						const updatedLayers = [...layers, item.layer]
+						setLayers(updatedLayers as Layer[])
+					}
 				}
+				const state = [...switchState]
+				const objIndex = state.findIndex((item) => item.id === layerId)
+				state[objIndex].isOn = !switchState[objIndex].isOn
+				setSwichState([...state])
 			}
-			const state = [...switchState]
-			const objIndex = state.findIndex((item) => item.id === layerId)
-			state[objIndex].isOn = !switchState[objIndex].isOn
-			setSwichState([...state])
 		},
 		[layerList, getLayer, layers, setLayers, removeLayer, switchState],
 	)
@@ -284,7 +300,7 @@ const MapTools: React.FC<MapToolsProps> = ({
 												<p className='text-[14px] font-light'>{item.label}</p>
 											</div>
 											<ToggleSwitch
-												checked={switchState!.find((sw) => sw.id === item.id)!.isOn}
+												checked={switchState?.find((sw) => sw.id === item.id)?.isOn}
 												onChange={() => {
 													onToggleLayer(item.id)
 												}}

@@ -1,5 +1,14 @@
 import useAreaUnit from '@/store/area-unit'
-import { Box, FormControl, MenuItem, Paper, Select, SelectChangeEvent, Typography } from '@mui/material'
+import {
+	Box,
+	CircularProgress,
+	FormControl,
+	MenuItem,
+	Paper,
+	Select,
+	SelectChangeEvent,
+	Typography,
+} from '@mui/material'
 import classNames from 'classnames'
 import React, { useEffect, useState } from 'react'
 import useSearchAnalyze from '../Main/context'
@@ -30,35 +39,65 @@ const CompareFilter: React.FC<CompareFilterProps> = ({ orderBy }) => {
 	})
 
 	const { data: compareProvinceData, isLoading: isCompareProvinceDataLoading } = useQuery({
-		queryKey: ['getCompareProvince', queryParams.yearStart, queryParams.yearEnd],
+		queryKey: ['getCompareProvince', queryParams?.yearStart, queryParams?.yearEnd],
 		queryFn: () =>
 			service.analyze.getCompareOverview({
-				year1: queryParams.yearStart || yearStart,
-				year2: queryParams.yearEnd || yearEnd,
+				year1: queryParams?.yearStart || yearStart,
+				year2: queryParams?.yearEnd || yearEnd,
 			}),
-		enabled: !!queryParams.yearStart && !!queryParams.yearEnd,
+		enabled: !!queryParams?.yearStart && !!queryParams?.yearEnd,
 	})
 
 	const { data: compareDistrictData, isLoading: isCompareDistrictDataLoading } = useQuery({
-		queryKey: ['getCompareDistrict', queryParams.yearStart, queryParams.yearEnd, queryParams.provinceId],
-		queryFn: () =>
-			service.analyze.getCompareOverview({
-				year1: queryParams.yearStart || yearStart,
-				year2: queryParams.yearEnd || yearEnd,
-				admCode: queryParams.provinceId,
-			}),
-		enabled: !!queryParams.yearStart && !!queryParams.yearEnd && !!queryParams.provinceId,
+		queryKey: ['getCompareDistrict', queryParams?.yearStart, queryParams?.yearEnd, queryParams?.provinceId],
+		queryFn: async () => {
+			const provinceId = (
+				await service.analyze.getCompareOverview({
+					year1: queryParams?.yearStart || yearStart,
+					year2: queryParams?.yearEnd || yearEnd,
+				})
+			)?.data?.adms?.[0]?.admCode
+
+			return await service.analyze.getCompareOverview({
+				year1: queryParams?.yearStart || yearStart,
+				year2: queryParams?.yearEnd || yearEnd,
+				admCode: queryParams?.provinceId || provinceId,
+			})
+		},
+		enabled: !!queryParams?.yearStart && !!queryParams?.yearEnd,
 	})
 
 	const { data: compareSubDistrictData, isLoading: isCompareSubDistrictDataLoading } = useQuery({
-		queryKey: ['getCompareSubDistrict', queryParams.yearStart, queryParams.yearEnd, queryParams.districtId],
-		queryFn: () =>
-			service.analyze.getCompareOverview({
-				year1: queryParams.yearStart || yearStart,
-				year2: queryParams.yearEnd || yearEnd,
-				admCode: queryParams.districtId,
-			}),
-		enabled: !!queryParams.yearStart && !!queryParams.yearEnd && !!queryParams.districtId,
+		queryKey: [
+			'getCompareSubDistrict',
+			queryParams?.yearStart,
+			queryParams?.yearEnd,
+			queryParams?.provinceId,
+			queryParams?.districtId,
+		],
+		queryFn: async () => {
+			const provinceId = (
+				await service.analyze.getCompareOverview({
+					year1: queryParams?.yearStart || yearStart,
+					year2: queryParams?.yearEnd || yearEnd,
+				})
+			)?.data?.adms?.[0]?.admCode
+
+			const districtId = (
+				await service.analyze.getCompareOverview({
+					year1: queryParams?.yearStart || yearStart,
+					year2: queryParams?.yearEnd || yearEnd,
+					admCode: queryParams?.provinceId || provinceId,
+				})
+			)?.data?.adms?.[0]?.admCode
+
+			return await service.analyze.getCompareOverview({
+				year1: queryParams?.yearStart || yearStart,
+				year2: queryParams?.yearEnd || yearEnd,
+				admCode: queryParams?.districtId || districtId,
+			})
+		},
+		enabled: !!queryParams?.yearStart && !!queryParams?.yearEnd,
 	})
 
 	useEffect(() => {
@@ -151,33 +190,69 @@ const CompareFilter: React.FC<CompareFilterProps> = ({ orderBy }) => {
 					</Box>
 				</Box>
 			</Box>
-			<Box className='flex w-full items-center gap-4 max-xl:flex-col'>
+			<Box className='flex w-full gap-4 max-xl:flex-col'>
 				<Box className='shadow-[0_3px_8px_0_rgba(212, 220, 230, 1)] flex w-full flex-col gap-6 rounded-lg border border-solid border-[#E9ECEE] bg-white px-4 py-6'>
-					<Box className='flex flex-col gap-4'>
-						<Typography className='!text-lg !font-medium !text-[#333333]'>
-							{t('analyze:durianPlantationAllAreas')}
-						</Typography>
-						<CompareTable compareOverviewData={compareProvinceData?.data} />
-					</Box>
-					<span className='text-[10px] font-medium text-[#333333]'>{`${t('areaUnit')} : ${t(AreaUnitText[areaUnit])}`}</span>
+					{isCompareProvinceDataLoading ? (
+						<div className='flex h-[357px] flex-col items-center justify-center bg-transparent lg:bg-white'>
+							<CircularProgress size={60} color='primary' />
+						</div>
+					) : (
+						<>
+							<Box className='box-border flex h-full flex-col justify-between'>
+								<Typography className='!mb-4 !text-lg !font-medium !text-[#333333]'>
+									{t('analyze:durianPlantationAllAreas')}
+								</Typography>
+								<CompareTable compareOverviewData={compareProvinceData?.data} />
+							</Box>
+							<span className='text-[10px] font-medium text-[#333333]'>{`${t('areaUnit')} : ${t(AreaUnitText[areaUnit])}`}</span>
+						</>
+					)}
 				</Box>
 				<Box className='shadow-[0_3px_8px_0_rgba(212, 220, 230, 1)] flex w-full flex-col gap-6 rounded-lg border border-solid border-[#E9ECEE] bg-white px-4 py-6'>
-					<Box className='flex flex-col gap-4'>
-						<Typography className='!text-lg !font-medium !text-[#333333]'>
-							{`${language === 'en' ? `${t('analyze:changesIn')} ` : ' '}${t('durianPlantationData')}${language === 'th' ? t('province') : ' '}${compareProvinceData?.data?.adms.find((province) => Number(province.admCode) === queryParams.provinceId)?.admName[language] || ''}${language === 'en' ? ` ${t('province')}` : ''}${language === 'th' ? t('analyze:changesIn') : ''}`}
-						</Typography>
-						<CompareTable compareOverviewData={compareDistrictData?.data} />
-					</Box>
-					<span className='text-[10px] font-medium text-[#333333]'>{`${t('areaUnit')} : ${t(AreaUnitText[areaUnit])}`}</span>
+					{isCompareDistrictDataLoading ? (
+						<div className='flex h-[357px] flex-col items-center justify-center bg-transparent lg:bg-white'>
+							<CircularProgress size={60} color='primary' />
+						</div>
+					) : (
+						<>
+							<Box className='box-border flex h-full flex-col justify-between'>
+								<Typography className='!mb-4 !text-lg !font-medium !text-[#333333]'>
+									{queryParams?.provinceId
+										? language === 'en'
+											? `${t('analyze:changesIn')} ${t('durianPlantationData')} ${compareProvinceData?.data?.adms?.find((province) => Number(province.admCode) === queryParams?.provinceId)?.admName?.[language]} ${t('province')}`
+											: `${t('durianPlantationData')}${t('province')}${compareProvinceData?.data?.adms?.find((province) => Number(province.admCode) === queryParams?.provinceId)?.admName?.[language]}${t('analyze:changesIn')}`
+										: language === 'en'
+											? `${t('analyze:changesIn')} ${t('durianPlantationData')} ${compareProvinceData?.data?.adms?.[0]?.admName?.[language]} ${t('province')}`
+											: `${t('durianPlantationData')}${t('province')}${compareProvinceData?.data?.adms?.[0]?.admName?.[language]}${t('analyze:changesIn')}`}
+								</Typography>
+								<CompareTable compareOverviewData={compareDistrictData?.data} />
+							</Box>
+							<span className='text-[10px] font-medium text-[#333333]'>{`${t('areaUnit')} : ${t(AreaUnitText[areaUnit])}`}</span>
+						</>
+					)}
 				</Box>
 				<Box className='shadow-[0_3px_8px_0_rgba(212, 220, 230, 1)] flex w-full flex-col gap-6 rounded-lg border border-solid border-[#E9ECEE] bg-white px-4 py-6'>
-					<Box className='flex flex-col gap-4'>
-						<Typography className='!text-lg !font-medium !text-[#333333]'>
-							{`${language === 'en' ? `${t('analyze:changesIn')} ` : ' '}${t('durianPlantationData')}${language === 'th' ? t('district') : ' '}${compareDistrictData?.data?.adms.find((district) => Number(district.admCode) === queryParams.districtId)?.admName[language] || ''}${language === 'en' ? ` ${t('district')}` : ''}${language === 'th' ? t('analyze:changesIn') : ''}`}
-						</Typography>
-						<CompareTable compareOverviewData={compareSubDistrictData?.data} />
-					</Box>
-					<span className='text-[10px] font-medium text-[#333333]'>{`${t('areaUnit')} : ${t(AreaUnitText[areaUnit])}`}</span>
+					{isCompareSubDistrictDataLoading ? (
+						<div className='flex h-[357px] flex-col items-center justify-center bg-transparent lg:bg-white'>
+							<CircularProgress size={60} color='primary' />
+						</div>
+					) : (
+						<>
+							<Box className='box-border flex h-full flex-col justify-between'>
+								<Typography className='!mb-4 !text-lg !font-medium !text-[#333333]'>
+									{queryParams?.districtId
+										? language === 'en'
+											? `${t('analyze:changesIn')} ${t('durianPlantationData')} ${compareDistrictData?.data?.adms?.find((district) => Number(district.admCode) === queryParams?.districtId)?.admName?.[language]} ${t('district')}`
+											: `${t('durianPlantationData')}${t('district')}${compareDistrictData?.data?.adms?.find((district) => Number(district.admCode) === queryParams?.districtId)?.admName?.[language]}${t('analyze:changesIn')}`
+										: language === 'en'
+											? `${t('analyze:changesIn')} ${t('durianPlantationData')} ${compareDistrictData?.data?.adms?.[0]?.admName?.[language]} ${t('district')}`
+											: `${t('durianPlantationData')}${t('district')}${compareDistrictData?.data?.adms?.[0]?.admName?.[language]}${t('analyze:changesIn')}`}
+								</Typography>
+								<CompareTable compareOverviewData={compareSubDistrictData?.data} />
+							</Box>
+							<span className='text-[10px] font-medium text-[#333333]'>{`${t('areaUnit')} : ${t(AreaUnitText[areaUnit])}`}</span>
+						</>
+					)}
 				</Box>
 			</Box>
 		</Paper>
