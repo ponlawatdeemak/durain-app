@@ -6,7 +6,8 @@
 		"dev": "next dev",
 		"build": "next build",
 		"start": "next start",
-		"lint": "next lint"
+		"lint": "next lint",
+		"deploy": "sh build.sh"
 	},
 	"dependencies": {
 		"@billboard.js/react": "^1.1.1",

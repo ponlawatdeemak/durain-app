@@ -15,14 +15,15 @@ USER ${P_UID}
 
 ADD --chown="21001:21001" package*.json ./
 
-RUN npm ci --only=production && \
-    rm -rf package-lock.json .npmrc .npm
+RUN yarn install --production --frozen-lockfile && \
+    rm -rf yarn.lock .cache .npm .yarn .next/cache
+
+
 
 ADD --chown="21001:21001" public ./public
 ADD --chown="21001:21001" .next ./.next
-ADD --chown="21001:21001" next.config.js ./
-
-RUN rm -rf ./.next/cache || true
+ADD --chown="21001:21001" next.config.js ./next.config.js
+ADD --chown="21001:21001" next-i18next.config.js ./next-i18next.config.js
 
 CMD npm start
 
