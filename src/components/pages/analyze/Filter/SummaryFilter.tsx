@@ -21,28 +21,47 @@ const SummaryFilter: React.FC<SummaryFilterProps> = ({ orderBy }) => {
 	const language = i18n.language as keyof ResponseLanguage
 
 	const { data: summaryProvinceData, isLoading: isSummaryProvinceDataLoading } = useQuery({
-		queryKey: ['getSummaryProvince', queryParams.year],
-		queryFn: () => service.analyze.getSummaryOverview({ year: queryParams.year || new Date().getFullYear() }),
+		queryKey: ['getSummaryProvince', queryParams?.year],
+		queryFn: () => service.analyze.getSummaryOverview({ year: queryParams?.year || new Date().getFullYear() }),
 	})
 
 	const { data: summaryDistrictData, isLoading: isSummaryDistrictDataLoading } = useQuery({
-		queryKey: ['getSummaryDistrict', queryParams.year, queryParams.provinceId],
-		queryFn: () =>
-			service.analyze.getSummaryOverview({
-				year: queryParams.year || new Date().getFullYear(),
-				admCode: queryParams.provinceId,
-			}),
-		enabled: !!queryParams.provinceId,
+		queryKey: ['getSummaryDistrict', queryParams?.year, queryParams?.provinceId],
+		queryFn: async () => {
+			const provinceId = (
+				await service.analyze.getSummaryOverview({
+					year: queryParams?.year || new Date().getFullYear(),
+				})
+			)?.data?.adms?.[0]?.admCode
+
+			return await service.analyze.getSummaryOverview({
+				year: queryParams?.year || new Date().getFullYear(),
+				admCode: queryParams?.provinceId || provinceId,
+			})
+		},
 	})
 
 	const { data: summarySubDistrictData, isLoading: isSummarySubDistrictDataLoading } = useQuery({
-		queryKey: ['getSummarySubDistrict', queryParams.year, queryParams.districtId],
-		queryFn: () =>
-			service.analyze.getSummaryOverview({
-				year: queryParams.year || new Date().getFullYear(),
-				admCode: queryParams.districtId,
-			}),
-		enabled: !!queryParams.districtId,
+		queryKey: ['getSummarySubDistrict', queryParams?.year, queryParams?.provinceId, queryParams?.districtId],
+		queryFn: async () => {
+			const provinceId = (
+				await service.analyze.getSummaryOverview({
+					year: queryParams?.year || new Date().getFullYear(),
+				})
+			)?.data?.adms?.[0]?.admCode
+
+			const districtId = (
+				await service.analyze.getSummaryOverview({
+					year: queryParams?.year || new Date().getFullYear(),
+					admCode: queryParams?.provinceId || provinceId,
+				})
+			)?.data?.adms?.[0]?.admCode
+
+			return await service.analyze.getSummaryOverview({
+				year: queryParams?.year || new Date().getFullYear(),
+				admCode: queryParams?.districtId || districtId,
+			})
+		},
 	})
 
 	return (
@@ -52,49 +71,67 @@ const SummaryFilter: React.FC<SummaryFilterProps> = ({ orderBy }) => {
 			})}
 		>
 			<Box className='shadow-[0_3px_8px_0_rgba(212, 220, 230, 1)] flex w-full flex-col gap-6 rounded-lg border border-solid border-[#E9ECEE] bg-white px-4 py-6'>
-				<Box className='flex flex-col gap-4'>
-					<Typography className='!text-lg !font-medium text-[#333333]'>
-						{t('analyze:durianPlantationAllAreas')}
-					</Typography>
-					{isSummaryProvinceDataLoading ? (
-						<div className='flex h-[274px] flex-col items-center justify-center bg-transparent lg:bg-white'>
-							<CircularProgress size={60} color='primary' />
-						</div>
-					) : (
-						<SummaryTable summaryOverviewData={summaryProvinceData?.data} />
-					)}
-				</Box>
-				<span className='text-[10px] font-medium text-[#333333]'>{`${t('areaUnit')} : ${t(AreaUnitText[areaUnit])}`}</span>
+				{isSummaryProvinceDataLoading ? (
+					<div className='flex h-[357px] flex-col items-center justify-center bg-transparent lg:bg-white'>
+						<CircularProgress size={60} color='primary' />
+					</div>
+				) : (
+					<>
+						<Box className='box-border flex h-full flex-col justify-between'>
+							<Typography className='!mb-4 !text-lg !font-medium !text-[#333333]'>
+								{t('analyze:durianPlantationAllAreas')}
+							</Typography>
+							<SummaryTable summaryOverviewData={summaryProvinceData?.data} />
+						</Box>
+						<span className='text-[10px] font-medium text-[#333333]'>{`${t('areaUnit')} : ${t(AreaUnitText[areaUnit])}`}</span>
+					</>
+				)}
 			</Box>
 			<Box className='shadow-[0_3px_8px_0_rgba(212, 220, 230, 1)] flex w-full flex-col gap-6 rounded-lg border border-solid border-[#E9ECEE] bg-white px-4 py-6'>
-				<Box className='flex flex-col gap-4'>
-					<Typography className='!text-lg !font-medium text-[#333333]'>
-						{`${t('durianPlantationData')}${language === 'th' ? t('province') : ' '}${summaryProvinceData?.data?.adms.find((province) => Number(province.admCode) === queryParams.provinceId)?.admName[language] || ''} ${language === 'en' ? t('province') : ''}`}
-					</Typography>
-					{isSummaryDistrictDataLoading ? (
-						<div className='flex h-[274px] flex-col items-center justify-center bg-transparent lg:bg-white'>
-							<CircularProgress size={60} color='primary' />
-						</div>
-					) : (
-						<SummaryTable summaryOverviewData={summaryDistrictData?.data} />
-					)}
-				</Box>
-				<span className='text-[10px] font-medium text-[#333333]'>{`${t('areaUnit')} : ${t(AreaUnitText[areaUnit])}`}</span>
+				{isSummaryDistrictDataLoading ? (
+					<div className='flex h-[357px] flex-col items-center justify-center bg-transparent lg:bg-white'>
+						<CircularProgress size={60} color='primary' />
+					</div>
+				) : (
+					<>
+						<Box className='box-border flex h-full flex-col justify-between'>
+							<Typography className='!mb-4 !text-lg !font-medium !text-[#333333]'>
+								{queryParams?.provinceId
+									? language === 'en'
+										? `${t('durianPlantationData')} ${summaryProvinceData?.data?.adms?.find((province) => Number(province.admCode) === queryParams?.provinceId)?.admName?.[language]} ${t('province')}`
+										: `${t('durianPlantationData')}${t('province')}${summaryProvinceData?.data?.adms?.find((province) => Number(province.admCode) === queryParams?.provinceId)?.admName?.[language]}`
+									: language === 'en'
+										? `${t('durianPlantationData')} ${summaryProvinceData?.data?.adms?.[0]?.admName?.[language]} ${t('province')}`
+										: `${t('durianPlantationData')}${t('province')}${summaryProvinceData?.data?.adms?.[0]?.admName?.[language]}`}
+							</Typography>
+							<SummaryTable summaryOverviewData={summaryDistrictData?.data} />
+						</Box>
+						<span className='text-[10px] font-medium text-[#333333]'>{`${t('areaUnit')} : ${t(AreaUnitText[areaUnit])}`}</span>
+					</>
+				)}
 			</Box>
 			<Box className='shadow-[0_3px_8px_0_rgba(212, 220, 230, 1)] flex w-full flex-col gap-6 rounded-lg border border-solid border-[#E9ECEE] bg-white px-4 py-6'>
-				<Box className='flex flex-col gap-4'>
-					<Typography className='!text-lg !font-medium text-[#333333]'>
-						{`${t('durianPlantationData')}${language === 'th' ? t('district') : ' '}${summaryDistrictData?.data?.adms.find((district) => Number(district.admCode) === queryParams.districtId)?.admName[language] || ''} ${language === 'en' ? t('district') : ' '}`}
-					</Typography>
-					{isSummarySubDistrictDataLoading ? (
-						<div className='flex h-[274px] flex-col items-center justify-center bg-transparent lg:bg-white'>
-							<CircularProgress size={60} color='primary' />
-						</div>
-					) : (
-						<SummaryTable summaryOverviewData={summarySubDistrictData?.data} />
-					)}
-				</Box>
-				<span className='text-[10px] font-medium text-[#333333]'>{`${t('areaUnit')} : ${t(AreaUnitText[areaUnit])}`}</span>
+				{isSummarySubDistrictDataLoading ? (
+					<div className='flex h-[357px] flex-col items-center justify-center bg-transparent lg:bg-white'>
+						<CircularProgress size={60} color='primary' />
+					</div>
+				) : (
+					<>
+						<Box className='box-border flex h-full flex-col justify-between'>
+							<Typography className='!mb-4 !text-lg !font-medium !text-[#333333]'>
+								{queryParams?.districtId
+									? language === 'en'
+										? `${t('durianPlantationData')} ${summaryDistrictData?.data?.adms?.find((district) => Number(district.admCode) === queryParams?.districtId)?.admName[language]} ${t('district')}`
+										: `${t('durianPlantationData')}${t('district')}${summaryDistrictData?.data?.adms?.find((district) => Number(district.admCode) === queryParams?.districtId)?.admName[language]}`
+									: language === 'en'
+										? `${t('durianPlantationData')} ${summaryDistrictData?.data?.adms?.[0]?.admName?.[language]} ${t('district')}`
+										: `${t('durianPlantationData')}${t('district')}${summaryDistrictData?.data?.adms?.[0]?.admName?.[language]}`}
+							</Typography>
+							<SummaryTable summaryOverviewData={summarySubDistrictData?.data} />
+						</Box>
+						<span className='text-[10px] font-medium text-[#333333]'>{`${t('areaUnit')} : ${t(AreaUnitText[areaUnit])}`}</span>
+					</>
+				)}
 			</Box>
 		</Paper>
 	)
