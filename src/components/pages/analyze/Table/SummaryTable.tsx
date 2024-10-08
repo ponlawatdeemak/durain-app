@@ -12,12 +12,14 @@ import { useTranslation } from 'next-i18next'
 import { ResponseLanguage } from '@/api/interface'
 import classNames from 'classnames'
 import { Box } from '@mui/material'
+import useResponsive from '@/hook/responsive'
 
 interface SummaryTableProps {
 	summaryOverviewData: GetSummaryOverviewDtoOut | undefined
 }
 
 const SummaryTable: React.FC<SummaryTableProps> = ({ summaryOverviewData }) => {
+	const { isDesktop } = useResponsive()
 	const { areaUnit } = useAreaUnit()
 	const { queryParams, setQueryParams } = useSearchAnalyze()
 	const { t, i18n } = useTranslation(['common'])
@@ -25,85 +27,75 @@ const SummaryTable: React.FC<SummaryTableProps> = ({ summaryOverviewData }) => {
 
 	const handleCodeClick = useCallback(
 		(admCode: number) => {
-			if (admCode.toString().length === 4) {
-				setQueryParams({ ...queryParams, districtId: Number(admCode) })
+			if (admCode.toString().length === 6) {
+				setQueryParams({ ...queryParams, subDistrictId: Number(admCode) })
+			} else if (admCode.toString().length === 4) {
+				setQueryParams({ ...queryParams, districtId: Number(admCode), subDistrictId: undefined })
 			} else if (admCode.toString().length === 2) {
-				setQueryParams({ ...queryParams, provinceId: Number(admCode) })
+				setQueryParams({
+					...queryParams,
+					provinceId: Number(admCode),
+					districtId: undefined,
+					subDistrictId: undefined,
+				})
 			}
 		},
 		[queryParams, setQueryParams],
 	)
 
 	return (
-		<TableContainer className='h-full !w-[calc(100vw-98px)] overflow-x-auto sm:!w-[calc(100vw-146px)] lg:!w-[calc(100vw-236px)] xl:h-[274px] xl:!w-[calc(100vw/3-112px)]'>
-			<Table>
-				<TableHead>
-					<TableRow className='!flex items-center overflow-hidden rounded !bg-[#F0F2F4]'>
-						<TableCell className='flex min-w-[130px] grow !border-0 !bg-transparent !pr-2 !text-base !text-[#333333]'>
-							{t('area')}
-						</TableCell>
-						{summaryOverviewData?.overall?.ageClass?.map((item) => {
+		<Box className='box-border flex w-full xl:relative xl:h-[274px]'>
+			<TableContainer className='h-full !w-[calc(100vw-98px)] overflow-x-auto px-[1px] sm:!w-[calc(100vw-146px)] lg:!w-[calc(100vw-236px)] xl:absolute xl:!w-[calc(100vw/3-112px)] xl:pr-2'>
+				<Table className='border-separate !border-spacing-y-[6px]' stickyHeader>
+					<TableHead>
+						<TableRow className='[&>th:first-child]:rounded-l [&>th:last-child]:rounded-r [&>th]:border-none [&>th]:bg-[#F0F2F4] [&>th]:text-base [&>th]:text-[#333333] [&>th]:!outline [&>th]:!outline-1 [&>th]:!outline-[#F0F2F4]'>
+							<TableCell className='min-w-[130px] !pr-2'>{t('area')}</TableCell>
+							{summaryOverviewData?.overall?.ageClass?.map((item) => {
+								return (
+									<TableCell key={item.id} align='center' className='w-[21.65%] min-w-[100px] !px-2'>
+										{item.name[language]}
+									</TableCell>
+								)
+							})}
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						{summaryOverviewData?.adms?.map((data) => {
 							return (
-								<TableCell
-									key={item.id}
-									align='center'
+								<TableRow
+									key={data.admCode}
 									className={classNames(
-										'w-[21.65%] !border-0 !bg-transparent !px-2 !text-base !text-[#333333]',
+										'rounded !outline !outline-1 !outline-[#E9ECEE] hover:cursor-pointer [&>td]:border-b-0 [&>td]:text-sm [&>td]:font-medium [&>td]:text-[#333333]',
 										{
-											'min-w-[100px]': language === 'en',
-											'min-w-[80px]': language === 'th',
+											'bg-[#F2F6F0]':
+												data.admCode === queryParams?.provinceId ||
+												data.admCode == queryParams?.districtId ||
+												data.admCode == queryParams?.subDistrictId,
 										},
 									)}
+									onClick={() => handleCodeClick(data.admCode)}
 								>
-									{item.name[language]}
-								</TableCell>
+									<TableCell className='!flex min-w-[130px] grow !py-2 !pr-2'>
+										{data?.admName?.[language]}
+									</TableCell>
+									{data.ageClass?.map((item) => {
+										return (
+											<TableCell
+												key={item.id}
+												align='center'
+												className='w-[21.65%] min-w-[100px] !p-2'
+											>
+												{Number(item?.area?.[areaUnit]?.toFixed(2) || 0)?.toLocaleString()}
+											</TableCell>
+										)
+									})}
+								</TableRow>
 							)
 						})}
-					</TableRow>
-				</TableHead>
-				{/* <Box className='h-full overflow-y-auto xl:h-[218px]'> */}
-				<TableBody className='mt-1 !flex flex-col gap-1'>
-					{summaryOverviewData?.adms.map((data) => {
-						return (
-							<TableRow
-								key={data.admCode}
-								className={classNames(
-									'!flex cursor-pointer items-center overflow-hidden rounded border border-solid border-[#E9ECEE]',
-									{
-										'bg-[#F2F6F0]':
-											data.admCode === queryParams.provinceId ||
-											data.admCode == queryParams.districtId,
-									},
-								)}
-								onClick={() => handleCodeClick(data.admCode)}
-							>
-								<TableCell className='flex min-w-[130px] grow !border-0 !py-2 !pr-2 text-sm !font-medium !text-[#333333]'>
-									{data.admName[language]}
-								</TableCell>
-								{data.ageClass.map((item) => {
-									return (
-										<TableCell
-											key={item.id}
-											align='center'
-											className={classNames(
-												'w-[21.65%] !border-0 !p-2 text-sm !font-medium !text-[#333333]',
-												{
-													'min-w-[100px]': language === 'en',
-													'min-w-[80px]': language === 'th',
-												},
-											)}
-										>
-											{item.area[areaUnit]}
-										</TableCell>
-									)
-								})}
-							</TableRow>
-						)
-					})}
-				</TableBody>
-				{/* </Box> */}
-			</Table>
-		</TableContainer>
+					</TableBody>
+				</Table>
+			</TableContainer>
+		</Box>
 	)
 }
 

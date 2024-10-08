@@ -6,7 +6,8 @@
 		"dev": "next dev",
 		"build": "next build",
 		"start": "next start",
-		"lint": "next lint"
+		"lint": "next lint",
+		"deploy": "sh build.sh"
 	},
 	"dependencies": {
 		"@billboard.js/react": "^1.1.1",
@@ -49,6 +50,7 @@
 		"zustand": "^4.5.5"
 	},
 	"devDependencies": {
+		"@types/geojson": "^7946.0.14",
 		"@types/mapbox-gl": "^3.4.0",
 		"@types/mapbox__mapbox-gl-draw": "^1.4.8",
 		"@types/node": "^20",

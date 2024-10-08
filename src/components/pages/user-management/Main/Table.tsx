@@ -183,7 +183,6 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 		queryKey: ['umSearch'],
 		queryFn: async () => {
 			const res = await um.umSearch(searchParams)
-			//console.log('res :: ', res)
 			setIsSearch(false)
 			return res
 		},
@@ -298,8 +297,8 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 				queryClient.invalidateQueries({ queryKey: ['getSearchUM', searchParams] })
 				setIsSearch(true)
 				setAlertInfo({ open: true, severity: 'success', message: t('profileDeleteSuccess', { ns: 'um' }) })
-				console.log(res)
 			} catch (error: any) {
+				console.error(error)
 				setAlertInfo({
 					open: true,
 					severity: 'error',
@@ -324,13 +323,12 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 			const promises = requestMap.map((request) => mutateDeleteProfile(request))
 			Promise.all(promises)
 				.then((res) => {
-					console.log(res)
 					queryClient.invalidateQueries({ queryKey: ['getSearchUM', searchParams] })
 					setIsSearch(true)
 					setAlertInfo({ open: true, severity: 'success', message: t('profileDeleteSuccess', { ns: 'um' }) })
 				})
 				.catch((error) => {
-					console.log(error)
+					console.error(error)
 				})
 		} catch (error: any) {
 			setAlertInfo({
@@ -355,13 +353,12 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 			const promises = requestMap.map((request) => mutatePatchStatus(request))
 			Promise.all(promises)
 				.then((res) => {
-					console.log(res)
 					queryClient.invalidateQueries({ queryKey: ['getSearchUM', searchParams] })
 					setIsSearch(true)
 					setAlertInfo({ open: true, severity: 'success', message: t('profileUpdate', { ns: 'um' }) })
 				})
 				.catch((error) => {
-					console.log(error)
+					console.error(error)
 				})
 		} catch (error: any) {
 			console.error(error)
@@ -387,13 +384,12 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 			const promises = requestMap.map((request) => mutatePatchStatus(request))
 			Promise.all(promises)
 				.then((res) => {
-					console.log(res)
 					queryClient.invalidateQueries({ queryKey: ['getSearchUM', searchParams] })
 					setIsSearch(true)
 					setAlertInfo({ open: true, severity: 'success', message: t('profileUpdate', { ns: 'um' }) })
 				})
 				.catch((error) => {
-					console.log('promise err :: ', error)
+					console.error('promise err :: ', error)
 					setAlertInfo({
 						open: true,
 						severity: 'error',
@@ -432,11 +428,6 @@ const UserManagementTable: React.FC<UserManagementTableProps> = ({
 	)
 
 	const isSelected = (id: string) => selected.indexOf(id) !== -1
-
-	const handleSubmitUser = async (event: React.FormEvent) => {
-		console.log('Form submitted')
-		// Add your form submission logic here
-	}
 
 	// Avoid a layout jump when reaching the last page with empty rows.
 	const emptyRows = page > Math.ceil(total / 10) - 1 ? Math.max(0, (1 + page) * 2 - tableData.length) : 0

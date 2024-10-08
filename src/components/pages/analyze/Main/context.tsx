@@ -6,6 +6,7 @@ export interface AnalyzeParamsType {
 	yearEnd?: number
 	provinceId?: number
 	districtId?: number
+	subDistrictId?: number
 }
 
 const initialParams = {
@@ -14,6 +15,7 @@ const initialParams = {
 	yearEnd: undefined,
 	provinceId: undefined,
 	districtId: undefined,
+	subDistrictId: undefined,
 }
 
 interface SearchAnalyzeContextType {

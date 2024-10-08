@@ -15,7 +15,7 @@ const FilterDetail = () => {
 	const [orderBy, setOrderBy] = useState('age')
 
 	useEffect(() => {
-		setQueryParams({ ...queryParams, provinceId: 22, districtId: 2202 })
+		setQueryParams({ ...queryParams, provinceId: undefined, districtId: undefined, subDistrictId: undefined })
 	}, [])
 
 	const handleOrderByChange = (event: SelectChangeEvent) => {

@@ -108,13 +108,11 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 
 	const handleSubmitUser = async (event: FormEvent) => {
 		event.preventDefault()
-		console.log('handleSubmit')
+
 		formik.validateForm().then((errors) => {
 			if (Object.keys(errors).length === 0) {
-				console.log('no err')
 				isEdit ? setIsConfirmEditOpen(true) : setIsConfirmAddOpen(true)
 			} else {
-				console.log('submit')
 				formik.handleSubmit()
 			}
 		})
@@ -169,7 +167,6 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 		queryFn: async () => {
 			if (userDialogMode === UserDialogMode.UserProfile) {
 				const res = await service.um.getProfile()
-				// console.log('ProfileRes :: ', res)
 				return res
 			}
 		},
@@ -246,7 +243,6 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 					const res = await um.postUploadFiles(imagePayload)
 					values.image = res.data?.download_file_url || ''
 					// response does not have image signature
-					console.log('invalues.image :: ', res)
 				}
 				if (userDialogMode === UserDialogMode.UserEdit) {
 					// put method edit existing user
@@ -296,7 +292,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 						setOpen(false)
 						formik.resetForm()
 					} catch (error: any) {
-						console.log(error)
+						console.error(error)
 						setAlertInfo({
 							open: true,
 							severity: 'error',
@@ -328,7 +324,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 						setOpen(false)
 						formik.resetForm()
 					} catch (error: any) {
-						console.log(error)
+						console.error(error)
 						setAlertInfo({
 							open: true,
 							severity: 'error',
@@ -387,7 +383,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 					console.error('Unknown component mode :: ', userDialogMode)
 				}
 			} catch (error: any) {
-				console.log(error)
+				console.error(error)
 				setAlertInfo({
 					open: true,
 					severity: 'error',
@@ -441,12 +437,12 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 			}
 			try {
 				const res = await mutateChangePassword(payload)
-				console.log('res :: ', res)
+
 				setResetPasswordStatus(true)
 				// on success
 			} catch (error) {
 				// on error
-				console.log('error :: ', error)
+				console.error('error :: ', error)
 				setResetPasswordStatus(false)
 			} finally {
 				setIsConfirmResetPasswordOpen(false)
@@ -504,13 +500,6 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 	}
 
 	useEffect(() => {
-		// console.log('isUserDataLoading :: ', isUserDataLoading)
-		// console.log('isUserProfileLoading :: ', isUserProfileLoading)
-		// console.log('isPutProfileUMPending :: ', isPutProfileUMPending)
-		// console.log('isPostProfileUMPending :: ', isPostProfileUMPending)
-		// console.log('isPutProfilePending :: ', isPutProfilePending)
-		// console.log('isChangePasswordPending :: ', isChangePasswordPending)
-
 		if (
 			isUserDataLoading ||
 			isUserProfileLoading ||

@@ -68,8 +68,6 @@ export const authOptions: NextAuthOptions = {
 		async jwt({ token, user, account, profile, trigger }) {
 			// if the access token expired, recheck token (user info) again
 			if (token.expire_at ?? 0 < Date.now()) {
-				console.log('nextauth: jwt: accessToken Expired, check refresh token')
-
 				// Access token has expired, try to update it
 				const newToken = await refreshAccessToken(token)
 				token.access_token = newToken.access_token
