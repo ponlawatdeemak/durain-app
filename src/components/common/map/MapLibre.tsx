@@ -15,7 +15,6 @@ const DeckGLOverlay: FC = () => {
 	const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay({ interleaved: true }))
 	useEffect(() => {
 		if (overlay instanceof MapboxOverlay) {
-			const isSelectPin = !!layers?.find((item) => item?.id === 'selected-pin')
 			const temp = layers.map((item) => {
 				// const spliter = '-----'
 				// let id = item.id?.split(spliter)?.[0] || ''
@@ -31,17 +30,9 @@ const DeckGLOverlay: FC = () => {
 					newProp.data = item.props.data
 					return new IconLayer(newProp)
 				}
-				if (isSelectPin) {
-					if (item instanceof MVTLayer) {
-						return new MVTLayer({
-							...item.props,
-							beforeId: 'custom-referer-layer',
-						})
-					}
-				} else {
-					if (item instanceof MVTLayer) {
-						return new MVTLayer(newProp)
-					}
+
+				if (item instanceof MVTLayer) {
+					return new MVTLayer(newProp)
 				}
 				return item
 			})

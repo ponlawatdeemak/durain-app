@@ -32,87 +32,39 @@ import MapView from '@/components/common/map/MapView'
 import hexRgb from 'hex-rgb'
 import { apiAccessToken } from '@/api/core'
 import { RegisterTypeColor } from '@/config/color'
-import CloseIcon from '@mui/icons-material/Close'
 import { AlertInfoType } from '@/components/shared/ProfileForm/interface'
-
 import { IconLayer } from '@deck.gl/layers'
 import { getPin } from '@/utils/pin'
 import { PickingInfo } from '@deck.gl/core'
+import { Geometry, Feature } from 'geojson'
+import MapInfoWindowContent from './MapInfoWindow'
 
-interface MapInfoWindowContentProp {
-	provinceTH: string
-	districtTH: string
-	subDistrictTH: string
-	provinceEN: string
-	districtEN: string
-	subDistrictEN: string
-	status: string
+interface RegisterData {
+	status: RegisterType
+	ADM1_TH: string
+	ADM1_EN: string
+	ADM2_TH: string
+	ADM2_EN: string
+	ADM3_TH: string
+	ADM3_EN: string
+	layerName: string
+	year_en: number
+	admCode: number
+	year_th: number
+	area_rai: number
 }
 
-const selectPinId = 'selected-pin'
+export const registerPinLayerId = 'register-pin'
+const defaultColor = [0, 0, 0, 0] as any
+const districtCodeLength = 4
+const allprovinceCode = 0
+const initialTableAdmCode = 0
 
-const MapInfoWindowContent: React.FC<{ data: MapInfoWindowContentProp }> = ({ data }) => {
-	const { t, i18n } = useTranslation()
-	const language = i18n.language as keyof ResponseLanguage
-
-	const { removeLayer, setInfoWindow } = useMapStore()
-
-	return (
-		<div className='flex h-[145px] w-[315px] flex-col items-end rounded-[8px] bg-green-light p-1'>
-			<IconButton
-				onClick={() => {
-					setInfoWindow(null)
-					removeLayer(selectPinId)
-				}}
-				className='self-right flex h-[25px] w-[25px]'
-			>
-				<CloseIcon fontSize='small' className='text-white' />
-			</IconButton>
-			<div className={`flex h-full w-full gap-2 px-4 py-1 text-[14px] font-medium`}>
-				<div className='flex h-full'>
-					<PopupReistrationLogo />
-				</div>
-				<div className='flex flex-col gap-2'>
-					<div className='flex gap-2'>
-						<div className='pt-[1px]'>
-							<PopupRegistrationPin />
-						</div>
-						<p className='flex text-white'>
-							{language === Languages.TH
-								? `ตำบล${data.subDistrictTH} อำเภอ${data.districtTH} จังหวัด${data.provinceTH}`
-								: `${data.subDistrictEN}, ${data.districtEN}, ${data.provinceEN}`}
-						</p>
-					</div>
-					<div className='flex w-max gap-2 rounded-[4px] bg-white px-2 py-1'>
-						{data.status === RegisterType.Registered ? (
-							<>
-								<PopupRegistrationChecked />
-								<p className='text-[16px] font-medium text-primary'>
-									{t('registration:registeredArea')}
-								</p>
-							</>
-						) : (
-							<>
-								<PopupRegistrationCross />
-								<p className='text-[16px] font-medium text-registerType-nonRegistered'>
-									{t('registration:unregisteredArea')}
-								</p>
-							</>
-						)}
-					</div>
-				</div>
-			</div>
-		</div>
-	)
-}
 const RegistrationMain: React.FC = () => {
 	const { t, i18n } = useTranslation()
 	const language = i18n.language as keyof ResponseLanguage
 	const { isDesktop } = useResponsive()
 	const { areaUnit } = useAreaUnit()
-	const districtCodeLength = 4
-	const allprovinceCode = 0
-	const initialTableAdmCode = 0
 
 	const [year, setYear] = useState(0)
 	const [admCode, setAdmCode] = useState(0)
@@ -126,7 +78,7 @@ const RegistrationMain: React.FC = () => {
 	})
 	const [subDistrictCode, setSubDistrictCode] = useState(0)
 
-	const { setLayers, getLayer, removeLayer, addLayer, mapLibre, setInfoWindow } = useMapStore()
+	const { getLayer, removeLayer, addLayer, mapLibre, setInfoWindow } = useMapStore()
 
 	const { data: availabilityData } = useQuery({
 		queryKey: ['availabilityRegistered'],
@@ -260,51 +212,87 @@ const RegistrationMain: React.FC = () => {
 	}
 
 	const onLayerClick = useCallback(
-		(info: PickingInfo) => {
-			if (info.object) {
-				const data = {
-					provinceTH: info.object.properties.ADM1_TH,
-					districtTH: info.object.properties.ADM2_TH,
-					subDistrictTH: info.object.properties.ADM3_TH,
-					provinceEN: info.object.properties.ADM1_EN,
-					districtEN: info.object.properties.ADM2_EN,
-					subDistrictEN: info.object.properties.ADM3_EN,
-					status: info.object.properties.status,
-				}
-				setInfoWindow({
-					children: <MapInfoWindowContent data={data} />,
-				})
-			}
-			if (info.coordinate) {
-				const lng = info.coordinate![0]
-				const lat = info.coordinate![1]
+		(info: PickingInfo<Feature<Geometry, RegisterData>>) => {
+			const clickData = info.object
 
-				const coordinates: [number, number] = [lng, lat]
-				removeLayer(selectPinId)
-				const iconLayer = new IconLayer({
-					id: selectPinId,
-					data: [{ coordinates }],
-					visible: true,
-					getIcon: () => {
-						return {
-							url: getPin('#F03E3E'),
-							anchorY: 69,
-							width: 58,
-							height: 69,
-							mask: false,
-						}
-					},
-					sizeScale: 1,
-					getPosition: (d) => d.coordinates,
-					getSize: 40,
-				})
-				addLayer(iconLayer)
+			if (clickData) {
+				const provinceCode = +String(clickData.properties.admCode).substring(0, 2)
+				const districtCode = +String(clickData.properties.admCode).substring(0, 4)
+				const isAllProvince = admCode === allprovinceCode && tableAdmCode === initialTableAdmCode
+				const isSelectProvince = admCode === provinceCode
+				const isTableProvince = tableAdmCode === provinceCode
+				const isTableDistrict = tableAdmCode === districtCode
+				if (isAllProvince || isSelectProvince || isTableProvince || isTableDistrict) {
+					const data = {
+						provinceTH: clickData.properties.ADM1_TH,
+						districtTH: clickData.properties.ADM2_TH,
+						subDistrictTH: clickData.properties.ADM3_TH,
+						provinceEN: clickData.properties.ADM1_EN,
+						districtEN: clickData.properties.ADM2_EN,
+						subDistrictEN: clickData.properties.ADM3_EN,
+						status: clickData.properties.status,
+					}
+					setInfoWindow({
+						children: <MapInfoWindowContent data={data} />,
+					})
+					if (info.coordinate) {
+						const lng = info.coordinate![0]
+						const lat = info.coordinate![1]
+
+						const coordinates: [number, number] = [lng, lat]
+						removeLayer(registerPinLayerId)
+						const iconLayer = new IconLayer({
+							id: registerPinLayerId,
+							data: [{ coordinates }],
+							visible: true,
+							getIcon: () => {
+								return {
+									url: getPin('#F03E3E'),
+									anchorY: 69,
+									width: 58,
+									height: 69,
+									mask: false,
+								}
+							},
+							sizeScale: 1,
+							getPosition: (d) => d.coordinates,
+							getSize: 40,
+						})
+						addLayer(iconLayer)
+					}
+				}
 			}
 		},
-		[addLayer, removeLayer, setInfoWindow],
+		[admCode, tableAdmCode, addLayer, removeLayer, setInfoWindow],
 	)
 
-	useEffect(() => {}, [])
+	const getColor = useCallback(
+		(d: Feature<Geometry, RegisterData>): any => {
+			const provinceCode = +String(d.properties.admCode).substring(0, 2)
+			const districtCode = +String(d.properties.admCode).substring(0, 4)
+			const isAllProvince = admCode === allprovinceCode && tableAdmCode === initialTableAdmCode
+			const isSelectProvince = admCode === provinceCode
+			const isTableProvince = tableAdmCode === provinceCode
+			const isTableDistrict = tableAdmCode === districtCode
+
+			if (isAllProvince || isSelectProvince || isTableProvince || isTableDistrict) {
+				if (d.properties.status === RegisterType.Registered) {
+					const array = hexRgb(RegisterTypeColor.registered, { format: 'array' })
+					array[3] = 255
+					return array
+				} else if (d.properties.status === RegisterType.NonRegistered) {
+					const array = hexRgb(RegisterTypeColor.nonRegistered, { format: 'array' })
+					array[3] = 255
+					return array
+				} else {
+					return defaultColor
+				}
+			} else {
+				return defaultColor
+			}
+		},
+		[admCode, tableAdmCode],
+	)
 
 	const layers = useMemo(() => {
 		return [
@@ -313,10 +301,7 @@ const RegistrationMain: React.FC = () => {
 				name: 'registered',
 				loadOptions: {
 					fetch: {
-						headers: {
-							'content-type': 'application/json',
-							Authorization: `Bearer ${apiAccessToken}`,
-						},
+						headers: { 'content-type': 'application/json', Authorization: `Bearer ${apiAccessToken}` },
 					},
 				},
 				data: tileLayer.registerLayer(year),
@@ -329,67 +314,13 @@ const RegistrationMain: React.FC = () => {
 				filled: true,
 				lineWidthUnits: 'pixels',
 				pickable: true,
-				getFillColor(d) {
-					if (admCode === allprovinceCode && tableAdmCode === initialTableAdmCode) {
-						if (d.properties.status === RegisterType.Registered) {
-							const array = hexRgb(RegisterTypeColor.registered, { format: 'array' })
-							array[3] = 255
-							return array
-						} else {
-							return [0, 0, 0, 0]
-						}
-					} else {
-						if (
-							(String(admCode) === String(d.properties.admCode).substring(0, 2) &&
-								tableAdmCode === initialTableAdmCode) ||
-							String(tableAdmCode) === String(d.properties.admCode).substring(0, 2) ||
-							String(tableAdmCode) === String(d.properties.admCode).substring(0, 4)
-						) {
-							if (d.properties.status === RegisterType.Registered) {
-								const array = hexRgb(RegisterTypeColor.registered, { format: 'array' })
-								array[3] = 255
-								return array
-							} else {
-								return [0, 0, 0, 0]
-							}
-						} else {
-							return [0, 0, 0, 0]
-						}
-					}
-				},
-				getLineColor(d) {
-					if (admCode === allprovinceCode && tableAdmCode === initialTableAdmCode) {
-						if (d.properties.status === RegisterType.Registered) {
-							const array = hexRgb(RegisterTypeColor.registered, { format: 'array' })
-							array[3] = 255
-							return array
-						} else {
-							return [0, 0, 0, 0]
-						}
-					} else {
-						if (
-							(String(admCode) === String(d.properties.admCode).substring(0, 2) &&
-								tableAdmCode === initialTableAdmCode) ||
-							String(tableAdmCode) === String(d.properties.admCode).substring(0, 2) ||
-							String(tableAdmCode) === String(d.properties.admCode).substring(0, 4)
-						) {
-							if (d.properties.status === RegisterType.Registered) {
-								const array = hexRgb(RegisterTypeColor.registered, { format: 'array' })
-								array[3] = 255
-								return array
-							} else {
-								return [0, 0, 0, 0]
-							}
-						} else {
-							return [0, 0, 0, 0]
-						}
-					}
-				},
+				getFillColor: getColor,
+				getLineColor: getColor,
 				onClick: onLayerClick,
 				updateTriggers: {
-					getFillColor: [admCode, year, tableAdmCode],
-					getLineColor: [admCode, year, tableAdmCode],
-					getLineWidth: [admCode, year, tableAdmCode],
+					getFillColor: [getColor],
+					getLineColor: [getColor],
+					onClick: [onLayerClick],
 				},
 			}),
 			new MVTLayer({
@@ -412,71 +343,17 @@ const RegistrationMain: React.FC = () => {
 				filled: true,
 				lineWidthUnits: 'pixels',
 				pickable: true,
-				getFillColor(d) {
-					if (admCode === allprovinceCode && tableAdmCode === initialTableAdmCode) {
-						if (d.properties.status === RegisterType.NonRegistered) {
-							const array = hexRgb(RegisterTypeColor.nonRegistered, { format: 'array' })
-							array[3] = 255
-							return array
-						} else {
-							return [0, 0, 0, 0]
-						}
-					} else {
-						if (
-							(String(admCode) === String(d.properties.admCode).substring(0, 2) &&
-								tableAdmCode === initialTableAdmCode) ||
-							String(tableAdmCode) === String(d.properties.admCode).substring(0, 2) ||
-							String(tableAdmCode) === String(d.properties.admCode).substring(0, 4)
-						) {
-							if (d.properties.status === RegisterType.NonRegistered) {
-								const array = hexRgb(RegisterTypeColor.nonRegistered, { format: 'array' })
-								array[3] = 255
-								return array
-							} else {
-								return [0, 0, 0, 0]
-							}
-						} else {
-							return [0, 0, 0, 0]
-						}
-					}
-				},
-				getLineColor(d) {
-					if (admCode === allprovinceCode && tableAdmCode === initialTableAdmCode) {
-						if (d.properties.status === RegisterType.NonRegistered) {
-							const array = hexRgb(RegisterTypeColor.nonRegistered, { format: 'array' })
-							array[3] = 255
-							return array
-						} else {
-							return [0, 0, 0, 0]
-						}
-					} else {
-						if (
-							(String(admCode) === String(d.properties.admCode).substring(0, 2) &&
-								tableAdmCode === initialTableAdmCode) ||
-							String(tableAdmCode) === String(d.properties.admCode).substring(0, 2) ||
-							String(tableAdmCode) === String(d.properties.admCode).substring(0, 4)
-						) {
-							if (d.properties.status === RegisterType.NonRegistered) {
-								const array = hexRgb(RegisterTypeColor.nonRegistered, { format: 'array' })
-								array[3] = 255
-								return array
-							} else {
-								return [0, 0, 0, 0]
-							}
-						} else {
-							return [0, 0, 0, 0]
-						}
-					}
-				},
+				getFillColor: getColor,
+				getLineColor: getColor,
 				onClick: onLayerClick,
 				updateTriggers: {
-					getFillColor: [admCode, year, tableAdmCode],
-					getLineColor: [admCode, year, tableAdmCode],
-					getLineWidth: [admCode, year, tableAdmCode],
+					getFillColor: [getColor],
+					getLineColor: [getColor],
+					onClick: [onLayerClick],
 				},
 			}),
 		]
-	}, [year, admCode, tableAdmCode, t, onLayerClick])
+	}, [year, getColor, t, onLayerClick])
 
 	const mapLayers: MapLayer[] | undefined = useMemo(() => {
 		return [
@@ -530,7 +407,7 @@ const RegistrationMain: React.FC = () => {
 					if (mapBoundaryAdmCodes?.includes(d.properties.provinceCode)) {
 						return [226, 226, 226, 100]
 					} else {
-						return [0, 0, 0, 0]
+						return defaultColor
 					}
 				} else {
 					if (
@@ -540,7 +417,7 @@ const RegistrationMain: React.FC = () => {
 					) {
 						return [226, 226, 226, 100]
 					} else {
-						return [0, 0, 0, 0]
+						return defaultColor
 					}
 				}
 			},
@@ -549,7 +426,7 @@ const RegistrationMain: React.FC = () => {
 					if (mapBoundaryAdmCodes?.includes(d.properties.provinceCode)) {
 						return [0, 0, 0, 255]
 					} else {
-						return [0, 0, 0, 0]
+						return defaultColor
 					}
 				} else {
 					if (
@@ -559,7 +436,7 @@ const RegistrationMain: React.FC = () => {
 					) {
 						return [0, 0, 0, 255]
 					} else {
-						return [0, 0, 0, 0]
+						return defaultColor
 					}
 				}
 			},
@@ -603,12 +480,12 @@ const RegistrationMain: React.FC = () => {
 		}
 	}, [tableAdmCode, admCode, mapLibre])
 
-	useEffect(() => {
-		if (layers && registeredData) {
-			const province = initialLayer.find((item) => item.id === 'boundary')!.layer
-			setLayers([province, ...(layers as any[])])
-		}
-	}, [admCode, initialLayer, getLayer, layers, mapLayers, registeredData, removeLayer, setLayers, year])
+	// useEffect(() => {
+	// 	if (layers && registeredData) {
+	// 		const province = initialLayer.find((item) => item.id === 'boundary')!.layer
+	// 		setLayers([province, ...(layers as any[])])
+	// 	}
+	// }, [admCode, initialLayer, getLayer, layers, mapLayers, registeredData, removeLayer, setLayers, year])
 
 	useEffect(() => {
 		const layer = getLayer('subDistrict')
@@ -637,14 +514,12 @@ const RegistrationMain: React.FC = () => {
 			filled: true,
 			lineWidthUnits: 'pixels',
 			pickable: false,
-			getFillColor(d) {
-				return [0, 0, 0, 0]
-			},
+			getFillColor: () => defaultColor,
 			getLineColor(d) {
 				if (d.properties.subDistrictCode === subDistrictCode) {
 					return [255, 0, 0, 255]
 				} else {
-					return [0, 0, 0, 0]
+					return defaultColor
 				}
 			},
 			updateTriggers: {
