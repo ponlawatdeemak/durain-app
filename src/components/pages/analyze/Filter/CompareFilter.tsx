@@ -20,11 +20,9 @@ import service from '@/api'
 import CompareTable from '../Table/CompareTable'
 import { AreaUnitText } from '@/enum'
 
-interface CompareFilterProps {
-	orderBy: string
-}
+interface CompareFilterProps {}
 
-const CompareFilter: React.FC<CompareFilterProps> = ({ orderBy }) => {
+const CompareFilter: React.FC<CompareFilterProps> = () => {
 	const { areaUnit } = useAreaUnit()
 	const { queryParams, setQueryParams } = useSearchAnalyze()
 	const { t, i18n } = useTranslation(['common'])
@@ -110,6 +108,10 @@ const CompareFilter: React.FC<CompareFilterProps> = ({ orderBy }) => {
 		setYearEnd(initYearEnd?.year ? initYearEnd.year : new Date().getFullYear())
 	}, [durianAvailabilityData])
 
+	useEffect(() => {
+		setQueryParams({ ...queryParams, provinceId: undefined, districtId: undefined, subDistrictId: undefined })
+	}, [])
+
 	const handleYearStartChange = (event: SelectChangeEvent<number>) => {
 		if (event.target.value) {
 			setQueryParams({ ...queryParams, yearStart: event.target.value as number })
@@ -125,11 +127,7 @@ const CompareFilter: React.FC<CompareFilterProps> = ({ orderBy }) => {
 	}
 
 	return (
-		<Paper
-			className={classNames('flex flex-col items-center gap-4 !rounded-lg !bg-[#D5E2DC] p-4', {
-				hidden: orderBy !== 'changes',
-			})}
-		>
+		<Paper className='flex flex-col items-center gap-4 !rounded-lg !bg-[#D5E2DC] p-4'>
 			<Box className='flex flex-col items-center gap-4 py-2 sm:flex-row sm:px-6'>
 				<span className='text-base font-medium text-[#333333]'>{t('analyze:comparisonYear')}</span>
 				<Box className='flex items-center gap-4'>
