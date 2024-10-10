@@ -513,7 +513,10 @@ const MapDetail = () => {
 						},
 					},
 				},
-				data: tileLayer.sameLayer(queryParams?.yearStart!, queryParams?.yearEnd!),
+				data: tileLayer.sameLayer(
+					Math.max(queryParams?.yearStart!, queryParams?.yearEnd!),
+					Math.min(queryParams?.yearStart!, queryParams?.yearEnd!),
+				),
 				onError(error) {
 					if (error.message.startsWith('loading TileJSON')) {
 						setAlertInfo({ open: true, severity: 'error', message: t('error.somethingWrong') })
@@ -545,6 +548,9 @@ const MapDetail = () => {
 				}
 			})
 		} else {
+			if (!queryParams.yearStart || !queryParams.yearEnd) return []
+			if (queryParams.yearStart === queryParams.yearEnd) return []
+
 			return [
 				{
 					id: 'increased',
@@ -566,7 +572,16 @@ const MapDetail = () => {
 				},
 			]
 		}
-	}, [overviewData?.overall.ageClass, t, language, summaryLayers, filter, compareLayers])
+	}, [
+		overviewData?.overall.ageClass,
+		t,
+		language,
+		summaryLayers,
+		filter,
+		compareLayers,
+		queryParams.yearStart,
+		queryParams.yearEnd,
+	])
 
 	const initialLayer = useMemo((): MapLayer[] => {
 		const layerProvince = tileLayer.province
