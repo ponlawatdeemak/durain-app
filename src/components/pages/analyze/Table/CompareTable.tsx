@@ -89,12 +89,12 @@ const CompareTable: React.FC<CompareTableProps> = ({ compareOverviewData }) => {
 									<TableCell className='w-[27%] min-w-[130px] !py-2 !pr-2'>
 										{data?.admName?.[language]}
 									</TableCell>
-									<TableCell align='center' className='w-[27%] min-w-[100px] !p-2'>
+									<TableCell align='right' className='w-[27%] min-w-[100px] !p-2'>
 										{Number(data?.year1Area?.[areaUnit]?.toFixed(2) || 0)?.toLocaleString()}
 									</TableCell>
 									<TableCell
-										align='center'
-										className='!flex min-w-[220px] grow items-center justify-center gap-2 !p-2'
+										align='right'
+										className='!flex min-w-[220px] grow items-center gap-2 !p-2'
 									>
 										<Box className='flex items-center gap-1'>
 											<Box className='flex flex-col items-center gap-0.5'>
