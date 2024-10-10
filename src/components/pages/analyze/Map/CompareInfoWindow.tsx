@@ -49,7 +49,18 @@ const CompareInfoWindow: React.FC<{ data: GetCompareLocationDtoOut; color: strin
 					</div>
 					<div className='flex flex-col gap-1'>
 						<div className='flex items-center gap-2'>
-							<div style={{ backgroundColor: color }} className='h-[19px] w-[19px] rounded-full'></div>
+							<div
+								style={{ backgroundColor: color }}
+								className='relative flex h-[20px] w-[20px] items-center justify-center rounded-full'
+							>
+								{color === DurianChangeAreaColor.increased ? (
+									<div className='absolute top-[6px] h-0 w-0 border-[6px] border-t-0 border-solid border-transparent border-b-white'></div>
+								) : color === DurianChangeAreaColor.decreased ? (
+									<div className='absolute top-[7px] h-0 w-0 border-[6px] border-b-0 border-solid border-transparent border-t-white'></div>
+								) : (
+									<div className='h-0 w-[10px] border-0 border-b-[3px] border-solid border-white'></div>
+								)}
+							</div>
 							<span style={{ color }} className='text-[18px] font-medium leading-[24px]'>
 								{color === DurianChangeAreaColor.increased
 									? t('analyze:increasedArea')
@@ -76,9 +87,7 @@ const CompareInfoWindow: React.FC<{ data: GetCompareLocationDtoOut; color: strin
 													? { borderTopColor: color }
 													: {}
 											}
-											className={classNames(
-												'h-0 w-0 border-4 border-b-0 border-solid border-transparent border-t-white',
-											)}
+											className='h-0 w-0 border-4 border-b-0 border-solid border-transparent border-t-white'
 										></div>
 									</div>
 									<span className='text-sm font-medium text-white'>
