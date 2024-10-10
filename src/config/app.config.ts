@@ -21,6 +21,10 @@ export const tileLayer = {
 	registerLayer: (year: string | number) =>
 		`${process.env.NEXT_PUBLIC_API_HOSTNAME_TILE}/registered_${year}/tiles.json`,
 	durianLayer: (year: string | number) => `${process.env.NEXT_PUBLIC_API_HOSTNAME_TILE}/durian_${year}/tiles.json`,
+	compareLayer: (year1: string | number, year2: string | number) =>
+		`${process.env.NEXT_PUBLIC_API_HOSTNAME_TILE}/compare_${year1}_${year2}/tiles.json`,
+	sameLayer: (year1: string | number, year2: string | number) =>
+		`${process.env.NEXT_PUBLIC_API_HOSTNAME_TILE}/compare_${year1}_${year2}_same/tiles.json`,
 }
 
 export const layerIdConfig = {

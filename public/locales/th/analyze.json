@@ -11,5 +11,9 @@
     "changesIn": "ที่เปลี่ยนแปลง",
     "comparisonYear": "ปีที่เปรียบเทียบ",
     "with": "กับ",
-    "areaChanges": "พื้นที่เปลี่ยนแปลง"
+    "areaChanges": "พื้นที่เปลี่ยนแปลง",
+    "durianPlantationAreaChanges": "การเปลี่ยนแปลงพื้นที่ปลูกทุเรียน",
+    "increasedArea": "พื้นที่เพิ่มขึ้น",
+    "decreasedArea": "พื้นที่ลดลง",
+    "noChangedArea": "พื้นที่ไม่เปลี่ยนแปลง"
 }

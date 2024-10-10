@@ -27,9 +27,22 @@ const CompareTable: React.FC<CompareTableProps> = ({ compareOverviewData }) => {
 	const handleCodeClick = useCallback(
 		(admCode: number) => {
 			if (admCode.toString().length === 6) {
-				setQueryParams({ ...queryParams, subDistrictId: Number(admCode) })
+				const provinceId = String(admCode).substring(0, 2)
+				const districtId = String(admCode).substring(0, 4)
+				setQueryParams({
+					...queryParams,
+					provinceId: Number(provinceId),
+					districtId: Number(districtId),
+					subDistrictId: Number(admCode),
+				})
 			} else if (admCode.toString().length === 4) {
-				setQueryParams({ ...queryParams, districtId: Number(admCode), subDistrictId: undefined })
+				const provinceId = String(admCode).substring(0, 2)
+				setQueryParams({
+					...queryParams,
+					provinceId: Number(provinceId),
+					districtId: Number(admCode),
+					subDistrictId: undefined,
+				})
 			} else if (admCode.toString().length === 2) {
 				setQueryParams({
 					...queryParams,

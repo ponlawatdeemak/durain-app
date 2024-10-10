@@ -11,5 +11,9 @@
     "changesIn": "Changes in",
     "comparisonYear": "Comparison Year",
     "with": "With",
-    "areaChanges": "Area Changes"
+    "areaChanges": "Area Changes",
+    "durianPlantationAreaChanges": "Durian Plantation Area Changes",
+    "increasedArea": "Increased Area",
+    "decreasedArea": "Decreased Area",
+    "noChangedArea": "No Changed Area"
 }

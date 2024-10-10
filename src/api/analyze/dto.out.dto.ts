@@ -68,3 +68,22 @@ export interface GetCompareOverviewDtoOut {
 	year1: ResponseLanguage
 	year2: ResponseLanguage
 }
+
+interface AgeclassLocation {
+	name: ResponseLanguage
+	age: ResponseLanguage
+	unit: ResponseLanguage
+	color: string
+}
+
+export interface GetAgeclassLocationDtoOut {
+	admCode: string
+	admNameFull: ResponseLanguage
+	ageClass: AgeclassLocation
+}
+
+export interface GetCompareLocationDtoOut {
+	admCode: number
+	admNameFull: ResponseLanguage
+	change: CompareChange
+}
