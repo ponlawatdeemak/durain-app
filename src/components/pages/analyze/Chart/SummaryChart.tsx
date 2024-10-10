@@ -96,8 +96,8 @@ const SummaryChart: React.FC<SummaryChartProps> = ({ summaryOverviewData, year }
 				contents: function (d: any, defaultTitleFormat: any, defaultValueFormat: any, color: any) {
 					return `<div style='box-shadow:0px 5px 11px 0px #AFAFAF80' class='rounded border border-solid border-[#EDEDED] bg-white px-2.5 py-1.5'>
                                 <div class='flex flex-col items-center gap-1'>
-                                    <span class='text-[10px] font-medium text-[#F1A90B]'>ปี 2567</span>
-                                    <span style='color:${color(d[0])}' class='text-sm text-center font-medium'>ทุเรียนอายุ ${d[0]?.name}</span>
+                                    <span class='text-[10px] font-medium text-[#F1A90B]'>${t('year')} ${year || ''}</span>
+                                    <span style='color:${color(d[0])}' class='text-sm text-center font-medium'>${t('analyze:ageOfDurianTrees')} ${d[0]?.name}</span>
                                     <span class='text-sm text-center font-medium text-[#5C5C5C]'>${Number(d[0]?.value?.toFixed(2) || 0).toLocaleString()} ${t(AreaUnitText?.[areaUnit])}</span>
                                 </div>
 						    </div>`
