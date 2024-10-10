@@ -50,41 +50,58 @@ const CompareInfoWindow: React.FC<{ data: GetCompareLocationDtoOut; color: strin
 					<div className='flex flex-col gap-1'>
 						<div className='flex items-center gap-2'>
 							<div
-								style={{ backgroundColor: color }}
+								style={{
+									backgroundColor:
+										data?.change?.totalChange?.[areaUnit] === 0
+											? DurianChangeAreaColor.noChanged
+											: Math.sign(data?.change?.totalChange?.[areaUnit]) === 1
+												? DurianChangeAreaColor.increased
+												: DurianChangeAreaColor.decreased,
+								}}
 								className='relative flex h-[20px] w-[20px] items-center justify-center rounded-full'
 							>
-								{color === DurianChangeAreaColor.increased ? (
-									<div className='absolute top-[6px] h-0 w-0 border-[6px] border-t-0 border-solid border-transparent border-b-white'></div>
-								) : color === DurianChangeAreaColor.decreased ? (
-									<div className='absolute top-[7px] h-0 w-0 border-[6px] border-b-0 border-solid border-transparent border-t-white'></div>
-								) : (
+								{data?.change?.totalChange?.[areaUnit] === 0 ? (
 									<div className='h-0 w-[10px] border-0 border-b-[3px] border-solid border-white'></div>
+								) : Math.sign(data?.change?.totalChange?.[areaUnit]) === 1 ? (
+									<div className='absolute top-[6px] h-0 w-0 border-[6px] border-t-0 border-solid border-transparent border-b-white'></div>
+								) : (
+									<div className='absolute top-[7px] h-0 w-0 border-[6px] border-b-0 border-solid border-transparent border-t-white'></div>
 								)}
 							</div>
-							<span style={{ color }} className='text-[18px] font-medium leading-[24px]'>
-								{color === DurianChangeAreaColor.increased
-									? t('analyze:increasedArea')
-									: color === DurianChangeAreaColor.decreased
-										? t('analyze:decreasedArea')
-										: t('analyze:noChangedArea')}
+							<span
+								style={{
+									color:
+										data?.change?.totalChange?.[areaUnit] === 0
+											? DurianChangeAreaColor.noChanged
+											: Math.sign(data?.change?.totalChange?.[areaUnit]) === 1
+												? DurianChangeAreaColor.increased
+												: DurianChangeAreaColor.decreased,
+								}}
+								className='text-[18px] font-medium leading-[24px]'
+							>
+								{data?.change?.totalChange?.[areaUnit] === 0
+									? t('analyze:noChangedArea')
+									: Math.sign(data?.change?.totalChange?.[areaUnit]) === 1
+										? t('analyze:increasedArea')
+										: t('analyze:decreasedArea')}
 							</span>
 						</div>
-						{color !== DurianChangeAreaColor.noChanged && (
+						{data?.change?.totalChange?.[areaUnit] !== 0 && (
 							<div className='flex flex-wrap items-center justify-end gap-2'>
 								<div className='flex items-center gap-1'>
 									<div className='flex flex-col items-center gap-0.5'>
 										<div
 											style={
-												color === DurianChangeAreaColor.increased
-													? { borderBottomColor: color }
+												Math.sign(data?.change?.totalChange?.[areaUnit]) === 1
+													? { borderBottomColor: DurianChangeAreaColor.increased }
 													: {}
 											}
 											className='h-0 w-0 border-4 border-t-0 border-solid border-transparent border-b-white'
 										></div>
 										<div
 											style={
-												color === DurianChangeAreaColor.decreased
-													? { borderTopColor: color }
+												Math.sign(data?.change?.totalChange?.[areaUnit]) === -1
+													? { borderTopColor: DurianChangeAreaColor.decreased }
 													: {}
 											}
 											className='h-0 w-0 border-4 border-b-0 border-solid border-transparent border-t-white'
