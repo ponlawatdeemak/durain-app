@@ -6,20 +6,17 @@ import { ExpandMore } from '@mui/icons-material'
 import useSearchAnalyze from '../Main/context'
 import { useTranslation } from 'next-i18next'
 import { ResponseLanguage } from '@/api/interface'
+import useOrderByFilter, { OrderBy } from '../Filter/context'
 
 const FilterDetail = () => {
-	const { queryParams, setQueryParams } = useSearchAnalyze()
 	const { t, i18n } = useTranslation(['common'])
 	const language = i18n.language as keyof ResponseLanguage
-
-	const [orderBy, setOrderBy] = useState('age')
-
-	useEffect(() => {
-		setQueryParams({ ...queryParams, provinceId: undefined, districtId: undefined, subDistrictId: undefined })
-	}, [])
+	const { setFilter } = useOrderByFilter()
+	const [orderBy, setOrderBy] = useState<OrderBy>(OrderBy.Age)
 
 	const handleOrderByChange = (event: SelectChangeEvent) => {
-		setOrderBy(event.target.value as string)
+		setOrderBy(event.target.value as OrderBy)
+		setFilter(event.target.value as OrderBy)
 	}
 
 	return (
@@ -46,15 +43,15 @@ const FilterDetail = () => {
 								value={orderBy}
 								onChange={handleOrderByChange}
 							>
-								<MenuItem value='age'>{t('analyze:ageOfDurian')}</MenuItem>
-								<MenuItem value='changes'>{t('analyze:changes')}</MenuItem>
+								<MenuItem value={OrderBy.Age}>{t('analyze:ageOfDurian')}</MenuItem>
+								<MenuItem value={OrderBy.Changes}>{t('analyze:changes')}</MenuItem>
 							</Select>
 						</FormControl>
 					</Box>
 				</Box>
 			</Box>
-			<SummaryFilter orderBy={orderBy} />
-			<CompareFilter orderBy={orderBy} />
+			{orderBy === OrderBy.Age && <SummaryFilter />}
+			{orderBy === OrderBy.Changes && <CompareFilter />}
 		</div>
 	)
 }

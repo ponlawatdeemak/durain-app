@@ -5,20 +5,24 @@ import { Box, CircularProgress, Paper, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import classNames from 'classnames'
 import { useTranslation } from 'next-i18next'
-import React from 'react'
+import React, { useEffect } from 'react'
 import useSearchAnalyze from '../Main/context'
 import SummaryTable from '../Table/SummaryTable'
 import { AreaUnitText } from '@/enum'
+import useOrderByFilter from './context'
 
-interface SummaryFilterProps {
-	orderBy: string
-}
+interface SummaryFilterProps {}
 
-const SummaryFilter: React.FC<SummaryFilterProps> = ({ orderBy }) => {
+const SummaryFilter: React.FC<SummaryFilterProps> = () => {
 	const { areaUnit } = useAreaUnit()
 	const { queryParams, setQueryParams } = useSearchAnalyze()
 	const { t, i18n } = useTranslation(['common'])
+	const { filter, setFilter } = useOrderByFilter()
 	const language = i18n.language as keyof ResponseLanguage
+
+	useEffect(() => {
+		setQueryParams({ ...queryParams, provinceId: undefined, districtId: undefined, subDistrictId: undefined })
+	}, [])
 
 	const { data: summaryProvinceData, isLoading: isSummaryProvinceDataLoading } = useQuery({
 		queryKey: ['getSummaryProvince', queryParams?.year],
@@ -65,11 +69,7 @@ const SummaryFilter: React.FC<SummaryFilterProps> = ({ orderBy }) => {
 	})
 
 	return (
-		<Paper
-			className={classNames('flex gap-4 !rounded-lg !bg-[#D5E2DC] p-4 max-xl:flex-col', {
-				hidden: orderBy !== 'age',
-			})}
-		>
+		<Paper className='flex gap-4 !rounded-lg !bg-[#D5E2DC] p-4 max-xl:flex-col'>
 			<Box className='shadow-[0_3px_8px_0_rgba(212, 220, 230, 1)] flex w-full flex-col gap-6 rounded-lg border border-solid border-[#E9ECEE] bg-white px-4 py-6'>
 				{isSummaryProvinceDataLoading ? (
 					<div className='flex h-[357px] flex-col items-center justify-center bg-transparent lg:bg-white'>

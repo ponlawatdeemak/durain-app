@@ -31,7 +31,6 @@ const AnalyzeSummary = () => {
 	const [year, setYear] = useState<number>(new Date().getFullYear())
 
 	useEffect(() => {
-		setQueryParams({ ...queryParams, year: new Date().getFullYear() })
 		setYear(new Date().getFullYear())
 	}, [])
 
@@ -52,7 +51,13 @@ const AnalyzeSummary = () => {
 
 	const handleYearChange = (event: SelectChangeEvent<number>) => {
 		if (event.target.value) {
-			setQueryParams({ ...queryParams, year: event.target.value as number })
+			setQueryParams({
+				...queryParams,
+				provinceId: undefined,
+				districtId: undefined,
+				subDistrictId: undefined,
+				year: event.target.value as number,
+			})
 			setYear(event.target.value as number)
 		}
 	}
