@@ -24,7 +24,7 @@ const CompareInfoWindow: React.FC<{ data: GetCompareLocationDtoOut; color: strin
 	const { removeLayer, setInfoWindow } = useMapStore()
 
 	return (
-		<div className='relative flex h-[145px] flex-col rounded-lg border-2 border-solid border-[#E9ECEE] bg-[#2F7A59] p-6'>
+		<div className='relative flex w-[315px] flex-col rounded-lg border-2 border-solid border-[#E9ECEE] bg-[#2F7A59] p-5 md:w-[350px] md:p-6'>
 			<IconButton
 				onClick={() => {
 					setInfoWindow(null)
@@ -70,7 +70,7 @@ const CompareInfoWindow: React.FC<{ data: GetCompareLocationDtoOut; color: strin
 							</span>
 						</div>
 						{color !== DurianChangeAreaColor.noChanged && (
-							<div className='flex items-center justify-end gap-2'>
+							<div className='flex flex-wrap items-center justify-end gap-2'>
 								<div className='flex items-center gap-1'>
 									<div className='flex flex-col items-center gap-0.5'>
 										<div

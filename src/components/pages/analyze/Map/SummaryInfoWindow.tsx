@@ -20,7 +20,7 @@ const SummaryInfoWindow: React.FC<{ data: GetAgeclassLocationDtoOut }> = ({ data
 	const { removeLayer, setInfoWindow } = useMapStore()
 
 	return (
-		<div className='relative flex w-[350px] flex-col rounded-lg border-2 border-solid border-[#E9ECEE] bg-white p-6'>
+		<div className='relative flex w-[315px] flex-col rounded-lg border-2 border-solid border-[#E9ECEE] bg-white p-5 md:w-[350px] md:p-6'>
 			<IconButton
 				onClick={() => {
 					setInfoWindow(null)
