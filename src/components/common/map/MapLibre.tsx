@@ -8,34 +8,40 @@ import maplibregl, { MapLibreEvent, MapStyleDataEvent, StyleSpecification } from
 import { googleProtocol } from '@/utils/google'
 import { IconLayer } from '@deck.gl/layers'
 import { MVTLayer } from '@deck.gl/geo-layers'
+import { Layer } from '@deck.gl/core'
+
+export const recreateLayer = (layerList: Layer[]) => {
+	return layerList.map((item) => {
+		// const spliter = '---'
+		// let id = item.id?.split(spliter)?.[0] || ''
+		// id = `${id}${spliter}${new Date().getTime()}`
+		const newProp = {
+			...item.props,
+			// id,
+			beforeId: 'custom-referer-layer',
+		} as any
+
+		if (item instanceof IconLayer) {
+			newProp.data = item.props.data
+			return new IconLayer(newProp)
+		}
+
+		if (item instanceof MVTLayer) {
+			return new MVTLayer(newProp)
+		}
+		return item
+	})
+}
 
 const DeckGLOverlay: FC = () => {
 	const { layers } = useMapStore()
 	const setOverlay = useMapStore((state) => state.setOverlay)
 	const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay({ interleaved: true }))
+
+	// set all layer to deck.gl instance
 	useEffect(() => {
 		if (overlay instanceof MapboxOverlay) {
-			const temp = layers.map((item) => {
-				// const spliter = '-----'
-				// let id = item.id?.split(spliter)?.[0] || ''
-				// id = `${id}${spliter}${new Date().getTime()}`
-				const newProp = {
-					...item.props,
-					// id,
-					id: item.id,
-					beforeId: 'custom-referer-layer',
-				} as any
-
-				if (item instanceof IconLayer) {
-					newProp.data = item.props.data
-					return new IconLayer(newProp)
-				}
-
-				if (item instanceof MVTLayer) {
-					return new MVTLayer(newProp)
-				}
-				return item
-			})
+			const temp = recreateLayer(layers)
 			overlay.setProps({ layers: temp })
 		}
 	}, [layers, overlay])
@@ -48,6 +54,7 @@ const DeckGLOverlay: FC = () => {
 			overlay.finalize()
 		}
 	}, [overlay, setOverlay])
+
 	return null
 }
 
@@ -55,8 +62,8 @@ interface MapLibreProps extends MapInterface {
 	mapStyle: string | StyleSpecification
 }
 
-const MapLibre: FC<MapLibreProps> = ({ viewState, mapStyle, onViewStateChange }) => {
-	const { setMapLibre, mapLibre } = useMapStore()
+const MapLibre: FC<MapLibreProps> = ({ viewState, mapStyle }) => {
+	const { setMapLibre } = useMapStore()
 
 	// initial google basemap style
 	useEffect(() => {
@@ -102,7 +109,7 @@ const MapLibre: FC<MapLibreProps> = ({ viewState, mapStyle, onViewStateChange })
 
 	return (
 		<Map antialias initialViewState={viewState} mapStyle={mapStyle} onLoad={onLoad} onStyleData={onStyleData}>
-			{mapLibre && <DeckGLOverlay />}
+			<DeckGLOverlay />
 		</Map>
 	)
 }

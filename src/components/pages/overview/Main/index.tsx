@@ -79,7 +79,7 @@ const OverviewMain: React.FC = () => {
 	const layers = useMemo(() => {
 		return overviewData?.overall.ageClass?.map((item) => {
 			return new MVTLayer({
-				id: item.id,
+				id: item.id + `-${new Date().getTime()}`,
 				name: item.name[language],
 				loadOptions: {
 					fetch: {
@@ -165,7 +165,7 @@ const OverviewMain: React.FC = () => {
 	const initialLayer = useMemo((): MapLayer[] => {
 		const layerProvince = tileLayer.province
 		const provinceLayer = new MVTLayer({
-			id: 'province',
+			id: 'province' + `-${new Date().getTime()}`,
 			name: 'province',
 			loadOptions: {
 				fetch: {

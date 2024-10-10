@@ -15,5 +15,6 @@
     "durianPlantationAreaChanges": "Durian Plantation Area Changes",
     "increasedArea": "Increased Area",
     "decreasedArea": "Decreased Area",
-    "noChangedArea": "No Changed Area"
+    "noChangedArea": "No Changed Area",
+    "ageOfDurianTrees":"Age of Durian Trees"
 }

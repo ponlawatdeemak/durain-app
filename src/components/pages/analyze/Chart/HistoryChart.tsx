@@ -147,7 +147,7 @@ const HistoryChart: React.FC<HistoryChartProps> = ({ historyOverviewData }) => {
 				contents: function (d: any, defaultTitleFormat: any, defaultValueFormat: any, color: any) {
 					let tooltipHistory = `<div style='box-shadow:0px 5px 11px 0px #AFAFAF80' class='rounded border border-solid border-[#E9ECEE] bg-white px-4 py-2'>
                                             <div class='flex flex-col items-center gap-1'>
-                                                <span class='text-[10px] leading-[14px] font-medium text-[#F1A90B]'>${'พื้นที่ปลูกรายปีย้อนหลัง'}</span>
+                                                <span class='text-[10px] leading-[14px] font-medium text-[#F1A90B]'>${t('analyze:historicalDurianPlantation')}</span>
                                                 <div class='flex flex-row items-center gap-[10px]'>`
 					d.forEach((item: any, index: number) => {
 						tooltipHistory += `${index !== 0 ? `<div class='h-[30px] border-0 border-l border-solid border-[#E5E8EB]'></div>` : ''}
