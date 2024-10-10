@@ -242,7 +242,7 @@ const RegistrationMain: React.FC = () => {
 						const coordinates: [number, number] = [lng, lat]
 						removeLayer(registerPinLayerId)
 						const iconLayer = new IconLayer({
-							id: registerPinLayerId,
+							id: registerPinLayerId + `-${new Date().getTime()}`,
 							data: [{ coordinates }],
 							visible: true,
 							getIcon: () => {
@@ -267,7 +267,7 @@ const RegistrationMain: React.FC = () => {
 	)
 
 	const getColor = useCallback(
-		(d: Feature<Geometry, RegisterData>): any => {
+		(d: Feature<Geometry, RegisterData>, type: RegisterType): any => {
 			const provinceCode = +String(d.properties.admCode).substring(0, 2)
 			const districtCode = +String(d.properties.admCode).substring(0, 4)
 			const isAllProvince = admCode === allprovinceCode && tableAdmCode === initialTableAdmCode
@@ -276,11 +276,11 @@ const RegistrationMain: React.FC = () => {
 			const isTableDistrict = tableAdmCode === districtCode
 
 			if (isAllProvince || isSelectProvince || isTableProvince || isTableDistrict) {
-				if (d.properties.status === RegisterType.Registered) {
+				if (type === RegisterType.Registered && d.properties.status === RegisterType.Registered) {
 					const array = hexRgb(RegisterTypeColor.registered, { format: 'array' })
 					array[3] = 255
 					return array
-				} else if (d.properties.status === RegisterType.NonRegistered) {
+				} else if (type === RegisterType.NonRegistered && d.properties.status === RegisterType.NonRegistered) {
 					const array = hexRgb(RegisterTypeColor.nonRegistered, { format: 'array' })
 					array[3] = 255
 					return array
@@ -298,6 +298,7 @@ const RegistrationMain: React.FC = () => {
 		return [
 			new MVTLayer({
 				id: 'registered' + `-${new Date().getTime()}`,
+				// id: 'registered',
 				name: 'registered',
 				loadOptions: {
 					fetch: {
@@ -314,8 +315,8 @@ const RegistrationMain: React.FC = () => {
 				filled: true,
 				lineWidthUnits: 'pixels',
 				pickable: true,
-				getFillColor: getColor,
-				getLineColor: getColor,
+				getFillColor: (d) => getColor(d, RegisterType.Registered),
+				getLineColor: (d) => getColor(d, RegisterType.Registered),
 				onClick: onLayerClick,
 				updateTriggers: {
 					getFillColor: [getColor],
@@ -325,6 +326,7 @@ const RegistrationMain: React.FC = () => {
 			}),
 			new MVTLayer({
 				id: 'unregistered' + `-${new Date().getTime()}`,
+				// id: 'unregistered',
 				name: 'unregistered',
 				loadOptions: {
 					fetch: {
@@ -343,8 +345,8 @@ const RegistrationMain: React.FC = () => {
 				filled: true,
 				lineWidthUnits: 'pixels',
 				pickable: true,
-				getFillColor: getColor,
-				getLineColor: getColor,
+				getFillColor: (d) => getColor(d, RegisterType.NonRegistered),
+				getLineColor: (d) => getColor(d, RegisterType.NonRegistered),
 				onClick: onLayerClick,
 				updateTriggers: {
 					getFillColor: [getColor],
@@ -379,6 +381,7 @@ const RegistrationMain: React.FC = () => {
 
 		const provinceLayer = new MVTLayer({
 			id: 'boundary' + `-${new Date().getTime()}`,
+			// id: 'boundary',
 			name: 'boundary',
 			loadOptions: {
 				fetch: {
@@ -443,7 +446,8 @@ const RegistrationMain: React.FC = () => {
 			updateTriggers: {
 				getFillColor: [admCode, year, mapBoundaryAdmCodes, tableAdmCode],
 				getLineColor: [admCode, year, mapBoundaryAdmCodes, tableAdmCode],
-				getLineWidth: [admCode, year, mapBoundaryAdmCodes, tableAdmCode],
+				// getLineWidth: [admCode, year, mapBoundaryAdmCodes, tableAdmCode],
+				// renderSubLayers: [admCode, year, mapBoundaryAdmCodes, tableAdmCode],
 			},
 		})
 

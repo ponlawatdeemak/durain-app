@@ -1,13 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Box, ToggleButton, ToggleButtonGroup, Typography, IconButton, Popover, styled, Switch } from '@mui/material'
 import { useTranslation } from 'next-i18next'
-import { Layer } from '@deck.gl/core'
 import { MapLayerIcon, MapMeasureIcon, MapPinIcon, MapZoomInIcon, MapZoomOutIcon } from '@/components/svg/MenuIcon'
 import { BaseMap, BasemapType, MapLayer } from '../interface/map'
 import useMapStore from '../store/map'
 import Measurement from './measurement'
 import classNames from 'classnames'
-import { layerIdConfig } from '@/config/app.config'
 
 const basemapList: BaseMap[] = [
 	{ value: BasemapType.CartoLight, image: '/images/map/basemap_street.png', label: 'map.street' },
@@ -31,7 +29,7 @@ const MapTools: React.FC<MapToolsProps> = ({
 	legendSelectorLabel,
 }) => {
 	const { t } = useTranslation()
-	const { getLayer, layers, setLayers, removeLayer, mapLibre } = useMapStore()
+	const { layers, setLayers, mapLibre } = useMapStore()
 
 	const [basemap, setBasemap] = useState<BasemapType | null>(currentBaseMap ?? null)
 	const [anchorBasemap, setAnchorBasemap] = useState<HTMLButtonElement | null>(null)
@@ -43,49 +41,37 @@ const MapTools: React.FC<MapToolsProps> = ({
 		}),
 	)
 
-	//sync switchState with map layer display
-	useEffect(() => {
-		switchState?.forEach((item) => {
-			if (item.isOn === false) {
-				const layer = getLayer(item.id)
-				if (layer) {
-					removeLayer(item.id)
-				}
-			}
-		})
-	}, [getLayer, layerList, removeLayer, switchState, layers])
-
 	//reload switchState
 	useEffect(() => {
-		if (switchState?.length !== layerList?.length) {
-			setSwichState(
-				layerList?.map((item) => {
-					return { id: item.id, isOn: true }
-				}),
-			)
-		}
-	}, [layerList, switchState?.length])
+		setSwichState(layerList?.map((item) => ({ id: item.id, isOn: true })))
+	}, [layerList])
+
+	useEffect(() => {}, [layers])
 
 	const onToggleLayer = useCallback(
 		(layerId: string) => {
-			if (switchState) {
-				const layer = getLayer(layerId)
-				if (layer) {
-					removeLayer(layerId)
-				} else {
-					const item = layerList?.find((item) => item.id === layerId)
-					if (item) {
-						const updatedLayers = [...layers, item.layer]
-						setLayers(updatedLayers as Layer[])
-					}
-				}
+			if (switchState && layers?.length) {
 				const state = [...switchState]
 				const objIndex = state.findIndex((item) => item.id === layerId)
 				state[objIndex].isOn = !switchState[objIndex].isOn
 				setSwichState([...state])
+				let tempList = layers.map((mapLayer) => {
+					let tempSplit = mapLayer.id.split('-')
+					tempSplit.pop()
+					const tempId = tempSplit.join('-')
+					const switchItem = switchState.find((sw) => sw.id === tempId)
+
+					let visible: boolean | undefined = true
+					if (switchItem) {
+						visible = switchItem?.isOn === true ? true : undefined
+					}
+					return mapLayer.clone({ visible })
+				})
+
+				setLayers(tempList)
 			}
 		},
-		[layerList, getLayer, layers, setLayers, removeLayer, switchState],
+		[setLayers, switchState, layers],
 	)
 
 	const handleBasemapChanged = useCallback(
