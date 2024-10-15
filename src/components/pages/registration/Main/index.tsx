@@ -1,5 +1,5 @@
 import { useTranslation } from 'next-i18next'
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import service from '@/api/index'
 import {
 	CheckedIcon,
@@ -39,9 +39,6 @@ import { PickingInfo } from '@deck.gl/core'
 import { Geometry, Feature } from 'geojson'
 import MapInfoWindowContent from './MapInfoWindow'
 
-import { Popup } from 'maplibre-gl'
-import Info from './Info'
-
 interface RegisterData {
 	status: RegisterType
 	ADM1_TH: string
@@ -80,9 +77,8 @@ const RegistrationMain: React.FC = () => {
 		message: '',
 	})
 	const [subDistrictCode, setSubDistrictCode] = useState(0)
-	const popupNode = useRef<HTMLDivElement>(null)
 
-	const { mapLibre, getLayer, removeLayer, addLayer, setInfoWindow } = useMapStore()
+	const { getLayer, removeLayer, addLayer, mapLibre, setInfoWindow } = useMapStore()
 
 	const { data: availabilityData } = useQuery({
 		queryKey: ['availabilityRegistered'],
@@ -298,34 +294,6 @@ const RegistrationMain: React.FC = () => {
 		[admCode, tableAdmCode],
 	)
 
-	const popup = useMemo(
-		() =>
-			new Popup({
-				closeOnClick: false,
-				closeOnMove: false,
-				maxWidth: '300px',
-			}),
-		[],
-	)
-
-	const onMapClickPopUp = useCallback(
-		(info: PickingInfo<Feature<Geometry, RegisterData>>) => {
-			console.log('mapLibre ', mapLibre)
-			console.log('info11 ', info, popup, popupNode.current)
-
-			if (!popup || !info || !mapLibre || !popupNode.current) return
-
-			// console.log('objects ', objects)
-			console.log('info ', info)
-
-			const lng = info.coordinate![0]
-			const lat = info.coordinate![1]
-
-			popup?.setLngLat([lng, lat]).setDOMContent(popupNode.current).addTo(mapLibre)
-		},
-		[mapLibre, popup],
-	)
-
 	const layers = useMemo(() => {
 		return [
 			new MVTLayer({
@@ -349,13 +317,11 @@ const RegistrationMain: React.FC = () => {
 				pickable: true,
 				getFillColor: (d) => getColor(d, RegisterType.Registered),
 				getLineColor: (d) => getColor(d, RegisterType.Registered),
-				// onClick: onLayerClick,
-				onClick: onMapClickPopUp,
+				onClick: onLayerClick,
 				updateTriggers: {
 					getFillColor: [getColor],
 					getLineColor: [getColor],
-					// onClick: [onLayerClick],
-					onClick: [onMapClickPopUp],
+					onClick: [onLayerClick],
 				},
 			}),
 			new MVTLayer({
@@ -381,17 +347,15 @@ const RegistrationMain: React.FC = () => {
 				pickable: true,
 				getFillColor: (d) => getColor(d, RegisterType.NonRegistered),
 				getLineColor: (d) => getColor(d, RegisterType.NonRegistered),
-				// onClick: onLayerClick,
-				onClick: onMapClickPopUp,
+				onClick: onLayerClick,
 				updateTriggers: {
 					getFillColor: [getColor],
 					getLineColor: [getColor],
-					// onClick: [onLayerClick],
-					onClick: [onMapClickPopUp],
+					onClick: [onLayerClick],
 				},
 			}),
 		]
-	}, [year, onMapClickPopUp, getColor, t])
+	}, [year, getColor, t, onLayerClick])
 
 	const mapLayers: MapLayer[] | undefined = useMemo(() => {
 		return [
@@ -594,19 +558,10 @@ const RegistrationMain: React.FC = () => {
 					className={classNames('flex rounded-[8px] bg-white', isDesktop ? 'h-full flex-grow' : 'h-[500px]')}
 				>
 					{year !== 0 ? (
-						<MapView initialLayer={initialLayer} legendSelectorLabel={t('registration:farmerRegistration')}>
-							<div>
-								<div
-									ref={popupNode}
-									className={classNames(
-										`m-4 mb-[8px] mt-[24px] max-h-80 flex-col text-[16px]`,
-										`${'flex'}`,
-									)}
-								>
-									<Info txt={''} />
-								</div>
-							</div>
-						</MapView>
+						<MapView
+							initialLayer={initialLayer}
+							legendSelectorLabel={t('registration:farmerRegistration')}
+						/>
 					) : (
 						<div className='flex h-full w-full items-center justify-center'>
 							<CircularProgress />

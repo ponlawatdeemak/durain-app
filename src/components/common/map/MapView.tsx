@@ -30,7 +30,7 @@ export interface MapViewProps extends PropsWithChildren {
 	legendSelectorLabel?: string
 }
 
-export default function MapView({ className = '', initialLayer, legendSelectorLabel, children }: MapViewProps) {
+export default function MapView({ className = '', initialLayer, legendSelectorLabel }: MapViewProps) {
 	const { getLayer, addLayer, removeLayer, setLayers, infoWindow, setInfoWindow, mapLibre } = useMapStore()
 
 	const [viewState, setViewState] = useState<MapViewState>(DEFAULT.viewState)
@@ -116,7 +116,6 @@ export default function MapView({ className = '', initialLayer, legendSelectorLa
 					{infoWindow.children}
 				</InfoWindow>
 			)}
-			{children}
 		</div>
 	)
 }
