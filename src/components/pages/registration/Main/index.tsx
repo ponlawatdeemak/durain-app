@@ -569,7 +569,7 @@ const RegistrationMain: React.FC = () => {
 					)}
 				</div>
 				<div className={classNames('flex flex-col gap-[8px]', isDesktop ? 'h-full w-[350px]' : 'w-full')}>
-					<div className='flex w-full flex-col items-center justify-center gap-[16px] rounded-[8px] bg-white p-[24px] shadow'>
+					<div className='flex w-full flex-col items-center justify-center gap-[16px] rounded-[8px] bg-white px-[16px] py-[16px] shadow'>
 						<p className='text-xl font-medium'>{t('registration:farmerRegistration')}</p>
 						<div className='flex w-full flex-row gap-3'>
 							<Select
@@ -605,7 +605,7 @@ const RegistrationMain: React.FC = () => {
 							</Select>
 						</div>
 					</div>
-					<div className='flex w-full flex-col items-center justify-center rounded-[8px] bg-white px-[16px] py-[24px] shadow'>
+					<div className='flex w-full flex-col items-center justify-center rounded-[8px] bg-white px-[16px] py-[16px] shadow'>
 						<div className='flex w-full items-center justify-between text-sm font-medium'>
 							<RegisteredIcon />
 							<div className='flex items-center'>
@@ -628,16 +628,16 @@ const RegistrationMain: React.FC = () => {
 							<div className={classNames('[&>svg]:fill-green-dark2', 'flex h-full items-end pb-[4px]')}>
 								<OverviewIcon />
 							</div>
-							<p className='text-[36px] font-bold leading-none'>
+							<p className='text-[24px] font-bold leading-none'>
 								{registeredData?.overall.totalArea
 									? Math.round(registeredData?.overall.totalArea?.[areaUnit]).toLocaleString()
 									: '-'}
 							</p>
 						</div>
-						<hr className={classNames('my-[16px] w-full')} />
+						<hr className={classNames('my-[8px] w-full')} />
 						<div className='flex w-full'>
 							<div className='flex w-1/2 flex-col items-end'>
-								<p className='text-[18px] font-normal'>{t('registration:area')}</p>
+								<p className='text-[14px] font-normal'>{t('registration:area')}</p>
 								<div className='flex flex-row items-end gap-[6px]'>
 									<div className='flex pb-[6px]'>
 										<CheckedIcon />
@@ -646,18 +646,22 @@ const RegistrationMain: React.FC = () => {
 										{t('registration:registered')}
 									</p>
 								</div>
-								<p className='pt-[8px] text-base font-medium'>{t(`registration:${areaUnit}`)}</p>
-								<p className='text-[24px] font-medium leading-none text-registerType-registered'>
-									{registeredData?.overall.nonRegisteredArea
-										? Math.round(
-												registeredData?.overall.registeredArea?.[areaUnit],
-											).toLocaleString()
-										: '-'}
-								</p>
+								<div>
+									<span className='pr-1 text-[24px] font-medium leading-none text-registerType-registered'>
+										{registeredData?.overall.nonRegisteredArea
+											? Math.round(
+													registeredData?.overall.registeredArea?.[areaUnit],
+												).toLocaleString()
+											: '-'}
+									</span>
+									<span className='pt-[8px] text-base font-medium'>
+										{t(`registration:${areaUnit}`)}
+									</span>
+								</div>
 							</div>
 							<hr className={classNames('ml-[24px] mr-[16px] h-full border-l-[1px] border-t-0')} />
 							<div className='flex w-1/2 flex-col items-end'>
-								<p className='text-[18px] font-normal'>{t('registration:area')}</p>
+								<p className='text-[14px] font-normal'>{t('registration:area')}</p>
 								<div className='flex flex-row items-end gap-[6px]'>
 									<div className='flex pb-[6px]'>
 										<CrossIcon />
@@ -666,21 +670,25 @@ const RegistrationMain: React.FC = () => {
 										{t('registration:unregistered')}
 									</p>
 								</div>
-								<p className='pt-[8px] text-base font-medium'>{t(`registration:${areaUnit}`)}</p>
-								<p className='text-[24px] font-medium leading-none text-registerType-nonRegistered'>
-									{registeredData?.overall.registeredArea
-										? Math.round(
-												registeredData?.overall.nonRegisteredArea?.[areaUnit],
-											).toLocaleString()
-										: '-'}
-								</p>
+								<div>
+									<span className='pr-1 text-[24px] font-medium leading-none text-registerType-nonRegistered'>
+										{registeredData?.overall.registeredArea
+											? Math.round(
+													registeredData?.overall.nonRegisteredArea?.[areaUnit],
+												).toLocaleString()
+											: '-'}
+									</span>
+									<span className='pt-[8px] text-base font-medium'>
+										{t(`registration:${areaUnit}`)}
+									</span>
+								</div>
 							</div>
 						</div>
 					</div>
 					<div
 						className={classNames(
 							'flex w-full flex-col items-center rounded-[8px] bg-white shadow',
-							isDesktop ? 'flex-grow p-[24px]' : 'px-[16px] py-[24px]',
+							isDesktop ? 'flex-grow px-[16px] py-[16px]' : 'px-[16px] py-[24px]',
 						)}
 					>
 						<div className='flex w-full items-center text-[18px] font-medium'>
