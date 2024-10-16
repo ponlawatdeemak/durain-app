@@ -48,12 +48,12 @@ const AboutMain: React.FC = ({}) => {
 						referrerPolicy='strict-origin-when-cross-origin'
 						allowFullScreen
 					></iframe>
-					<div className='pb-[24px] pt-[32px] text-left text-lg font-light text-[#21573F]'>
+					<div className='pb-[24px] pt-[32px] text-left text-xl font-light text-[#21573F]'>
 						{language === Languages.EN
 							? 'Durian Crop Area Analysis System Using Satellite Technology and Artificial Intelligence'
 							: 'ระบบวิเคราะห์พื้นที่ปลูกทุเรียนด้วยเทคโนโลยีดาวเทียมและปัญญาประดิษฐ์'}
 					</div>
-					<div className={classNames('flex w-full flex-grow whitespace-pre-wrap pr-0 text-sm font-light')}>
+					<div className={classNames('flex w-full flex-grow whitespace-pre-wrap pr-0 text-base font-light')}>
 						{language === Languages.EN
 							? `Durian is the most economically valuable export fruit in Thailand. According to an assessment by Krungthai COMPASS, the Thai durian export market to China is expected to continue expanding, with a compound annual growth rate (CAGR) of 19.3% during the period from 2022 to 2030. The export value is projected to increase to 22.162 billion USD, or approximately 700 billion THB, in 2030, up from the current level of around 120 billion THB.
 
