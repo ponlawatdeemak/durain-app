@@ -29,12 +29,15 @@ const MenuButton: React.FC<MenuButtonProps> = ({ ...props }) => {
 				disableRipple
 				onMouseEnter={handlePopoverOpen}
 				onMouseLeave={handlePopoverClose}
-				className='h-[80px]'
+				className='h-20'
 			>
 				{icon}
 			</ToggleButton>
 			<Popover
 				sx={{ pointerEvents: 'none' }}
+				slotProps={{
+					paper: { className: '!rounded-none flex items-center h-14 !rounded-r !shadow-none' },
+				}}
 				open={open}
 				anchorEl={anchorEl}
 				anchorOrigin={{
@@ -48,7 +51,9 @@ const MenuButton: React.FC<MenuButtonProps> = ({ ...props }) => {
 				onClose={handlePopoverClose}
 				disableRestoreFocus
 			>
-				<Typography sx={{ p: 1 }}>{label}</Typography>
+				<Typography className='bg-primary-light2 flex h-14 w-[230px] items-center border-0 border-l-[3px] border-solid border-primary-light px-6 py-2 !text-[14px] !font-light !leading-[18px] text-green-light'>
+					{label}
+				</Typography>
 			</Popover>
 		</>
 	)
