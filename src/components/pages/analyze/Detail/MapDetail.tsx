@@ -28,6 +28,7 @@ import { DurianChangeAreaColor } from '@/config/color'
 import CompareInfoWindow from '../Map/CompareInfoWindow'
 import { Popup } from 'maplibre-gl'
 import { OrderBy, registerPinLayerId } from '../Main'
+import classNames from 'classnames'
 
 interface CompareSameLayerType {
 	ADM1_TH: string
@@ -765,7 +766,10 @@ const MapDetail: React.FC<MapDetailProps> = ({ orderBy, popup }) => {
 									? t('analyze:ageOfDurian')
 									: t('analyze:durianPlantationAreaChanges')
 							}
-							className='h-full w-full'
+							className={classNames('h-full w-full', {
+								'[&_.maplibregl-popup-anchor-bottom-left>.maplibregl-popup-tip]:!border-t-green-light [&_.maplibregl-popup-anchor-bottom-right>.maplibregl-popup-tip]:!border-t-green-light [&_.maplibregl-popup-anchor-bottom>.maplibregl-popup-tip]:!border-t-green-light [&_.maplibregl-popup-anchor-left>.maplibregl-popup-tip]:!border-r-green-light [&_.maplibregl-popup-anchor-right>.maplibregl-popup-tip]:!border-l-green-light [&_.maplibregl-popup-anchor-top-left>.maplibregl-popup-tip]:!border-b-green-light [&_.maplibregl-popup-anchor-top-right>.maplibregl-popup-tip]:!border-b-green-light [&_.maplibregl-popup-anchor-top>.maplibregl-popup-tip]:!border-b-green-light':
+									orderBy === OrderBy.Changes,
+							})}
 						>
 							<div className='hidden'>
 								{orderBy === OrderBy.Age ? (

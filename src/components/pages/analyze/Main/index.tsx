@@ -25,7 +25,7 @@ export const AnalyzeMain = () => {
 				closeOnClick: false,
 				closeOnMove: false,
 				className: classNames(
-					'!max-w-[315px] md:!max-w-[350px] [&_.maplibregl-popup-content]:rounded-lg [&_.maplibregl-popup-content]:p-0 [&_.maplibregl-popup-close-button]:text-[24px] [&_.maplibregl-popup-close-button]:right-2 [&_.maplibregl-popup-close-button]:top-2',
+					'!max-w-[315px] md:!max-w-[350px] [&_.maplibregl-popup-content]:overflow-hidden [&_.maplibregl-popup-content]:rounded-lg [&_.maplibregl-popup-content]:p-0 [&_.maplibregl-popup-close-button]:text-[24px] [&_.maplibregl-popup-close-button]:right-2 [&_.maplibregl-popup-close-button]:top-2',
 					{
 						'[&_.maplibregl-popup-close-button]:text-green-dark1': orderBy === OrderBy.Age,
 						'[&_.maplibregl-popup-close-button]:!text-white': orderBy === OrderBy.Changes,

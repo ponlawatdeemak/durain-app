@@ -12,7 +12,7 @@ const SummaryInfoWindow: React.FC<{ data: GetAgeclassLocationDtoOut | null }> = 
 	}
 
 	return (
-		<div className='relative flex w-[315px] flex-col rounded-lg bg-white p-5 md:w-[350px] md:p-6'>
+		<div className='relative flex w-[315px] flex-col bg-white p-5 md:w-[350px] md:p-6'>
 			<div className={`flex h-full w-full flex-col gap-2`}>
 				<div className='flex items-center justify-between'>
 					<span className='text-[18px] font-medium leading-[24px] text-[#333333]'>

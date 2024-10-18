@@ -15,7 +15,7 @@ const CompareInfoWindow: React.FC<{ data: GetCompareLocationDtoOut | null }> = (
 	}
 
 	return (
-		<div className='relative flex w-[315px] flex-col rounded-lg bg-green-light p-5 md:w-[350px] md:p-6'>
+		<div className='relative flex w-[315px] flex-col bg-green-light p-5 md:w-[350px] md:p-6'>
 			<div className={`flex h-full w-full items-center gap-2`}>
 				<div className='flex h-full'>
 					<PopupReistrationLogo />
