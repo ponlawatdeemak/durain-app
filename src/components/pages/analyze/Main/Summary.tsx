@@ -21,8 +21,13 @@ import useAreaUnit from '@/store/area-unit'
 import SummaryChart from '../Chart/SummaryChart'
 import HistoryChart from '../Chart/HistoryChart'
 import { AreaUnitText } from '@/enum'
+import { Popup } from 'maplibre-gl'
 
-const AnalyzeSummary = () => {
+interface AnalyzeSummaryProps {
+	popup: Popup
+}
+
+const AnalyzeSummary: React.FC<AnalyzeSummaryProps> = ({ popup }) => {
 	const { areaUnit } = useAreaUnit()
 	const { queryParams, setQueryParams } = useSearchAnalyze()
 	const { t, i18n } = useTranslation(['common'])
@@ -59,6 +64,7 @@ const AnalyzeSummary = () => {
 				year: event.target.value as number,
 			})
 			setYear(event.target.value as number)
+			popup.remove()
 		}
 	}
 

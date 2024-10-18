@@ -13,12 +13,14 @@ import { ResponseLanguage } from '@/api/interface'
 import classNames from 'classnames'
 import { Box } from '@mui/material'
 import { AddCircleOutline, RemoveCircleOutline } from '@mui/icons-material'
+import { Popup } from 'maplibre-gl'
 
 interface CompareTableProps {
 	compareOverviewData: GetCompareOverviewDtoOut | undefined
+	popup: Popup
 }
 
-const CompareTable: React.FC<CompareTableProps> = ({ compareOverviewData }) => {
+const CompareTable: React.FC<CompareTableProps> = ({ compareOverviewData, popup }) => {
 	const { areaUnit } = useAreaUnit()
 	const { queryParams, setQueryParams } = useSearchAnalyze()
 	const { t, i18n } = useTranslation(['common'])
@@ -51,6 +53,7 @@ const CompareTable: React.FC<CompareTableProps> = ({ compareOverviewData }) => {
 					subDistrictId: undefined,
 				})
 			}
+			popup.remove()
 		},
 		[queryParams, setQueryParams],
 	)

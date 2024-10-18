@@ -9,15 +9,16 @@ import React, { useEffect } from 'react'
 import useSearchAnalyze from '../Main/context'
 import SummaryTable from '../Table/SummaryTable'
 import { AreaUnitText } from '@/enum'
-import useOrderByFilter from './context'
+import { Popup } from 'maplibre-gl'
 
-interface SummaryFilterProps {}
+interface SummaryFilterProps {
+	popup: Popup
+}
 
-const SummaryFilter: React.FC<SummaryFilterProps> = () => {
+const SummaryFilter: React.FC<SummaryFilterProps> = ({ popup }) => {
 	const { areaUnit } = useAreaUnit()
 	const { queryParams, setQueryParams } = useSearchAnalyze()
 	const { t, i18n } = useTranslation(['common'])
-	const { filter, setFilter } = useOrderByFilter()
 	const language = i18n.language as keyof ResponseLanguage
 
 	useEffect(() => {
@@ -81,7 +82,7 @@ const SummaryFilter: React.FC<SummaryFilterProps> = () => {
 							<Typography className='!mb-4 !text-lg !font-medium !text-[#333333]'>
 								{t('analyze:durianPlantationAllAreas')}
 							</Typography>
-							<SummaryTable summaryOverviewData={summaryProvinceData?.data} />
+							<SummaryTable summaryOverviewData={summaryProvinceData?.data} popup={popup} />
 						</Box>
 						<span className='text-[10px] font-medium text-[#333333]'>{`${t('areaUnit')} : ${t(AreaUnitText[areaUnit])}`}</span>
 					</>
@@ -104,7 +105,7 @@ const SummaryFilter: React.FC<SummaryFilterProps> = () => {
 										? `${t('durianPlantationData')} ${summaryProvinceData?.data?.adms?.[0]?.admName?.[language]} ${t('province')}`
 										: `${t('durianPlantationData')}${t('province')}${summaryProvinceData?.data?.adms?.[0]?.admName?.[language]}`}
 							</Typography>
-							<SummaryTable summaryOverviewData={summaryDistrictData?.data} />
+							<SummaryTable summaryOverviewData={summaryDistrictData?.data} popup={popup} />
 						</Box>
 						<span className='text-[10px] font-medium text-[#333333]'>{`${t('areaUnit')} : ${t(AreaUnitText[areaUnit])}`}</span>
 					</>
@@ -127,7 +128,7 @@ const SummaryFilter: React.FC<SummaryFilterProps> = () => {
 										? `${t('durianPlantationData')} ${summaryDistrictData?.data?.adms?.[0]?.admName?.[language]} ${t('district')}`
 										: `${t('durianPlantationData')}${t('district')}${summaryDistrictData?.data?.adms?.[0]?.admName?.[language]}`}
 							</Typography>
-							<SummaryTable summaryOverviewData={summarySubDistrictData?.data} />
+							<SummaryTable summaryOverviewData={summarySubDistrictData?.data} popup={popup} />
 						</Box>
 						<span className='text-[10px] font-medium text-[#333333]'>{`${t('areaUnit')} : ${t(AreaUnitText[areaUnit])}`}</span>
 					</>

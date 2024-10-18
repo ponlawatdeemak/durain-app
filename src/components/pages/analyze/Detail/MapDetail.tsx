@@ -2,7 +2,7 @@ import { ResponseLanguage } from '@/api/interface'
 import MapView from '@/components/common/map/MapView'
 import { Alert, Box, CircularProgress, Snackbar, Typography } from '@mui/material'
 import { useTranslation } from 'next-i18next'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import useSearchAnalyze from '../Main/context'
 import { thaiExtent, tileLayer } from '@/config/app.config'
 import { apiAccessToken } from '@/api/core'
@@ -14,16 +14,20 @@ import hexRgb from 'hex-rgb'
 import useMapStore from '@/components/common/map/store/map'
 import { GetSummaryOverviewDtoIn } from '@/api/analyze/dto-in.dto'
 import { AlertInfoType } from '@/components/shared/ProfileForm/interface'
-import { GetSummaryOverviewDtoOut } from '@/api/analyze/dto.out.dto'
+import {
+	GetAgeclassLocationDtoOut,
+	GetCompareLocationDtoOut,
+	GetSummaryOverviewDtoOut,
+} from '@/api/analyze/dto.out.dto'
 import { Feature, Geometry } from 'geojson'
 import { PickingInfo } from '@deck.gl/core'
 import SummaryInfoWindow from '../Map/SummaryInfoWindow'
 import { IconLayer } from '@deck.gl/layers'
 import { getPin } from '@/utils/pin'
-import { RegisterType } from '@/enum'
-import useOrderByFilter, { OrderBy } from '../Filter/context'
 import { DurianChangeAreaColor } from '@/config/color'
 import CompareInfoWindow from '../Map/CompareInfoWindow'
+import { Popup } from 'maplibre-gl'
+import { OrderBy, registerPinLayerId } from '../Main'
 
 interface CompareSameLayerType {
 	ADM1_TH: string
@@ -60,15 +64,19 @@ interface AgeClass {
 	percent: number
 }
 
-export const registerPinLayerId = 'register-pin'
 const defaultColor = [0, 0, 0, 0] as any
 
-const MapDetail = () => {
+interface MapDetailProps {
+	orderBy: OrderBy
+	popup: Popup
+}
+
+const MapDetail: React.FC<MapDetailProps> = ({ orderBy, popup }) => {
 	const { t, i18n } = useTranslation(['common'])
 	const language = i18n.language as keyof ResponseLanguage
 	const { queryParams, setQueryParams } = useSearchAnalyze()
-	const { filter, setFilter } = useOrderByFilter()
-	const [orderBy, setOrderBy] = useState<OrderBy>()
+	const [summaryInfoWindow, setSummaryInfoWindow] = useState<GetAgeclassLocationDtoOut | null>(null)
+	const [compareInfoWindow, setCompareInfoWindow] = useState<GetCompareLocationDtoOut | null>(null)
 	const { mapLibre, setLayers, removeLayer, getLayer, addLayer, setInfoWindow } = useMapStore()
 	const [overviewData, setOverviewData] = useState<GetSummaryOverviewDtoOut>()
 	const [alertInfo, setAlertInfo] = React.useState<AlertInfoType>({
@@ -77,9 +85,8 @@ const MapDetail = () => {
 		message: '',
 	})
 
-	useEffect(() => {
-		setOrderBy(filter)
-	}, [filter])
+	const popupSummaryNode = useRef<HTMLDivElement>(null)
+	const popupCompareNode = useRef<HTMLDivElement>(null)
 
 	const filterSummaryOverview = useMemo(() => {
 		const filter: GetSummaryOverviewDtoIn = {
@@ -98,7 +105,6 @@ const MapDetail = () => {
 	const { data: summaryOverviewData, isLoading: isSummaryOverviewDataLoading } = useQuery({
 		queryKey: ['getSummaryOverviewMap', filterSummaryOverview],
 		queryFn: async () => {
-			setInfoWindow(null)
 			const response = await service.analyze.getSummaryOverview(filterSummaryOverview)
 			if (response?.data) {
 				setOverviewData(response.data)
@@ -134,9 +140,11 @@ const MapDetail = () => {
 				if (!response.data) {
 					throw new Error('Access Position failed!!')
 				}
-				setInfoWindow({
-					children: <SummaryInfoWindow data={response.data} />,
-				})
+				setSummaryInfoWindow(response?.data)
+
+				if (!popup || !mapLibre || !popupSummaryNode.current) return
+
+				popup?.setLngLat([lon, lat]).setDOMContent(popupSummaryNode.current).addTo(mapLibre)
 
 				const coordinates: [number, number] = [lon, lat]
 				removeLayer(registerPinLayerId)
@@ -162,7 +170,7 @@ const MapDetail = () => {
 				console.log('error: ', error)
 			}
 		},
-		[addLayer, removeLayer, setInfoWindow],
+		[addLayer, removeLayer, mapLibre, popup],
 	)
 
 	const handleComparePositionClick = useCallback(
@@ -175,9 +183,11 @@ const MapDetail = () => {
 				if (!response.data) {
 					throw new Error('Access Position failed!!')
 				}
-				setInfoWindow({
-					children: <CompareInfoWindow data={response.data} color={color} />,
-				})
+				setCompareInfoWindow(response?.data)
+
+				if (!popup || !mapLibre || !popupCompareNode.current) return
+
+				popup?.setLngLat([lon, lat]).setDOMContent(popupCompareNode.current).addTo(mapLibre)
 
 				const coordinates: [number, number] = [lon, lat]
 				removeLayer(registerPinLayerId)
@@ -203,7 +213,7 @@ const MapDetail = () => {
 				console.log('error: ', error)
 			}
 		},
-		[addLayer, removeLayer, setInfoWindow],
+		[addLayer, removeLayer, mapLibre, popup],
 	)
 
 	const onSummaryLayerClick = useCallback(
@@ -538,7 +548,7 @@ const MapDetail = () => {
 	}, [language, queryParams.yearStart, queryParams.yearEnd, t, getCompareColor, onCompareLayerClick])
 
 	const mapLayers: MapLayer[] | undefined = useMemo(() => {
-		if (filter === OrderBy.Age) {
+		if (orderBy === OrderBy.Age) {
 			return overviewData?.overall.ageClass?.map((item, index) => {
 				return {
 					id: item.id,
@@ -577,7 +587,7 @@ const MapDetail = () => {
 		t,
 		language,
 		summaryLayers,
-		filter,
+		orderBy,
 		compareLayers,
 		queryParams.yearStart,
 		queryParams.yearEnd,
@@ -747,16 +757,28 @@ const MapDetail = () => {
 					{t('analyze:durianPlantationByAge')}
 				</Typography>
 				<Box className='h-[650px] overflow-hidden rounded-lg bg-white'>
-					{!!queryParams?.year && mapLayers && orderBy === filter ? (
+					{!!queryParams?.year && mapLayers ? (
 						<MapView
 							initialLayer={initialLayer}
 							legendSelectorLabel={
-								filter === OrderBy.Age
+								orderBy === OrderBy.Age
 									? t('analyze:ageOfDurian')
 									: t('analyze:durianPlantationAreaChanges')
 							}
 							className='h-full w-full'
-						/>
+						>
+							<div className='hidden'>
+								{orderBy === OrderBy.Age ? (
+									<div ref={popupSummaryNode} className='flex h-full w-full flex-col'>
+										<SummaryInfoWindow data={summaryInfoWindow} />
+									</div>
+								) : (
+									<div ref={popupCompareNode} className='flex h-full w-full flex-col'>
+										<CompareInfoWindow data={compareInfoWindow} />
+									</div>
+								)}
+							</div>
+						</MapView>
 					) : (
 						<div className='flex h-full w-full items-center justify-center'>
 							<CircularProgress />

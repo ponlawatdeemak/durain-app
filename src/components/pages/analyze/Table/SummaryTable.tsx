@@ -13,12 +13,14 @@ import { ResponseLanguage } from '@/api/interface'
 import classNames from 'classnames'
 import { Box } from '@mui/material'
 import useResponsive from '@/hook/responsive'
+import { Popup } from 'maplibre-gl'
 
 interface SummaryTableProps {
 	summaryOverviewData: GetSummaryOverviewDtoOut | undefined
+	popup: Popup
 }
 
-const SummaryTable: React.FC<SummaryTableProps> = ({ summaryOverviewData }) => {
+const SummaryTable: React.FC<SummaryTableProps> = ({ summaryOverviewData, popup }) => {
 	const { isDesktop } = useResponsive()
 	const { areaUnit } = useAreaUnit()
 	const { queryParams, setQueryParams } = useSearchAnalyze()
@@ -52,6 +54,7 @@ const SummaryTable: React.FC<SummaryTableProps> = ({ summaryOverviewData }) => {
 					subDistrictId: undefined,
 				})
 			}
+			popup.remove()
 		},
 		[queryParams, setQueryParams],
 	)
