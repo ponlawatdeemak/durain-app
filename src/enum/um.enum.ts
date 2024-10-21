@@ -4,3 +4,8 @@ export enum UserRole {
 	Analyst = 'analyst',
 	Officer = 'officer',
 }
+
+export enum FlagStatus {
+	Active = 'A',
+	Inactive = 'C',
+}

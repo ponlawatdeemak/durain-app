@@ -8,7 +8,7 @@ import SettingDialog from '@/components/menu/SettingDialog'
 import { AppPath } from '@/config/app.config'
 import { useTranslation } from 'react-i18next'
 import useResponsive from '@/hook/responsive'
-import { UserRole } from '@/enum'
+import { FlagStatus, UserRole } from '@/enum'
 import { useSession } from 'next-auth/react'
 
 interface MenuConfigType {
@@ -106,6 +106,7 @@ const SideBar = () => {
 				<MenuButtonGroup orientation='vertical' value={menu} exclusive onChange={handleMenuChange}>
 					{menuConfig.map((item, index) =>
 						(item.access?.length || 0) > 0 ? (
+							session?.user?.flagStatus === FlagStatus.Active &&
 							item.access?.includes(session?.user.role || '') && (
 								<MenuButton
 									key={index}

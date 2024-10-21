@@ -11,6 +11,8 @@ import { useEffect, useState } from 'react'
 import MenuList from './MenuList'
 import ThaicomLogo from '../svg/ThaicomLogo'
 import getConfig from 'next/config'
+import AlertConfirm from '../common/dialog/AlertConfirm'
+import { FlagStatus } from '@/enum'
 const { publicRuntimeConfig } = getConfig()
 
 interface AppBarProps {
@@ -22,6 +24,7 @@ const AppBar: React.FC<AppBarProps> = ({ className = '' }) => {
 	const { t } = useTranslation('common')
 	const { isDesktop } = useResponsive()
 	const [count, setCount] = useState<number>(0)
+	const [isOpenAlertDialog, setIsOpenAlertDialog] = useState<boolean>(true)
 
 	const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
 
@@ -53,20 +56,23 @@ const AppBar: React.FC<AppBarProps> = ({ className = '' }) => {
 				{isMenuOpen && (
 					<div className='flex h-[calc(100vh-64px)] flex-col justify-between rounded-none bg-[#f2f5f8] lg:hidden'>
 						<MenuList setIsMenuOpen={setIsMenuOpen} />
-						<div
-							className={classNames('m-4 flex items-center justify-between rounded bg-white p-3', {
-								'!justify-end': !session?.user,
-							})}
-						>
-							{session?.user && <UserAvatar user={session.user} />}
+						<div className='m-4 flex items-center justify-between rounded bg-white p-3'>
+							{session?.user ? (
+								<UserAvatar user={session.user} />
+							) : (
+								<Button
+									variant='contained'
+									startIcon={<LockOpen />}
+									onClick={() => signIn(NEXTAUTH_PROVIDER_ID)}
+									className='!px-6'
+								>
+									{t('login')}
+								</Button>
+							)}
 							<div className='flex items-center'>
-								{session?.user ? (
+								{session?.user && (
 									<IconButton onClick={() => signOut()}>
 										<ExitToApp className='!h-9 !w-9 font-light text-[#d13438]' />
-									</IconButton>
-								) : (
-									<IconButton onClick={() => signIn(NEXTAUTH_PROVIDER_ID)}>
-										<LockOpen className='!h-9 !w-9 font-light text-[#0c626d]' />
 									</IconButton>
 								)}
 								<div className='flex flex-col px-2 py-1'>
@@ -76,6 +82,21 @@ const AppBar: React.FC<AppBarProps> = ({ className = '' }) => {
 							</div>
 						</div>
 					</div>
+				)}
+				{session?.user?.flagStatus === FlagStatus.Inactive && (
+					<AlertConfirm
+						className='[&_.MuiDialogActions-root>button]:bg-error [&_.MuiDialogTitle-root>p]:mt-5 [&_.MuiDialogTitle-root>p]:text-[20px] [&_.MuiDialogTitle-root>p]:text-error'
+						open={isOpenAlertDialog}
+						mode='alertDialog'
+						title={t('alert.inactiveFlagStatus')}
+						content=''
+						onClose={() => {
+							setIsOpenAlertDialog(false)
+						}}
+						onConfirm={() => {
+							setIsOpenAlertDialog(false)
+						}}
+					/>
 				)}
 			</div>
 		)
@@ -108,6 +129,21 @@ const AppBar: React.FC<AppBarProps> = ({ className = '' }) => {
 					</Button>
 				)}
 			</div>
+			{session?.user?.flagStatus === FlagStatus.Inactive && (
+				<AlertConfirm
+					className='[&_.MuiDialogActions-root>button]:bg-error [&_.MuiDialogTitle-root>p]:mt-5 [&_.MuiDialogTitle-root>p]:text-[20px] [&_.MuiDialogTitle-root>p]:text-error'
+					open={isOpenAlertDialog}
+					mode='alertDialog'
+					title={t('alert.inactiveFlagStatus')}
+					content=''
+					onClose={() => {
+						setIsOpenAlertDialog(false)
+					}}
+					onConfirm={() => {
+						setIsOpenAlertDialog(false)
+					}}
+				/>
+			)}
 		</div>
 	)
 }

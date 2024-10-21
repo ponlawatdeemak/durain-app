@@ -19,10 +19,13 @@ import { useQuery } from '@tanstack/react-query'
 import service from '@/api'
 import CompareTable from '../Table/CompareTable'
 import { AreaUnitText } from '@/enum'
+import { Popup } from 'maplibre-gl'
 
-interface CompareFilterProps {}
+interface CompareFilterProps {
+	popup: Popup
+}
 
-const CompareFilter: React.FC<CompareFilterProps> = () => {
+const CompareFilter: React.FC<CompareFilterProps> = ({ popup }) => {
 	const { areaUnit } = useAreaUnit()
 	const { queryParams, setQueryParams } = useSearchAnalyze()
 	const { t, i18n } = useTranslation(['common'])
@@ -116,6 +119,7 @@ const CompareFilter: React.FC<CompareFilterProps> = () => {
 		if (event.target.value) {
 			setQueryParams({ ...queryParams, yearStart: event.target.value as number })
 			setYearStart(event.target.value as number)
+			popup.remove()
 		}
 	}
 
@@ -123,6 +127,7 @@ const CompareFilter: React.FC<CompareFilterProps> = () => {
 		if (event.target.value) {
 			setQueryParams({ ...queryParams, yearEnd: event.target.value as number })
 			setYearEnd(event.target.value as number)
+			popup.remove()
 		}
 	}
 
@@ -200,7 +205,7 @@ const CompareFilter: React.FC<CompareFilterProps> = () => {
 								<Typography className='!mb-4 !text-lg !font-medium !text-[#333333]'>
 									{t('analyze:durianPlantationAllAreas')}
 								</Typography>
-								<CompareTable compareOverviewData={compareProvinceData?.data} />
+								<CompareTable compareOverviewData={compareProvinceData?.data} popup={popup} />
 							</Box>
 							<span className='text-[10px] font-medium text-[#333333]'>{`${t('areaUnit')} : ${t(AreaUnitText[areaUnit])}`}</span>
 						</>
@@ -223,7 +228,7 @@ const CompareFilter: React.FC<CompareFilterProps> = () => {
 											? `${t('analyze:changesIn')} ${t('durianPlantationData')} ${compareProvinceData?.data?.adms?.[0]?.admName?.[language]} ${t('province')}`
 											: `${t('durianPlantationData')}${t('province')}${compareProvinceData?.data?.adms?.[0]?.admName?.[language]}${t('analyze:changesIn')}`}
 								</Typography>
-								<CompareTable compareOverviewData={compareDistrictData?.data} />
+								<CompareTable compareOverviewData={compareDistrictData?.data} popup={popup} />
 							</Box>
 							<span className='text-[10px] font-medium text-[#333333]'>{`${t('areaUnit')} : ${t(AreaUnitText[areaUnit])}`}</span>
 						</>
@@ -246,7 +251,7 @@ const CompareFilter: React.FC<CompareFilterProps> = () => {
 											? `${t('analyze:changesIn')} ${t('durianPlantationData')} ${compareDistrictData?.data?.adms?.[0]?.admName?.[language]} ${t('district')}`
 											: `${t('durianPlantationData')}${t('district')}${compareDistrictData?.data?.adms?.[0]?.admName?.[language]}${t('analyze:changesIn')}`}
 								</Typography>
-								<CompareTable compareOverviewData={compareSubDistrictData?.data} />
+								<CompareTable compareOverviewData={compareSubDistrictData?.data} popup={popup} />
 							</Box>
 							<span className='text-[10px] font-medium text-[#333333]'>{`${t('areaUnit')} : ${t(AreaUnitText[areaUnit])}`}</span>
 						</>

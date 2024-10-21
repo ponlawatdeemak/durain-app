@@ -57,6 +57,7 @@ export interface GetProfileDtoOut {
 	responsibleProvinceName: ResponseLanguage
 	responsibleDistrictName: ResponseLanguage
 	flagStatusName: ResponseLanguage
+	flagStatus: string
 }
 
 export interface PutProfileDtoOut {

@@ -13,6 +13,7 @@
 
 	"confirm": "Confirm",
 	"cancel": "Cancel",
+    "close": "Close",
 	"back": "Back",
 
 	"unitArea": "Units",
@@ -78,7 +79,8 @@
 
 	"alert": {
 		"confirmEditPassword": "Confirm password change?",
-		"confirmChangePassword": "Do you want change user password?"
+		"confirmChangePassword": "Do you want change user password?",
+        "inactiveFlagStatus": "Your account is inactive. Please contact the administrator."
 	},
 	"pleaseEnter": "Please enter",
 	"notEnter": "Not enter",
