@@ -4,7 +4,7 @@ import { useTranslation } from 'next-i18next'
 import { AppPath } from '@/config/app.config'
 import { List, ListItem, ListItemText } from '@mui/material'
 import SettingDialog from './SettingDialog'
-import { UserRole } from '@/enum'
+import { FlagStatus, UserRole } from '@/enum'
 import { useSession } from 'next-auth/react'
 
 interface MenuConfigType {
@@ -16,9 +16,10 @@ interface MenuConfigType {
 
 interface MenuListProps {
 	setIsMenuOpen: React.Dispatch<React.SetStateAction<boolean>>
+	flagStatus?: string
 }
 
-const MenuList: React.FC<MenuListProps> = ({ setIsMenuOpen }) => {
+const MenuList: React.FC<MenuListProps> = ({ setIsMenuOpen, flagStatus }) => {
 	const router = useRouter()
 	const { data: session } = useSession()
 	const { t } = useTranslation('common')
@@ -70,6 +71,7 @@ const MenuList: React.FC<MenuListProps> = ({ setIsMenuOpen }) => {
 			<List className='h-full p-0'>
 				{menuConfig.map((menu) =>
 					(menu.access?.length || 0) > 0 ? (
+						flagStatus === FlagStatus.Active &&
 						menu.access?.includes(session?.user.role || '') && (
 							<ListItem
 								key={menu.id}

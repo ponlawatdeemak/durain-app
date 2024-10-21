@@ -12,6 +12,7 @@ import React from 'react'
 import { mdiClose } from '@mdi/js'
 import Icon from '@mdi/react'
 import { useTranslation } from 'next-i18next'
+import classNames from 'classnames'
 
 export interface AlertConfirmProps {
 	open: boolean
@@ -46,11 +47,15 @@ const AlertConfirm: React.FC<AlertConfirmProps> = ({
 		<Dialog
 			open={open}
 			onClose={(event, reason) => {
-				if (reason !== 'backdropClick') {
+				if (mode === 'DialogConfirm') {
+					if (reason !== 'backdropClick') {
+						onClose()
+					}
+				} else {
 					onClose()
 				}
 			}}
-			className='[&_.MuiDialog-paper]:w-[560px]'
+			className={classNames('[&_.MuiDialog-paper]:w-[560px]', className)}
 		>
 			<DialogTitle className='flex items-center justify-between p-[8px] pl-[24px]'>
 				<Typography className='text-md font-semibold'>{title}</Typography>
@@ -65,12 +70,12 @@ const AlertConfirm: React.FC<AlertConfirmProps> = ({
 				{subContent && <DialogContentText>{subContent}</DialogContentText>}
 			</DialogContent>
 			{mode === 'DialogConfirm' ? (
-				<DialogActions className='border-t-gray border-[0px] border-t-[1px] border-solid border-transparent p-[24px] pt-[15px]'>
+				<DialogActions className='border-[0px] border-t-[1px] border-solid border-transparent border-t-gray p-[24px] pt-[15px]'>
 					<Button
 						onClick={onClose}
 						variant='outlined'
 						size='large'
-						className='!border-gray h-[40px] px-[15px] text-base font-semibold !text-black'
+						className='h-[40px] !border-gray px-[15px] text-base font-semibold !text-black'
 					>
 						{cancelTitle || t('cancel')}
 					</Button>
@@ -84,7 +89,7 @@ const AlertConfirm: React.FC<AlertConfirmProps> = ({
 					</Button>
 				</DialogActions>
 			) : (
-				<DialogActions className='border-t-gray border-[0px] border-t-[1px] border-solid border-transparent p-[24px] pt-[15px]'>
+				<DialogActions className='border-[0px] border-t-[1px] border-solid border-transparent border-t-gray p-[24px] pt-[15px]'>
 					<Button
 						onClick={onConfirm}
 						variant='contained'
