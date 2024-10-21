@@ -6,17 +6,22 @@ import { ExpandMore } from '@mui/icons-material'
 import useSearchAnalyze from '../Main/context'
 import { useTranslation } from 'next-i18next'
 import { ResponseLanguage } from '@/api/interface'
-import useOrderByFilter, { OrderBy } from '../Filter/context'
+import { Popup } from 'maplibre-gl'
+import { OrderBy } from '../Main'
 
-const FilterDetail = () => {
+interface FilterDetailProps {
+	orderBy: OrderBy
+	setOrderBy: React.Dispatch<React.SetStateAction<OrderBy>>
+	popup: Popup
+}
+
+const FilterDetail: React.FC<FilterDetailProps> = ({ orderBy, setOrderBy, popup }) => {
 	const { t, i18n } = useTranslation(['common'])
 	const language = i18n.language as keyof ResponseLanguage
-	const { setFilter } = useOrderByFilter()
-	const [orderBy, setOrderBy] = useState<OrderBy>(OrderBy.Age)
 
 	const handleOrderByChange = (event: SelectChangeEvent) => {
 		setOrderBy(event.target.value as OrderBy)
-		setFilter(event.target.value as OrderBy)
+		popup.remove()
 	}
 
 	return (
@@ -50,8 +55,8 @@ const FilterDetail = () => {
 					</Box>
 				</Box>
 			</Box>
-			{orderBy === OrderBy.Age && <SummaryFilter />}
-			{orderBy === OrderBy.Changes && <CompareFilter />}
+			{orderBy === OrderBy.Age && <SummaryFilter popup={popup} />}
+			{orderBy === OrderBy.Changes && <CompareFilter popup={popup} />}
 		</div>
 	)
 }
