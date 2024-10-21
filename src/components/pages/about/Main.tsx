@@ -36,7 +36,7 @@ const AboutMain: React.FC = ({}) => {
 			>
 				<div
 					className={classNames(
-						'flex flex-col rounded-lg bg-[#BFD6CC] p-[48px] [&&::-webkit-scrollbar-thumb]:rounded [&&::-webkit-scrollbar-thumb]:bg-[#307A59] [&::-webkit-scrollbar-track]:rounded [&::-webkit-scrollbar]:w-[4px]',
+						'flex flex-col rounded-lg bg-[#BFD6CC] px-6 py-12 lg:px-12 [&&::-webkit-scrollbar-thumb]:rounded [&&::-webkit-scrollbar-thumb]:bg-[#307A59] [&::-webkit-scrollbar-track]:rounded [&::-webkit-scrollbar]:w-[4px]',
 						isDesktop ? 'h-full flex-grow overflow-y-auto' : '',
 					)}
 				>
