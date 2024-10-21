@@ -12,17 +12,14 @@ import MenuList from './MenuList'
 import ThaicomLogo from '../svg/ThaicomLogo'
 import getConfig from 'next/config'
 import AlertConfirm from '../common/dialog/AlertConfirm'
-import { useQuery } from '@tanstack/react-query'
-import service from '@/api'
 import { FlagStatus } from '@/enum'
 const { publicRuntimeConfig } = getConfig()
 
 interface AppBarProps {
 	className?: string
-	flagStatus?: string
 }
 
-const AppBar: React.FC<AppBarProps> = ({ className = '', flagStatus }) => {
+const AppBar: React.FC<AppBarProps> = ({ className = '' }) => {
 	const { data: session } = useSession()
 	const { t } = useTranslation('common')
 	const { isDesktop } = useResponsive()
@@ -58,7 +55,7 @@ const AppBar: React.FC<AppBarProps> = ({ className = '', flagStatus }) => {
 				</div>
 				{isMenuOpen && (
 					<div className='flex h-[calc(100vh-64px)] flex-col justify-between rounded-none bg-[#f2f5f8] lg:hidden'>
-						<MenuList setIsMenuOpen={setIsMenuOpen} flagStatus={flagStatus} />
+						<MenuList setIsMenuOpen={setIsMenuOpen} />
 						<div
 							className={classNames('m-4 flex items-center justify-between rounded bg-white p-3', {
 								'!justify-end': !session?.user,
@@ -83,7 +80,7 @@ const AppBar: React.FC<AppBarProps> = ({ className = '', flagStatus }) => {
 						</div>
 					</div>
 				)}
-				{flagStatus === FlagStatus.Inactive && (
+				{session?.user?.flagStatus === FlagStatus.Inactive && (
 					<AlertConfirm
 						className='[&_.MuiDialogActions-root>button]:bg-error [&_.MuiDialogTitle-root>p]:mt-5 [&_.MuiDialogTitle-root>p]:text-[20px] [&_.MuiDialogTitle-root>p]:text-error'
 						open={isOpenAlertDialog}
@@ -129,7 +126,7 @@ const AppBar: React.FC<AppBarProps> = ({ className = '', flagStatus }) => {
 					</Button>
 				)}
 			</div>
-			{flagStatus === FlagStatus.Inactive && (
+			{session?.user?.flagStatus === FlagStatus.Inactive && (
 				<AlertConfirm
 					className='[&_.MuiDialogActions-root>button]:bg-error [&_.MuiDialogTitle-root>p]:mt-5 [&_.MuiDialogTitle-root>p]:text-[20px] [&_.MuiDialogTitle-root>p]:text-error'
 					open={isOpenAlertDialog}

@@ -10,8 +10,6 @@ import { useTranslation } from 'react-i18next'
 import useResponsive from '@/hook/responsive'
 import { FlagStatus, UserRole } from '@/enum'
 import { useSession } from 'next-auth/react'
-import { useQuery } from '@tanstack/react-query'
-import service from '@/api'
 
 interface MenuConfigType {
 	id: string
@@ -21,11 +19,7 @@ interface MenuConfigType {
 	access?: string[]
 }
 
-interface SideBarProps {
-	flagStatus?: string
-}
-
-const SideBar: React.FC<SideBarProps> = ({ flagStatus }) => {
+const SideBar = () => {
 	const router = useRouter()
 	const { data: session } = useSession()
 	const [menu, setMenu] = useState('')
@@ -112,7 +106,7 @@ const SideBar: React.FC<SideBarProps> = ({ flagStatus }) => {
 				<MenuButtonGroup orientation='vertical' value={menu} exclusive onChange={handleMenuChange}>
 					{menuConfig.map((item, index) =>
 						(item.access?.length || 0) > 0 ? (
-							flagStatus === FlagStatus.Active &&
+							session?.user?.flagStatus === FlagStatus.Active &&
 							item.access?.includes(session?.user.role || '') && (
 								<MenuButton
 									key={index}

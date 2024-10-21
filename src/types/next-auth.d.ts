@@ -25,6 +25,7 @@ declare module 'next-auth' {
 			orgCode?: string | null
 			responsibleProvinceCode?: string | null
 			responsibleDistrictCode?: string | null
+			flagStatus?: string | null
 			accessToken?: string | null
 			refreshToken?: string | null
 			expireAt?: number | null

@@ -134,6 +134,7 @@ export const authOptions: NextAuthOptions = {
 			session.user.role = profile?.role
 			session.user.responsibleProvinceCode = profile?.responsibleProvinceCode
 			session.user.responsibleDistrictCode = profile?.responsibleDistrictCode
+			session.user.flagStatus = profile?.flagStatus
 			session.user.accessToken = token.access_token ?? ''
 			session.user.refreshToken = token.refresh_token ?? ''
 
