@@ -1,14 +1,10 @@
 import { useTranslation } from 'next-i18next'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import service from '@/api/index'
 import {
 	CheckedIcon,
 	CrossIcon,
 	OverviewIcon,
-	PopupRegistrationChecked,
-	PopupRegistrationCross,
-	PopupRegistrationPin,
-	PopupReistrationLogo,
 	RegisteredIcon,
 	RegistrationIcon,
 	RegistrationTableBackIcon,
@@ -38,6 +34,8 @@ import { getPin } from '@/utils/pin'
 import { PickingInfo } from '@deck.gl/core'
 import { Geometry, Feature } from 'geojson'
 import MapInfoWindowContent from './MapInfoWindow'
+import { GetRegisteredLocationDtoOut } from '@/api/registration/dto-out.dto'
+import { Popup } from 'maplibre-gl'
 
 interface RegisterData {
 	status: RegisterType
@@ -78,7 +76,9 @@ const RegistrationMain: React.FC = () => {
 	})
 	const [subDistrictCode, setSubDistrictCode] = useState(0)
 
-	const { getLayer, removeLayer, addLayer, mapLibre, setInfoWindow } = useMapStore()
+	const { getLayer, removeLayer, addLayer, mapLibre } = useMapStore()
+	const [mapInfoWindow, setMapInfoWindow] = useState<GetRegisteredLocationDtoOut | null>(null)
+	const popupNode = useRef<HTMLDivElement>(null)
 
 	const { data: availabilityData } = useQuery({
 		queryKey: ['availabilityRegistered'],
@@ -99,7 +99,7 @@ const RegistrationMain: React.FC = () => {
 		queryKey: ['overviewRegistered', year, admCode],
 		queryFn: async () => {
 			try {
-				setInfoWindow(null)
+				popup.remove()
 				setTableAdmCode(0)
 				const res = await service.registration.overviewRegistered({
 					year: year,
@@ -125,7 +125,7 @@ const RegistrationMain: React.FC = () => {
 		queryKey: ['overviewRegisteredTable', tableAdmCode],
 		queryFn: async () => {
 			try {
-				setInfoWindow(null)
+				popup.remove()
 				const res = await service.registration.overviewRegistered({
 					year: year,
 					admCode: tableAdmCode ?? undefined,
@@ -211,59 +211,85 @@ const RegistrationMain: React.FC = () => {
 		}
 	}
 
+	const popup = useMemo(
+		() =>
+			new Popup({
+				closeButton: true,
+				closeOnClick: false,
+				closeOnMove: false,
+				className:
+					'!max-w-[315px] [&_.maplibregl-popup-content]:overflow-hidden [&_.maplibregl-popup-content]:rounded-lg [&_.maplibregl-popup-content]:p-0 [&_.maplibregl-popup-close-button]:text-[24px] [&_.maplibregl-popup-close-button]:right-2 [&_.maplibregl-popup-close-button]:top-2 [&_.maplibregl-popup-close-button]:!text-white',
+			}),
+		[],
+	)
+
+	useEffect(() => {
+		const handlePopupClose = () => {
+			removeLayer(registerPinLayerId)
+		}
+
+		popup.on('close', handlePopupClose)
+
+		return () => {
+			popup.off('close', handlePopupClose)
+		}
+	}, [popup])
+
 	const onLayerClick = useCallback(
-		(info: PickingInfo<Feature<Geometry, RegisterData>>) => {
+		async (info: PickingInfo<Feature<Geometry, RegisterData>>, year: number) => {
 			const clickData = info.object
 
 			if (clickData) {
-				const provinceCode = +String(clickData.properties.admCode).substring(0, 2)
-				const districtCode = +String(clickData.properties.admCode).substring(0, 4)
-				const isAllProvince = admCode === allprovinceCode && tableAdmCode === initialTableAdmCode
-				const isSelectProvince = admCode === provinceCode
-				const isTableProvince = tableAdmCode === provinceCode
-				const isTableDistrict = tableAdmCode === districtCode
-				if (isAllProvince || isSelectProvince || isTableProvince || isTableDistrict) {
-					const data = {
-						provinceTH: clickData.properties.ADM1_TH,
-						districtTH: clickData.properties.ADM2_TH,
-						subDistrictTH: clickData.properties.ADM3_TH,
-						provinceEN: clickData.properties.ADM1_EN,
-						districtEN: clickData.properties.ADM2_EN,
-						subDistrictEN: clickData.properties.ADM3_EN,
-						status: clickData.properties.status,
-					}
-					setInfoWindow({
-						children: <MapInfoWindowContent data={data} />,
-					})
-					if (info.coordinate) {
-						const lng = info.coordinate![0]
-						const lat = info.coordinate![1]
+				if (info.coordinate) {
+					const provinceCode = +String(clickData.properties.admCode).substring(0, 2)
+					const districtCode = +String(clickData.properties.admCode).substring(0, 4)
+					const isAllProvince = admCode === allprovinceCode && tableAdmCode === initialTableAdmCode
+					const isSelectProvince = admCode === provinceCode
+					const isTableProvince = tableAdmCode === provinceCode
+					const isTableDistrict = tableAdmCode === districtCode
+					if (isAllProvince || isSelectProvince || isTableProvince || isTableDistrict) {
+						try {
+							const lon = info.coordinate![0]
+							const lat = info.coordinate![1]
 
-						const coordinates: [number, number] = [lng, lat]
-						removeLayer(registerPinLayerId)
-						const iconLayer = new IconLayer({
-							id: registerPinLayerId + `-${new Date().getTime()}`,
-							data: [{ coordinates }],
-							visible: true,
-							getIcon: () => {
-								return {
-									url: getPin('#F03E3E'),
-									anchorY: 69,
-									width: 58,
-									height: 69,
-									mask: false,
-								}
-							},
-							sizeScale: 1,
-							getPosition: (d) => d.coordinates,
-							getSize: 40,
-						})
-						addLayer(iconLayer)
+							const response = await service.registration.getRegisteredLocation({ lat, lon, year })
+							if (!response.data) {
+								throw new Error('Access Position failed!!')
+							}
+							setMapInfoWindow(response?.data)
+
+							if (!popup || !mapLibre || !popupNode.current) return
+
+							popup?.setLngLat([lon, lat]).setDOMContent(popupNode.current).addTo(mapLibre)
+
+							const coordinates: [number, number] = [lon, lat]
+							removeLayer(registerPinLayerId)
+							const iconLayer = new IconLayer({
+								id: registerPinLayerId,
+								data: [{ coordinates }],
+								visible: true,
+								getIcon: () => {
+									return {
+										url: getPin('#F03E3E'),
+										anchorY: 69,
+										width: 58,
+										height: 69,
+										mask: false,
+									}
+								},
+								sizeScale: 1,
+								getPosition: (d: any) => d.coordinates,
+								getSize: 40,
+							})
+							addLayer(iconLayer)
+						} catch (error) {
+							console.log('error: ', error)
+						}
 					}
 				}
 			}
 		},
-		[admCode, tableAdmCode, addLayer, removeLayer, setInfoWindow],
+		[admCode, tableAdmCode, addLayer, removeLayer, mapLibre, popup],
 	)
 
 	const getColor = useCallback(
@@ -317,7 +343,9 @@ const RegistrationMain: React.FC = () => {
 				pickable: true,
 				getFillColor: (d) => getColor(d, RegisterType.Registered),
 				getLineColor: (d) => getColor(d, RegisterType.Registered),
-				onClick: onLayerClick,
+				onClick: (info, _event) => {
+					onLayerClick(info, year)
+				},
 				updateTriggers: {
 					getFillColor: [getColor],
 					getLineColor: [getColor],
@@ -347,7 +375,9 @@ const RegistrationMain: React.FC = () => {
 				pickable: true,
 				getFillColor: (d) => getColor(d, RegisterType.NonRegistered),
 				getLineColor: (d) => getColor(d, RegisterType.NonRegistered),
-				onClick: onLayerClick,
+				onClick: (info, _event) => {
+					onLayerClick(info, year)
+				},
 				updateTriggers: {
 					getFillColor: [getColor],
 					getLineColor: [getColor],
@@ -561,7 +591,14 @@ const RegistrationMain: React.FC = () => {
 						<MapView
 							initialLayer={initialLayer}
 							legendSelectorLabel={t('registration:farmerRegistration')}
-						/>
+							className='h-full w-full [&_.maplibregl-popup-anchor-bottom-left>.maplibregl-popup-tip]:!border-t-green-light [&_.maplibregl-popup-anchor-bottom-right>.maplibregl-popup-tip]:!border-t-green-light [&_.maplibregl-popup-anchor-bottom>.maplibregl-popup-tip]:!border-t-green-light [&_.maplibregl-popup-anchor-left>.maplibregl-popup-tip]:!border-r-green-light [&_.maplibregl-popup-anchor-right>.maplibregl-popup-tip]:!border-l-green-light [&_.maplibregl-popup-anchor-top-left>.maplibregl-popup-tip]:!border-b-green-light [&_.maplibregl-popup-anchor-top-right>.maplibregl-popup-tip]:!border-b-green-light [&_.maplibregl-popup-anchor-top>.maplibregl-popup-tip]:!border-b-green-light'
+						>
+							<div className='hidden'>
+								<div ref={popupNode} className='flex h-full w-full flex-col'>
+									<MapInfoWindowContent data={mapInfoWindow} />
+								</div>
+							</div>
+						</MapView>
 					) : (
 						<div className='flex h-full w-full items-center justify-center'>
 							<CircularProgress />
