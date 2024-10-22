@@ -643,7 +643,7 @@ export const PopupRegistrationCross: React.FC<SVGProps> = ({ width = 24, height 
 			<path
 				d='M3.70419 9.80453L12 3.77727L20.2958 9.80453L17.1271 19.5568H6.87291L3.70419 9.80453Z'
 				stroke='#F8B3B1'
-				stroke-width='2.06667'
+				strokeWidth='2.06667'
 			/>
 			<path
 				fillRule='evenodd'
