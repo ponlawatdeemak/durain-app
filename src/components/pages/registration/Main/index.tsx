@@ -698,7 +698,7 @@ const RegistrationMain: React.FC = () => {
 									</span>
 								</div>
 							</div>
-							<hr className={classNames('ml-[24px] mr-[16px] h-full border-l-[1px] border-t-0')} />
+							<hr className={classNames('ml-[16px] mr-[16px] h-full border-l-[1px] border-t-0')} />
 							<div className='flex w-1/2 flex-col items-end'>
 								<p className='text-[14px] font-normal'>{t('registration:area')}</p>
 								<div className='flex flex-row items-end gap-[6px]'>
