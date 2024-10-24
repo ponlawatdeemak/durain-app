@@ -131,9 +131,9 @@ const AnalyzeSummary: React.FC<AnalyzeSummaryProps> = ({ popup }) => {
 										<span className='text-lg font-medium text-[#333333]'>{`${t('analyze:durianPlantationArea')} ${t('year')} ${durianAvailabilityData?.data?.find((data) => data?.year === year)?.yearName?.[language] || ''}`}</span>
 										<span className='text-3xl font-medium text-[#333333]'>{`${Number(summaryOverviewData?.data?.overall?.area?.[areaUnit]?.toFixed(2) || 0)?.toLocaleString() || '-'} ${t(AreaUnitText[areaUnit])}`}</span>
 										<Box className='flex w-full items-center text-sm font-medium text-[#5C5C5C]'>
-											<span className='w-full pl-4'>{t('age')}</span>
-											<span className='w-full text-center'>{`${t('analyze:amount')}%`}</span>
-											<span className='w-full text-right'>{t('area')}</span>
+											<span className='w-[30%] pl-4'>{t('age')}</span>
+											<span className='w-[30%] text-center'>{`${t('analyze:amount')}%`}</span>
+											<span className='w-[40%] text-right'>{t('area')}</span>
 										</Box>
 										<Box className='flex w-full flex-col gap-1'>
 											{summaryOverviewData?.data?.overall?.ageClass?.map((item, index) => {
@@ -143,17 +143,17 @@ const AnalyzeSummary: React.FC<AnalyzeSummaryProps> = ({ popup }) => {
 															<Divider className='!border !border-dashed !border-[#DEE2E6]' />
 														)}
 														<Box className='flex w-full items-center text-sm font-medium text-[#333333]'>
-															<div className='flex w-full items-center gap-2'>
+															<div className='flex w-[30%] items-center gap-2'>
 																<Box
 																	className='h-2.5 w-2.5 rounded-full'
 																	sx={{ backgroundColor: item.color }}
 																></Box>
 																<span>{item?.name?.[language] || '-'}</span>
 															</div>
-															<span className='w-full text-center'>
+															<span className='w-[30%] text-center'>
 																{item?.percent ? `${item.percent?.toFixed(2)}%` : '-'}
 															</span>
-															<span className='w-full text-right'>{`${item?.area?.[areaUnit] ? Number(item.area[areaUnit]?.toFixed(2))?.toLocaleString() : '-'} ${t(AreaUnitText[areaUnit])}`}</span>
+															<span className='w-[40%] text-right'>{`${item?.area?.[areaUnit] ? Number(item.area[areaUnit]?.toFixed(2))?.toLocaleString() : '-'} ${t(AreaUnitText[areaUnit])}`}</span>
 														</Box>
 													</div>
 												)
