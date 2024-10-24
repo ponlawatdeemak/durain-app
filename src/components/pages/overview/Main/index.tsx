@@ -52,6 +52,8 @@ const OverviewMain: React.FC = () => {
 	const StyledTooltip = styled(
 		({ className, title, children, ...props }: { className?: any; title: any; children: any }) => (
 			<Tooltip
+				leaveTouchDelay={3000}
+				enterTouchDelay={50}
 				placement='top'
 				arrow
 				title={title}
