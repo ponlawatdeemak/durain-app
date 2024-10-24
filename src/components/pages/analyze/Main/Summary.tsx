@@ -133,7 +133,7 @@ const AnalyzeSummary: React.FC<AnalyzeSummaryProps> = ({ popup }) => {
 										<Box className='flex w-full items-center text-sm font-medium text-[#5C5C5C]'>
 											<span className='w-[30%] pl-4'>{t('age')}</span>
 											<span className='w-[30%] text-center'>{`${t('analyze:amount')}%`}</span>
-											<span className='w-[40%] text-right'>{t('area')}</span>
+											<span className='w-[50%] text-right md:w-[40%]'>{t('area')}</span>
 										</Box>
 										<Box className='flex w-full flex-col gap-1'>
 											{summaryOverviewData?.data?.overall?.ageClass?.map((item, index) => {
@@ -153,7 +153,7 @@ const AnalyzeSummary: React.FC<AnalyzeSummaryProps> = ({ popup }) => {
 															<span className='w-[30%] text-center'>
 																{item?.percent ? `${item.percent?.toFixed(2)}%` : '-'}
 															</span>
-															<span className='w-[40%] text-right'>{`${item?.area?.[areaUnit] ? Number(item.area[areaUnit]?.toFixed(2))?.toLocaleString() : '-'} ${t(AreaUnitText[areaUnit])}`}</span>
+															<span className='w-[50%] text-right md:w-[40%]'>{`${item?.area?.[areaUnit] ? Number(item.area[areaUnit]?.toFixed(2))?.toLocaleString() : '-'} ${t(AreaUnitText[areaUnit])}`}</span>
 														</Box>
 													</div>
 												)
