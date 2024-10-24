@@ -114,11 +114,6 @@ const MapLibre: FC<MapLibreProps> = ({ viewState, mapStyle }) => {
 			mapStyle={mapStyle}
 			onLoad={onLoad}
 			onStyleData={onStyleData}
-			// dragRotate={false}
-			// doubleClickZoom={false}
-			// pitchWithRotate={false}
-			// touchZoomRotate={false}
-
 			touchZoomRotate={true}
 			touchPitch={false}
 			dragRotate={false}
