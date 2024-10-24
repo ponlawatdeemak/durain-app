@@ -131,194 +131,98 @@ const MapDetail: React.FC<MapDetailProps> = ({ orderBy, popup }) => {
 		return overviewData?.adms.map((item) => Number(item?.admCode)) || []
 	}, [overviewData])
 
-	const handleSummaryPositionClick = useCallback(
-		async (coordinate: number[], year: number) => {
-			try {
-				const lon = coordinate![0]
-				const lat = coordinate![1]
+	const handlePositionClick = useCallback(
+		(coordinate: { lng: number; lat: number }, data: GetAgeclassLocationDtoOut | GetCompareLocationDtoOut) => {
+			const lon = coordinate.lng
+			const lat = coordinate.lat
 
-				const response = await service.analyze.getAgeclassLocation({ lat, lon, year })
-				if (!response.data) {
-					throw new Error('Access Position failed!!')
-				}
-				setSummaryInfoWindow(response?.data)
+			if (orderBy === OrderBy.Age) {
+				setSummaryInfoWindow(data as GetAgeclassLocationDtoOut)
 
 				if (!popup || !mapLibre || !popupSummaryNode.current) return
 
 				popup?.setLngLat([lon, lat]).setDOMContent(popupSummaryNode.current).addTo(mapLibre)
-
-				const coordinates: [number, number] = [lon, lat]
-				removeLayer(registerPinLayerId)
-				const iconLayer = new IconLayer({
-					id: registerPinLayerId,
-					data: [{ coordinates }],
-					visible: true,
-					getIcon: () => {
-						return {
-							url: getPin('#F03E3E'),
-							anchorY: 69,
-							width: 58,
-							height: 69,
-							mask: false,
-						}
-					},
-					sizeScale: 1,
-					getPosition: (d: any) => d.coordinates,
-					getSize: 40,
-				})
-				addLayer(iconLayer)
-			} catch (error) {
-				console.log('error: ', error)
-			}
-		},
-		[addLayer, removeLayer, mapLibre, popup],
-	)
-
-	const handleComparePositionClick = useCallback(
-		async (coordinate: number[], year1: number, year2: number, color: string) => {
-			try {
-				const lon = coordinate![0]
-				const lat = coordinate![1]
-
-				const response = await service.analyze.getCompareLocation({ lat, lon, year1, year2 })
-				if (!response.data) {
-					throw new Error('Access Position failed!!')
-				}
-				setCompareInfoWindow(response?.data)
+			} else if (orderBy === OrderBy.Changes) {
+				setCompareInfoWindow(data as GetCompareLocationDtoOut)
 
 				if (!popup || !mapLibre || !popupCompareNode.current) return
 
 				popup?.setLngLat([lon, lat]).setDOMContent(popupCompareNode.current).addTo(mapLibre)
-
-				const coordinates: [number, number] = [lon, lat]
-				removeLayer(registerPinLayerId)
-				const iconLayer = new IconLayer({
-					id: registerPinLayerId,
-					data: [{ coordinates }],
-					visible: true,
-					getIcon: () => {
-						return {
-							url: getPin('#F03E3E'),
-							anchorY: 69,
-							width: 58,
-							height: 69,
-							mask: false,
-						}
-					},
-					sizeScale: 1,
-					getPosition: (d: any) => d.coordinates,
-					getSize: 40,
-				})
-				addLayer(iconLayer)
-			} catch (error) {
-				console.log('error: ', error)
 			}
-		},
-		[addLayer, removeLayer, mapLibre, popup],
-	)
 
-	const onSummaryLayerClick = useCallback(
-		(info: PickingInfo<Feature<Geometry, DurianLayerType>>) => {
-			const clickData = info.object
-
-			if (clickData) {
-				if (info.coordinate) {
-					if (!queryParams.provinceId) {
-						if (mapBoundaryAdmCodes?.includes(+String(clickData.properties.admCode).substring(0, 2))) {
-							handleSummaryPositionClick(info.coordinate, queryParams?.year!)
-						}
-					} else {
-						if (!queryParams.districtId) {
-							if (queryParams.provinceId === +String(clickData.properties.admCode).substring(0, 2)) {
-								handleSummaryPositionClick(info.coordinate, queryParams?.year!)
-							}
-						} else {
-							if (!queryParams.subDistrictId) {
-								if (queryParams.districtId === +String(clickData.properties.admCode).substring(0, 4)) {
-									handleSummaryPositionClick(info.coordinate, queryParams?.year!)
-								}
-							} else {
-								if (queryParams.subDistrictId === Number(clickData.properties.admCode)) {
-									handleSummaryPositionClick(info.coordinate, queryParams?.year!)
-								}
-							}
-						}
+			const coordinates: [number, number] = [lon, lat]
+			removeLayer(registerPinLayerId)
+			const iconLayer = new IconLayer({
+				id: registerPinLayerId,
+				data: [{ coordinates }],
+				visible: true,
+				getIcon: () => {
+					return {
+						url: getPin('#F03E3E'),
+						anchorY: 69,
+						width: 58,
+						height: 69,
+						mask: false,
 					}
-				}
-			}
+				},
+				sizeScale: 1,
+				getPosition: (d: any) => d.coordinates,
+				getSize: 40,
+			})
+			addLayer(iconLayer)
 		},
 		[
-			queryParams.year,
-			queryParams.provinceId,
-			queryParams.districtId,
-			queryParams.subDistrictId,
-			mapBoundaryAdmCodes,
-			handleSummaryPositionClick,
+			orderBy,
+			setSummaryInfoWindow,
+			setCompareInfoWindow,
+			addLayer,
+			removeLayer,
+			mapLibre,
+			popup,
+			popupSummaryNode,
+			popupCompareNode,
 		],
 	)
 
-	const onCompareLayerClick = useCallback(
-		(color: string) => {
-			return (info: PickingInfo<Feature<Geometry, CompareLayerType | CompareSameLayerType>>) => {
-				const clickData = info.object
-
-				if (clickData) {
-					if (info.coordinate) {
-						if (!queryParams.provinceId) {
-							if (mapBoundaryAdmCodes?.includes(+String(clickData.properties.admCode).substring(0, 2))) {
-								handleComparePositionClick(
-									info.coordinate,
-									queryParams?.yearStart!,
-									queryParams?.yearEnd!,
-									color,
-								)
-							}
+	const onLayerClick = useCallback(
+		(coordinate: { lng: number; lat: number }, data: GetAgeclassLocationDtoOut | GetCompareLocationDtoOut) => {
+			if (!queryParams.provinceId) {
+				if (mapBoundaryAdmCodes?.includes(+String(data?.admCode).substring(0, 2))) {
+					handlePositionClick(coordinate, data)
+				} else {
+					popup.remove()
+				}
+			} else {
+				if (!queryParams.districtId) {
+					if (queryParams.provinceId === +String(data?.admCode).substring(0, 2)) {
+						handlePositionClick(coordinate, data)
+					} else {
+						popup.remove()
+					}
+				} else {
+					if (!queryParams.subDistrictId) {
+						if (queryParams.districtId === +String(data?.admCode).substring(0, 4)) {
+							handlePositionClick(coordinate, data)
 						} else {
-							if (!queryParams.districtId) {
-								if (queryParams.provinceId === +String(clickData.properties.admCode).substring(0, 2)) {
-									handleComparePositionClick(
-										info.coordinate,
-										queryParams?.yearStart!,
-										queryParams?.yearEnd!,
-										color,
-									)
-								}
-							} else {
-								if (!queryParams.subDistrictId) {
-									if (
-										queryParams.districtId === +String(clickData.properties.admCode).substring(0, 4)
-									) {
-										handleComparePositionClick(
-											info.coordinate,
-											queryParams?.yearStart!,
-											queryParams?.yearEnd!,
-											color,
-										)
-									}
-								} else {
-									if (queryParams.subDistrictId === Number(clickData.properties.admCode)) {
-										handleComparePositionClick(
-											info.coordinate,
-											queryParams?.yearStart!,
-											queryParams?.yearEnd!,
-											color,
-										)
-									}
-								}
-							}
+							popup.remove()
+						}
+					} else {
+						if (queryParams.subDistrictId === Number(data?.admCode)) {
+							handlePositionClick(coordinate, data)
+						} else {
+							popup.remove()
 						}
 					}
 				}
 			}
 		},
 		[
-			queryParams.yearStart,
-			queryParams.yearEnd,
 			queryParams.provinceId,
 			queryParams.districtId,
 			queryParams.subDistrictId,
 			mapBoundaryAdmCodes,
-			handleComparePositionClick,
+			handlePositionClick,
+			popup,
 		],
 	)
 
@@ -444,16 +348,14 @@ const MapDetail: React.FC<MapDetailProps> = ({ orderBy, popup }) => {
 				pickable: true,
 				getFillColor: getSummaryColor(item),
 				getLineColor: getSummaryColor(item),
-				onClick: onSummaryLayerClick,
 				updateTriggers: {
 					getFillColor: [getSummaryColor(item)],
 					getLineColor: [getSummaryColor(item)],
 					getLineWidth: [getSummaryColor(item)],
-					onClick: [onSummaryLayerClick],
 				},
 			})
 		})
-	}, [overviewData?.overall.ageClass, language, queryParams.year, t, getSummaryColor, onSummaryLayerClick])
+	}, [overviewData?.overall.ageClass, language, queryParams.year, t, getSummaryColor])
 
 	const compareLayers = useMemo(() => {
 		return [
@@ -477,11 +379,9 @@ const MapDetail: React.FC<MapDetailProps> = ({ orderBy, popup }) => {
 				pickable: true,
 				getFillColor: getCompareColor(DurianChangeAreaColor.increased),
 				getLineColor: getCompareColor(DurianChangeAreaColor.increased),
-				onClick: onCompareLayerClick(DurianChangeAreaColor.increased),
 				updateTriggers: {
 					getFillColor: [getCompareColor],
 					getLineColor: [getCompareColor],
-					onClick: [onCompareLayerClick],
 				},
 			}),
 			new MVTLayer({
@@ -506,11 +406,9 @@ const MapDetail: React.FC<MapDetailProps> = ({ orderBy, popup }) => {
 				pickable: true,
 				getFillColor: getCompareColor(DurianChangeAreaColor.decreased),
 				getLineColor: getCompareColor(DurianChangeAreaColor.decreased),
-				onClick: onCompareLayerClick(DurianChangeAreaColor.decreased),
 				updateTriggers: {
 					getFillColor: [getCompareColor],
 					getLineColor: [getCompareColor],
-					onClick: [onCompareLayerClick],
 				},
 			}),
 			new MVTLayer({
@@ -538,15 +436,13 @@ const MapDetail: React.FC<MapDetailProps> = ({ orderBy, popup }) => {
 				pickable: true,
 				getFillColor: getCompareColor(DurianChangeAreaColor.noChanged),
 				getLineColor: getCompareColor(DurianChangeAreaColor.noChanged),
-				onClick: onCompareLayerClick(DurianChangeAreaColor.noChanged),
 				updateTriggers: {
 					getFillColor: [getCompareColor],
 					getLineColor: [getCompareColor],
-					onClick: [onCompareLayerClick],
 				},
 			}),
 		]
-	}, [language, queryParams.yearStart, queryParams.yearEnd, t, getCompareColor, onCompareLayerClick])
+	}, [language, queryParams.yearStart, queryParams.yearEnd, t, getCompareColor])
 
 	const mapLayers: MapLayer[] | undefined = useMemo(() => {
 		if (orderBy === OrderBy.Age) {
@@ -750,6 +646,49 @@ const MapDetail: React.FC<MapDetailProps> = ({ orderBy, popup }) => {
 			}
 		}
 	}, [mapLibre, queryParams?.provinceId, queryParams?.districtId, queryParams?.subDistrictId])
+
+	useEffect(() => {
+		if (mapLibre) {
+			const handleClick = async (evt: any) => {
+				const coordinate = evt.lngLat
+
+				if (coordinate) {
+					try {
+						let response
+						if (orderBy === OrderBy.Age) {
+							response = await service.analyze.getAgeclassLocation({
+								lat: coordinate.lat,
+								lon: coordinate.lng,
+								year: queryParams?.year!,
+							})
+						} else if (orderBy === OrderBy.Changes) {
+							response = await service.analyze.getCompareLocation({
+								lat: coordinate.lat,
+								lon: coordinate.lng,
+								year1: queryParams?.yearStart!,
+								year2: queryParams?.yearEnd!,
+							})
+						}
+
+						if (!response?.data) {
+							throw new Error('Access Position failed!!')
+						}
+
+						onLayerClick(coordinate, response?.data)
+					} catch (error) {
+						console.error('error: ', error)
+						popup.remove()
+					}
+				}
+			}
+
+			mapLibre.on('click', handleClick)
+
+			return () => {
+				mapLibre.off('click', handleClick)
+			}
+		}
+	}, [mapLibre, orderBy, queryParams.year, queryParams.yearStart, queryParams.yearEnd, onLayerClick, popup])
 
 	return (
 		<React.Fragment>
