@@ -80,8 +80,6 @@ const MapLibre: FC<MapLibreProps> = ({ viewState, mapStyle }) => {
 	const onLoad = useCallback(
 		(event: MapLibreEvent) => {
 			const map = event.target
-			map.dragRotate.disable()
-			map.touchZoomRotate.disableRotation()
 			setMapLibre(map)
 		},
 		[setMapLibre],
@@ -110,7 +108,21 @@ const MapLibre: FC<MapLibreProps> = ({ viewState, mapStyle }) => {
 	}
 
 	return (
-		<Map antialias initialViewState={viewState} mapStyle={mapStyle} onLoad={onLoad} onStyleData={onStyleData}>
+		<Map
+			antialias
+			initialViewState={viewState}
+			mapStyle={mapStyle}
+			onLoad={onLoad}
+			onStyleData={onStyleData}
+			// dragRotate={false}
+			// doubleClickZoom={false}
+			// pitchWithRotate={false}
+			// touchZoomRotate={false}
+
+			touchZoomRotate={true}
+			touchPitch={false}
+			dragRotate={false}
+		>
 			<DeckGLOverlay />
 		</Map>
 	)
