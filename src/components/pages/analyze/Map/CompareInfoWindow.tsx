@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { GetCompareLocationDtoOut } from '@/api/analyze/dto.out.dto'
 import { DurianChangeAreaColor } from '@/config/color'
 import useAreaUnit from '@/store/area-unit'
+import { AddCircleOutline, RemoveCircleOutline } from '@mui/icons-material'
 
 const CompareInfoWindow: React.FC<{ data: GetCompareLocationDtoOut | null }> = ({ data }) => {
 	const { areaUnit } = useAreaUnit()
@@ -98,13 +99,10 @@ const CompareInfoWindow: React.FC<{ data: GetCompareLocationDtoOut | null }> = (
 								<div className='flex items-center gap-1'>
 									<span className='text-sm font-medium text-white'>{'('}</span>
 									<div className='flex items-center gap-1'>
-										<div className='flex flex-col items-center gap-0.5'>
-											<div
-												style={{ borderBottomColor: DurianChangeAreaColor.increased }}
-												className='h-0 w-0 border-4 border-t-0 border-solid border-transparent border-b-white'
-											></div>
-											<div className='h-0 w-0 border-4 border-b-0 border-solid border-transparent border-t-white'></div>
-										</div>
+										<AddCircleOutline
+											style={{ color: DurianChangeAreaColor.increased }}
+											className='!h-3 !w-3'
+										/>
 										<span className='text-sm font-medium text-white'>
 											{Number(
 												Math.abs(data?.change?.increase?.[areaUnit])?.toFixed(2) || 0,
@@ -113,13 +111,10 @@ const CompareInfoWindow: React.FC<{ data: GetCompareLocationDtoOut | null }> = (
 									</div>
 									<span className='text-sm font-medium text-white'>{'/'}</span>
 									<div className='flex items-center gap-1'>
-										<div className='flex flex-col items-center gap-0.5'>
-											<div className='h-0 w-0 border-4 border-t-0 border-solid border-transparent border-b-white'></div>
-											<div
-												style={{ borderTopColor: DurianChangeAreaColor.decreased }}
-												className='h-0 w-0 border-4 border-b-0 border-solid border-transparent border-t-white'
-											></div>
-										</div>
+										<RemoveCircleOutline
+											style={{ color: DurianChangeAreaColor.decreased }}
+											className='!h-3 !w-3'
+										/>
 										<span className='text-sm font-medium text-white'>
 											{Number(
 												Math.abs(data?.change?.decrease?.[areaUnit])?.toFixed(2) || 0,

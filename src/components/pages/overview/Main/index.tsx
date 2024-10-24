@@ -31,7 +31,7 @@ const OverviewMain: React.FC = () => {
 	const [admCode, setAdmCode] = useState(0)
 	const [availabilityData, setAvailabilityData] = useState<availabilityDurianDtoOut[]>()
 	const [overviewData, setOverviewData] = useState<OverviewSummaryDtoOut>()
-	const { setLayers, getLayer, removeLayer, mapLibre } = useMapStore()
+	const { setLayers, mapLibre, switchState } = useMapStore()
 
 	const availableAdm = useMemo(() => {
 		return availabilityData?.find((item: availabilityDurianDtoOut) => item.year === year)?.availableAdm
@@ -264,9 +264,22 @@ const OverviewMain: React.FC = () => {
 	useEffect(() => {
 		if (layers && overviewData) {
 			const reload = initialLayer.map((item) => item.layer)
-			setLayers(reload)
+			let tempList = reload.map((mapLayer) => {
+				let tempSplit = mapLayer.id.split('-')
+				tempSplit.pop()
+				const tempId = tempSplit.join('-')
+				const switchItem = switchState?.find((sw) => sw.id === tempId)
+
+				let visible: boolean | undefined = true
+				if (switchItem) {
+					visible = switchItem?.isOn === true ? true : undefined
+				}
+				return mapLayer.clone({ visible })
+			})
+
+			setLayers(tempList)
 		}
-	}, [admCode, initialLayer, getLayer, layers, overviewData, removeLayer, setLayers, year])
+	}, [initialLayer, layers, overviewData, setLayers])
 
 	return (
 		<div

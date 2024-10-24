@@ -20,14 +20,13 @@ import {
 	GetSummaryOverviewDtoOut,
 } from '@/api/analyze/dto.out.dto'
 import { Feature, Geometry } from 'geojson'
-import { PickingInfo } from '@deck.gl/core'
 import SummaryInfoWindow from '../Map/SummaryInfoWindow'
 import { IconLayer } from '@deck.gl/layers'
 import { getPin } from '@/utils/pin'
 import { DurianChangeAreaColor } from '@/config/color'
 import CompareInfoWindow from '../Map/CompareInfoWindow'
 import { Popup } from 'maplibre-gl'
-import { OrderBy, registerPinLayerId } from '../Main'
+import { districtPinLayerId, OrderBy, registerPinLayerId } from '../Main'
 import classNames from 'classnames'
 
 interface CompareSameLayerType {
@@ -78,7 +77,7 @@ const MapDetail: React.FC<MapDetailProps> = ({ orderBy, popup }) => {
 	const { queryParams, setQueryParams } = useSearchAnalyze()
 	const [summaryInfoWindow, setSummaryInfoWindow] = useState<GetAgeclassLocationDtoOut | null>(null)
 	const [compareInfoWindow, setCompareInfoWindow] = useState<GetCompareLocationDtoOut | null>(null)
-	const { mapLibre, setLayers, removeLayer, getLayer, addLayer, setInfoWindow } = useMapStore()
+	const { mapLibre, setLayers, removeLayer, addLayer, switchState } = useMapStore()
 	const [overviewData, setOverviewData] = useState<GetSummaryOverviewDtoOut>()
 	const [alertInfo, setAlertInfo] = React.useState<AlertInfoType>({
 		open: false,
@@ -150,7 +149,54 @@ const MapDetail: React.FC<MapDetailProps> = ({ orderBy, popup }) => {
 				popup?.setLngLat([lon, lat]).setDOMContent(popupCompareNode.current).addTo(mapLibre)
 			}
 
+			if (orderBy === OrderBy.Changes) {
+				removeLayer(districtPinLayerId)
+				const districtLayer = new MVTLayer({
+					id: districtPinLayerId,
+					name: districtPinLayerId,
+					loadOptions: {
+						fetch: {
+							headers: {
+								'content-type': 'application/json',
+								Authorization: `Bearer ${apiAccessToken}`,
+							},
+						},
+					},
+					visible: true,
+					data: tileLayer.subDistrict,
+					onError(error) {
+						if (error.message.startsWith('loading TileJSON')) {
+							setAlertInfo({ open: true, severity: 'error', message: t('error.somethingWrong') })
+						}
+					},
+					filled: true,
+					lineWidthUnits: 'pixels',
+					getFillColor(d: any) {
+						if (Number(d.properties.subDistrictCode) === Number(data.admCode)) {
+							return [241, 169, 11, 64]
+						} else {
+							return defaultColor
+						}
+					},
+					getLineColor(d: any) {
+						if (Number(d.properties.subDistrictCode) === Number(data.admCode)) {
+							return [241, 169, 11, 255]
+						} else {
+							return defaultColor
+						}
+					},
+					pickable: true,
+					updateTriggers: {
+						getFillColor: [data.admCode],
+						getLineColor: [data.admCode],
+						getLineWidth: [data.admCode],
+					},
+				})
+				addLayer(districtLayer)
+			}
+
 			const coordinates: [number, number] = [lon, lat]
+
 			removeLayer(registerPinLayerId)
 			const iconLayer = new IconLayer({
 				id: registerPinLayerId,
@@ -615,7 +661,20 @@ const MapDetail: React.FC<MapDetailProps> = ({ orderBy, popup }) => {
 	useEffect(() => {
 		if ((summaryLayers || compareLayers) && overviewData) {
 			const reload = initialLayer.map((item) => item.layer)
-			setLayers(reload)
+			let tempList = reload.map((mapLayer) => {
+				let tempSplit = mapLayer.id.split('-')
+				tempSplit.pop()
+				const tempId = tempSplit.join('-')
+				const switchItem = switchState?.find((sw) => sw.id === tempId)
+
+				let visible: boolean | undefined = true
+				if (switchItem) {
+					visible = switchItem?.isOn === true ? true : undefined
+				}
+				return mapLayer.clone({ visible })
+			})
+
+			setLayers(tempList)
 		}
 	}, [initialLayer, summaryLayers, overviewData, setLayers, compareLayers])
 
@@ -705,10 +764,13 @@ const MapDetail: React.FC<MapDetailProps> = ({ orderBy, popup }) => {
 									? t('analyze:ageOfDurian')
 									: t('analyze:durianPlantationAreaChanges')
 							}
-							className={classNames('h-full w-full', {
-								'[&_.maplibregl-popup-anchor-bottom-left>.maplibregl-popup-tip]:!border-t-green-light [&_.maplibregl-popup-anchor-bottom-right>.maplibregl-popup-tip]:!border-t-green-light [&_.maplibregl-popup-anchor-bottom>.maplibregl-popup-tip]:!border-t-green-light [&_.maplibregl-popup-anchor-left>.maplibregl-popup-tip]:!border-r-green-light [&_.maplibregl-popup-anchor-right>.maplibregl-popup-tip]:!border-l-green-light [&_.maplibregl-popup-anchor-top-left>.maplibregl-popup-tip]:!border-b-green-light [&_.maplibregl-popup-anchor-top-right>.maplibregl-popup-tip]:!border-b-green-light [&_.maplibregl-popup-anchor-top>.maplibregl-popup-tip]:!border-b-green-light':
-									orderBy === OrderBy.Changes,
-							})}
+							className={classNames(
+								'h-full w-full [&_.maplibregl-popup.maplibregl-popup-anchor-bottom]:top-[-35px]',
+								{
+									'[&_.maplibregl-popup-anchor-bottom-left>.maplibregl-popup-tip]:!border-t-green-light [&_.maplibregl-popup-anchor-bottom-right>.maplibregl-popup-tip]:!border-t-green-light [&_.maplibregl-popup-anchor-bottom>.maplibregl-popup-tip]:!border-t-green-light [&_.maplibregl-popup-anchor-left>.maplibregl-popup-tip]:!border-r-green-light [&_.maplibregl-popup-anchor-right>.maplibregl-popup-tip]:!border-l-green-light [&_.maplibregl-popup-anchor-top-left>.maplibregl-popup-tip]:!border-b-green-light [&_.maplibregl-popup-anchor-top-right>.maplibregl-popup-tip]:!border-b-green-light [&_.maplibregl-popup-anchor-top>.maplibregl-popup-tip]:!border-b-green-light':
+										orderBy === OrderBy.Changes,
+								},
+							)}
 						>
 							<div className='hidden'>
 								{orderBy === OrderBy.Age ? (
