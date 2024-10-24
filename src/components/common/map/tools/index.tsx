@@ -29,24 +29,19 @@ const MapTools: React.FC<MapToolsProps> = ({
 	legendSelectorLabel,
 }) => {
 	const { t } = useTranslation()
-	const { layers, setLayers, mapLibre } = useMapStore()
+	const { layers, setLayers, mapLibre, switchState, setSwitchState } = useMapStore()
 
 	const [basemap, setBasemap] = useState<BasemapType | null>(currentBaseMap ?? null)
 	const [anchorBasemap, setAnchorBasemap] = useState<HTMLButtonElement | null>(null)
 	const [anchorLegend, setAnchorLegend] = useState<HTMLButtonElement | null>(null)
 	const [showMeasure, setShowMeasure] = useState(false)
-	const [switchState, setSwichState] = useState(
-		layerList?.map((item) => {
-			return { id: item.id, isOn: true }
-		}),
-	)
 
 	//reload switchState
 	useEffect(() => {
-		setSwichState(layerList?.map((item) => ({ id: item.id, isOn: true })))
-	}, [layerList])
-
-	useEffect(() => {}, [layers])
+		if (mapLibre === null || switchState?.length !== layerList?.length) {
+			setSwitchState(layerList?.map((item) => ({ id: item.id, isOn: true })) ?? null)
+		}
+	}, [layerList, mapLibre, layers])
 
 	const onToggleLayer = useCallback(
 		(layerId: string) => {
@@ -54,7 +49,7 @@ const MapTools: React.FC<MapToolsProps> = ({
 				const state = [...switchState]
 				const objIndex = state.findIndex((item) => item.id === layerId)
 				state[objIndex].isOn = !switchState[objIndex].isOn
-				setSwichState([...state])
+				setSwitchState([...state])
 				let tempList = layers.map((mapLayer) => {
 					let tempSplit = mapLayer.id.split('-')
 					tempSplit.pop()

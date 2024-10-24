@@ -20,7 +20,6 @@ import {
 	GetSummaryOverviewDtoOut,
 } from '@/api/analyze/dto.out.dto'
 import { Feature, Geometry } from 'geojson'
-import { PickingInfo } from '@deck.gl/core'
 import SummaryInfoWindow from '../Map/SummaryInfoWindow'
 import { IconLayer } from '@deck.gl/layers'
 import { getPin } from '@/utils/pin'
@@ -78,7 +77,7 @@ const MapDetail: React.FC<MapDetailProps> = ({ orderBy, popup }) => {
 	const { queryParams, setQueryParams } = useSearchAnalyze()
 	const [summaryInfoWindow, setSummaryInfoWindow] = useState<GetAgeclassLocationDtoOut | null>(null)
 	const [compareInfoWindow, setCompareInfoWindow] = useState<GetCompareLocationDtoOut | null>(null)
-	const { mapLibre, setLayers, removeLayer, getLayer, addLayer, setInfoWindow } = useMapStore()
+	const { mapLibre, setLayers, removeLayer, addLayer, switchState } = useMapStore()
 	const [overviewData, setOverviewData] = useState<GetSummaryOverviewDtoOut>()
 	const [alertInfo, setAlertInfo] = React.useState<AlertInfoType>({
 		open: false,
@@ -615,7 +614,20 @@ const MapDetail: React.FC<MapDetailProps> = ({ orderBy, popup }) => {
 	useEffect(() => {
 		if ((summaryLayers || compareLayers) && overviewData) {
 			const reload = initialLayer.map((item) => item.layer)
-			setLayers(reload)
+			let tempList = reload.map((mapLayer) => {
+				let tempSplit = mapLayer.id.split('-')
+				tempSplit.pop()
+				const tempId = tempSplit.join('-')
+				const switchItem = switchState?.find((sw) => sw.id === tempId)
+
+				let visible: boolean | undefined = true
+				if (switchItem) {
+					visible = switchItem?.isOn === true ? true : undefined
+				}
+				return mapLayer.clone({ visible })
+			})
+
+			setLayers(tempList)
 		}
 	}, [initialLayer, summaryLayers, overviewData, setLayers, compareLayers])
 

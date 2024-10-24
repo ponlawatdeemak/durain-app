@@ -76,7 +76,7 @@ const RegistrationMain: React.FC = () => {
 	})
 	const [subDistrictCode, setSubDistrictCode] = useState(0)
 
-	const { getLayer, removeLayer, addLayer, mapLibre } = useMapStore()
+	const { getLayer, removeLayer, addLayer, mapLibre, setLayers, switchState } = useMapStore()
 	const [mapInfoWindow, setMapInfoWindow] = useState<GetRegisteredLocationDtoOut | null>(null)
 	const popupNode = useRef<HTMLDivElement>(null)
 
@@ -514,12 +514,25 @@ const RegistrationMain: React.FC = () => {
 		}
 	}, [tableAdmCode, admCode, mapLibre])
 
-	// useEffect(() => {
-	// 	if (layers && registeredData) {
-	// 		const province = initialLayer.find((item) => item.id === 'boundary')!.layer
-	// 		setLayers([province, ...(layers as any[])])
-	// 	}
-	// }, [admCode, initialLayer, getLayer, layers, mapLayers, registeredData, removeLayer, setLayers, year])
+	useEffect(() => {
+		if (layers && registeredData) {
+			const reload = initialLayer.map((item) => item.layer)
+			let tempList = reload.map((mapLayer) => {
+				let tempSplit = mapLayer.id.split('-')
+				tempSplit.pop()
+				const tempId = tempSplit.join('-')
+				const switchItem = switchState?.find((sw) => sw.id === tempId)
+
+				let visible: boolean | undefined = true
+				if (switchItem) {
+					visible = switchItem?.isOn === true ? true : undefined
+				}
+				return mapLayer.clone({ visible })
+			})
+
+			setLayers(tempList)
+		}
+	}, [initialLayer, layers, registeredData, setLayers])
 
 	useEffect(() => {
 		const layer = getLayer('subDistrict')
