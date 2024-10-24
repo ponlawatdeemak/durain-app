@@ -12,6 +12,7 @@ export enum OrderBy {
 }
 
 export const registerPinLayerId = 'register-pin'
+export const districtPinLayerId = 'district-pin'
 
 export const AnalyzeMain = () => {
 	const { removeLayer } = useMapStore()
@@ -38,6 +39,7 @@ export const AnalyzeMain = () => {
 	useEffect(() => {
 		const handlePopupClose = () => {
 			removeLayer(registerPinLayerId)
+			removeLayer(districtPinLayerId)
 		}
 
 		popup.on('close', handlePopupClose)

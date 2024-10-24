@@ -549,10 +549,16 @@ const RegistrationMain: React.FC = () => {
 			filled: true,
 			lineWidthUnits: 'pixels',
 			pickable: false,
-			getFillColor: () => defaultColor,
+			getFillColor(d) {
+				if (d.properties.subDistrictCode === subDistrictCode) {
+					return [241, 169, 11, 64]
+				} else {
+					return defaultColor
+				}
+			},
 			getLineColor(d) {
 				if (d.properties.subDistrictCode === subDistrictCode) {
-					return [255, 0, 0, 255]
+					return [241, 169, 11, 255]
 				} else {
 					return defaultColor
 				}
@@ -625,7 +631,7 @@ const RegistrationMain: React.FC = () => {
 						<MapView
 							initialLayer={initialLayer}
 							legendSelectorLabel={t('registration:farmerRegistration')}
-							className='h-full w-full [&_.maplibregl-popup-anchor-bottom-left>.maplibregl-popup-tip]:!border-t-green-light [&_.maplibregl-popup-anchor-bottom-right>.maplibregl-popup-tip]:!border-t-green-light [&_.maplibregl-popup-anchor-bottom>.maplibregl-popup-tip]:!border-t-green-light [&_.maplibregl-popup-anchor-left>.maplibregl-popup-tip]:!border-r-green-light [&_.maplibregl-popup-anchor-right>.maplibregl-popup-tip]:!border-l-green-light [&_.maplibregl-popup-anchor-top-left>.maplibregl-popup-tip]:!border-b-green-light [&_.maplibregl-popup-anchor-top-right>.maplibregl-popup-tip]:!border-b-green-light [&_.maplibregl-popup-anchor-top>.maplibregl-popup-tip]:!border-b-green-light'
+							className='h-full w-full [&_.maplibregl-popup-anchor-bottom-left>.maplibregl-popup-tip]:!border-t-green-light [&_.maplibregl-popup-anchor-bottom-right>.maplibregl-popup-tip]:!border-t-green-light [&_.maplibregl-popup-anchor-bottom>.maplibregl-popup-tip]:!border-t-green-light [&_.maplibregl-popup-anchor-left>.maplibregl-popup-tip]:!border-r-green-light [&_.maplibregl-popup-anchor-right>.maplibregl-popup-tip]:!border-l-green-light [&_.maplibregl-popup-anchor-top-left>.maplibregl-popup-tip]:!border-b-green-light [&_.maplibregl-popup-anchor-top-right>.maplibregl-popup-tip]:!border-b-green-light [&_.maplibregl-popup-anchor-top>.maplibregl-popup-tip]:!border-b-green-light [&_.maplibregl-popup.maplibregl-popup-anchor-bottom]:top-[-35px]'
 						>
 							<div className='hidden'>
 								<div ref={popupNode} className='flex h-full w-full flex-col'>
