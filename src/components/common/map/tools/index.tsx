@@ -1,7 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Box, ToggleButton, ToggleButtonGroup, Typography, IconButton, Popover, styled, Switch } from '@mui/material'
 import { useTranslation } from 'next-i18next'
-import { MapLayerIcon, MapMeasureIcon, MapPinIcon, MapZoomInIcon, MapZoomOutIcon } from '@/components/svg/MenuIcon'
+import {
+	MapExtentIcon,
+	MapLayerIcon,
+	MapMeasureIcon,
+	MapPinIcon,
+	MapZoomInIcon,
+	MapZoomOutIcon,
+} from '@/components/svg/MenuIcon'
 import { BaseMap, BasemapType, MapLayer } from '../interface/map'
 import useMapStore from '../store/map'
 import Measurement from './measurement'
@@ -178,7 +185,7 @@ const MapTools: React.FC<MapToolsProps> = ({
 						mapLibre?.fitBounds(thaiExtent)
 					}}
 				>
-					<MapPinIcon />
+					<MapExtentIcon />
 				</IconButton>
 			</Box>
 
