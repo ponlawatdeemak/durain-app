@@ -1,5 +1,5 @@
 import { Box, FormControl, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import SummaryFilter from '../Filter/SummaryFilter'
 import CompareFilter from '../Filter/CompareFilter'
 import { ExpandMore } from '@mui/icons-material'
@@ -19,10 +19,13 @@ const FilterDetail: React.FC<FilterDetailProps> = ({ orderBy, setOrderBy, popup 
 	const { t, i18n } = useTranslation(['common'])
 	const language = i18n.language as keyof ResponseLanguage
 
-	const handleOrderByChange = (event: SelectChangeEvent) => {
-		setOrderBy(event.target.value as OrderBy)
-		popup.remove()
-	}
+	const handleOrderByChange = useCallback(
+		(event: SelectChangeEvent) => {
+			setOrderBy(event.target.value as OrderBy)
+			popup.remove()
+		},
+		[setOrderBy, popup],
+	)
 
 	return (
 		<div className='flex flex-col gap-4'>
