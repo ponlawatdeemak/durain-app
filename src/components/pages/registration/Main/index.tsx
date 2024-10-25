@@ -250,7 +250,7 @@ const RegistrationMain: React.FC = () => {
 				const provinceCode = +String(data.admCode).substring(0, 2)
 				const districtCode = +String(data.admCode).substring(0, 4)
 				const isAllProvince = admCode === allprovinceCode && tableAdmCode === initialTableAdmCode
-				const isSelectProvince = admCode === provinceCode
+				const isSelectProvince = admCode === provinceCode && tableAdmCode === provinceCode
 				const isTableProvince = tableAdmCode === provinceCode
 				const isTableDistrict = tableAdmCode === districtCode
 				if (isAllProvince || isSelectProvince || isTableProvince || isTableDistrict) {
