@@ -100,7 +100,6 @@ const RegistrationMain: React.FC = () => {
 		queryFn: async () => {
 			try {
 				popup.remove()
-				setTableAdmCode(0)
 				const res = await service.registration.overviewRegistered({
 					year: year,
 					admCode: admCode ?? undefined,
@@ -192,7 +191,11 @@ const RegistrationMain: React.FC = () => {
 
 	const handleRowClick = (rowAdmCode: number, rowAdmName: ResponseLanguage) => {
 		if (String(rowAdmCode).length <= districtCodeLength) {
-			setDistrict(rowAdmName)
+			if (String(rowAdmCode).length < districtCodeLength) {
+				setAdmCode(rowAdmCode)
+			} else {
+				setDistrict(rowAdmName)
+			}
 			setTableAdmCode(rowAdmCode)
 			setShowBack(true)
 		} else {
@@ -206,10 +209,14 @@ const RegistrationMain: React.FC = () => {
 	}
 
 	const handleBackClick = () => {
-		if (String(tableAdmCode).length === districtCodeLength && admCode === allprovinceCode) {
-			setTableAdmCode((tableAdmCode) => Number(String(tableAdmCode).slice(0, 2)))
-		} else {
+		if (tableAdmCode === admCode) {
+			setAdmCode(0)
 			setTableAdmCode(0)
+		} else {
+			if (String(tableAdmCode).length === districtCodeLength) {
+				setTableAdmCode((tableAdmCode) => Number(String(tableAdmCode).slice(0, 2)))
+				setSubDistrictCode(0)
+			}
 		}
 	}
 
@@ -293,7 +300,7 @@ const RegistrationMain: React.FC = () => {
 			const provinceCode = +String(d.properties.admCode).substring(0, 2)
 			const districtCode = +String(d.properties.admCode).substring(0, 4)
 			const isAllProvince = admCode === allprovinceCode && tableAdmCode === initialTableAdmCode
-			const isSelectProvince = admCode === provinceCode
+			const isSelectProvince = admCode === provinceCode && tableAdmCode === provinceCode
 			const isTableProvince = tableAdmCode === provinceCode
 			const isTableDistrict = tableAdmCode === districtCode
 
@@ -425,7 +432,7 @@ const RegistrationMain: React.FC = () => {
 			filled: true,
 			lineWidthUnits: 'pixels',
 			pickable: true,
-			getFillColor(d) {
+			getFillColor(d: any) {
 				if (admCode === allprovinceCode && tableAdmCode === initialTableAdmCode) {
 					if (mapBoundaryAdmCodes?.includes(d.properties.provinceCode)) {
 						return [226, 226, 226, 100]
@@ -444,7 +451,7 @@ const RegistrationMain: React.FC = () => {
 					}
 				}
 			},
-			getLineColor(d) {
+			getLineColor(d: any) {
 				if (admCode === allprovinceCode && tableAdmCode === initialTableAdmCode) {
 					if (mapBoundaryAdmCodes?.includes(d.properties.provinceCode)) {
 						return [0, 0, 0, 255]
@@ -485,7 +492,6 @@ const RegistrationMain: React.FC = () => {
 
 	useEffect(() => {
 		if (admCode === tableAdmCode || tableAdmCode === initialTableAdmCode) {
-			setShowBack(false)
 			if (admCode !== allprovinceCode) {
 				service.overview.locationExtent(admCode).then((res) => {
 					if (res.data) {
@@ -493,6 +499,7 @@ const RegistrationMain: React.FC = () => {
 					}
 				})
 			} else {
+				setShowBack(false)
 				mapLibre?.fitBounds(thaiExtent)
 			}
 		} else {
@@ -659,6 +666,7 @@ const RegistrationMain: React.FC = () => {
 								onChange={(e) => {
 									setYear(Number(e.target.value))
 									setAdmCode(0)
+									setTableAdmCode(0)
 								}}
 							>
 								{availabilityData?.map((item: any, index: number) => (
@@ -672,7 +680,11 @@ const RegistrationMain: React.FC = () => {
 								className='w-7/12'
 								value={admCode || ''}
 								disabled={!availableAdm}
-								onChange={(e) => setAdmCode(Number(e.target.value))}
+								onChange={(e) => {
+									setAdmCode(Number(e.target.value))
+									setTableAdmCode(Number(e.target.value))
+									setShowBack(true)
+								}}
 								displayEmpty
 							>
 								<MenuItem value=''>{t('registration:allProvinces')}</MenuItem>
@@ -779,21 +791,17 @@ const RegistrationMain: React.FC = () => {
 							<div className='flex w-full justify-center text-center'>
 								{admCode === allprovinceCode && tableAdmCode === initialTableAdmCode
 									? t('registration:provincialRegistrationData')
-									: tableAdmCode === initialTableAdmCode
+									: tableAdmCode === admCode
 										? language === Languages.TH
 											? `${t('registration:registrationData')} จ.${selectedAdm?.[language] ?? ''}`
 											: `${selectedAdm?.[language] ?? ''} Province ${t('registration:registrationData')}`
-										: admCode === allprovinceCode
-											? String(tableAdmCode).length === districtCodeLength
-												? language === Languages.TH
-													? `${t('registration:registrationData')} อ.${district?.[language] ?? ''}`
-													: `${district?.[language] ?? ''} District ${t('registration:registrationData')}`
-												: language === Languages.TH
-													? `${t('registration:registrationData')} จ.${selectedTableAdmName?.[language] ?? ''}`
-													: `${selectedTableAdmName?.[language] ?? ''} Province ${t('registration:registrationData')}`
+										: String(tableAdmCode).length === districtCodeLength
+											? language === Languages.TH
+												? `${t('registration:registrationData')} อ.${district?.[language] ?? ''}`
+												: `${district?.[language] ?? ''} District ${t('registration:registrationData')}`
 											: language === Languages.TH
-												? `${t('registration:registrationData')} อ.${selectedTableAdmName?.[language] ?? ''}`
-												: `${selectedTableAdmName?.[language] ?? ''} District ${t('registration:registrationData')}`}
+												? `${t('registration:registrationData')} อ.${district?.[language] ?? ''}`
+												: `${district?.[language] ?? ''} District ${t('registration:registrationData')}`}
 							</div>
 						</div>
 						<div
