@@ -40,7 +40,11 @@ const AppBar: React.FC<AppBarProps> = ({ className = '' }) => {
 
 	if (!isDesktop) {
 		return (
-			<div>
+			<div
+				className={classNames('', {
+					'h-full': isMenuOpen,
+				})}
+			>
 				<div
 					className={classNames(
 						'flex h-[64px] flex-row items-center justify-between border-0 border-b border-solid border-[#e9ecee] bg-white px-[30px]',
@@ -54,7 +58,7 @@ const AppBar: React.FC<AppBarProps> = ({ className = '' }) => {
 					</IconButton>
 				</div>
 				{isMenuOpen && (
-					<div className='flex h-[calc(100vh-64px)] flex-col justify-between rounded-none bg-[#f2f5f8] lg:hidden'>
+					<div className='flex h-[calc(100%-64px)] flex-col justify-between rounded-none bg-[#f2f5f8] lg:hidden'>
 						<MenuList setIsMenuOpen={setIsMenuOpen} />
 						<div className='m-4 flex items-center justify-between rounded bg-white p-3'>
 							{session?.user ? (
