@@ -22,6 +22,11 @@ RUN yarn build
 # # 2nd Stage
 FROM node:20-alpine AS runner
 
+RUN chmod -R g=u /app/public && \
+    chmod -R g=u /app/.next && \
+    chmod -R g=u /app/node_modules && \
+    chmod -R g=u /app/package.json
+
 # node image comes with rootless user "node" by default
 WORKDIR /home/node
 COPY --chown=node:node --chmod=755 --from=builder /app/public ./public
