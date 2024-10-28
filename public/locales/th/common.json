@@ -1,0 +1,124 @@
+{
+	"appName": "ระบบวิเคราะห์พื้นที่ปลูกทุเรียน",
+
+	"menuOverview": "ภาพรวมการปลูกทุเรียน",
+	"menuAnalyze": "วิเคราะห์พื้นที่ปลูกทุเรียน",
+	"menuRegistration": "ข้อมูลการขึ้นทะเบียนปลูกทุเรียน",
+	"menuUserManagement": "การจัดการผู้ใช้งาน",
+	"menuSetting": "การตั้งค่า",
+	"menuAbout": "เกี่ยวกับเรา",
+
+	"login": "เข้าสู่ระบบ",
+	"logout": "ออกจากระบบ",
+
+	"confirm": "ยืนยัน",
+	"cancel": "ยกเลิก",
+    "close": "ปิด",
+	"back": "ย้อนกลับ",
+
+	"unitArea": "หน่วยพื้นที่",
+	"unitRai": "ไร่",
+	"unitSqkm": "ตร.กม.",
+	"unitHectare": "เฮกตาร์",
+
+	"languages": "ภาษา",
+	"languagesTh": "ภาษาไทย",
+	"languagesEn": "English",
+
+	"username": "ชื่อผู้ใช้งาน",
+	"nameSurname": "ชื่อ นามสกุล",
+	"email": "อีเมล",
+	"firstName": "ชื่อจริง",
+	"lastName": "นามสกุล",
+	"org": "หน่วยงาน",
+	"role": "บทบาท",
+	"province": "จังหวัด",
+	"allProvinces": "จังหวัดทั้งหมด",
+	"district": "อำเภอ",
+	"allDistricts": "อำเภอทั้งหมด",
+	"subDistrict": "ตำบล",
+	"allSubDistricts": "ตำบลทั้งหมด",
+	"village": "หมู่บ้าน",
+	"areaRai": "ไร่",
+	"areaPlot": "แปลง",
+	"status": "สถานะ",
+	"previous": "ก่อนหน้า",
+	"next": "ถัดไป",
+	"common": {
+		"uploadImg": "อัปโหลดรูปภาพ",
+		"conditionImg": "ขนาดไฟล์ไม่เกิน 3 MB (jpg หรือ png)"
+	},
+
+	"resetPassword": "รีเซ็ตรหัสผ่าน",
+	"password": "รหัสผ่าน",
+	"passwordNew": "รหัสผ่านใหม่",
+	"passwordConfirm": "ยืนยันรหัสผ่าน",
+
+	"warning": {
+		"inputUserName": "กรุณากรอกชื่อผู้ใช้งาน",
+		"inputEmail": "กรุณากรอกอีเมล",
+		"inputPassword": "กรุณากรอกรหัสผ่าน",
+		"inputNewPassword": "กรุณากรอกรหัสผ่านใหม่",
+		"inputConfirmPassword": "กรุณากรอกรหัสผ่านอีกครั้ง",
+		"inputVerificationCode": "กรุณากรอกรหัสยืนยันตัวตน",
+		"invalidPasswordMatch": "รหัสผ่านต้องตรงกัน",
+		"invalidEmailFormat": "รูปแบบอีเมลไม่ถูกต้อง",
+		"minPasswordCharacters": "รหัสผ่านต้องมีขนาดอย่างน้อย 8 ตัวอักษร",
+		"minPasswordNumber": "ต้องมีอย่างน้อย 1 หมายเลข",
+		"minPasswordLowercaseLetter": "ต้องมีตัวอักษรพิมพ์เล็กอย่างน้อย 1 ตัว",
+		"minPasswordUppercaseLetter": "ต้องมีอักษรตัวพิมพ์ใหญ่อย่างน้อย 1 ตัว",
+		"minPasswordSymbol": "ต้องมีอักขระพิเศษอย่างน้อย 1 ตัว",
+		"inputFirstName": "กรุณากรอกชื่อ",
+		"inputLastName": "กรุณากรอกนามสกุล",
+		"inputProvince": "กรุณาเลือกจังหวัด",
+		"inputDistrict": "กรุณาเลือกอำเภอ",
+		"inputOrgCode": "กรุณาเลือกหน่วยงาน",
+		"inputRole": "กรุณาเลือกบทบาท"
+	},
+
+	"alert": {
+		"confirmEditPassword": "ยืนยันการแก้รหัสผ่าน",
+		"confirmChangePassword": "ต้องการยืนยันการแก้รหัสผ่านของผู้ใช้งานนี้ใช่หรือไม่",
+        "inactiveFlagStatus": "สถานะของคุณถูกปิดการใช้งานโปรดติดต่อ admin"
+	},
+	"pleaseEnter": "โปรดระบุ",
+	"notEnter": "ไม่ระบุ",
+	"year": "ปี",
+	"age": "อายุ",
+	"area": "พื้นที่",
+	"areaUnit": "หน่วยพื้นที่",
+	"durianPlantationData": "ข้อมูลพื้นที่ปลูกทุเรียน",
+	"plantationArea": "พื้นที่ปลูก",
+
+	"map": {
+		"mapType": "ประเภทแผนที่",
+		"street": "เส้นถนน",
+		"satellite": "มืด",
+		"hybrid": "ภูมิประเทศ"
+	},
+
+	"error": {
+		"somethingWrong": "เกิดข้อผิดพลาด กรุณาตรวจสอบข้อมูลอีกครั้ง"
+	},
+	"measurement": {
+		"title": "เครื่องมือวัดแผนที่",
+		"guide": "กำหนดตำแหน่งการวัดระยะด้วยการ Double Click",
+		"unit": {
+			"squareMeters": "ตารางเมตร",
+			"squareKilometers": "ตารางกิโลเมตร",
+			"meters": "เมตร",
+			"kilometers": "กิโลเมตร",
+			"degree": "องศา"
+		},
+		"measure": {
+			"area": "วัดขนาดพื้นที่",
+			"length": "วัดระยะทาง",
+			"location": "วัดตำแหน่ง"
+		},
+		"delete": "ลบ",
+		"unitlabel": "หน่วย",
+		"resultLabel": "ผลลัพธ์จากการวัด",
+		"latitude": "ละติจูด",
+		"longitude": "ลองจิจูด"
+	}
+}

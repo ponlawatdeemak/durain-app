@@ -1,0 +1,125 @@
+{
+	"appName": "Durian Monitoring System",
+
+	"menuOverview": "Overview of Durian plantation",
+	"menuAnalyze": "Analyze Durian Plantation Areas",
+	"menuRegistration": "Durian Registration Data",
+	"menuUserManagement": "User Management",
+	"menuSetting": "Settings",
+	"menuAbout": "About Us",
+
+	"login": "Login",
+	"logout": "Logout",
+
+	"confirm": "Confirm",
+	"cancel": "Cancel",
+    "close": "Close",
+	"back": "Back",
+
+	"unitArea": "Units",
+	"unitRai": "Rai",
+	"unitSqkm": "km²",
+	"unitHectare": "Hectare",
+
+	"languages": "Languages",
+	"languagesTh": "ภาษาไทย",
+	"languagesEn": "English",
+
+	"username": "Username",
+	"nameSurname": "Name Surname",
+	"email": "E-mail",
+	"firstName": "First Name",
+	"lastName": "Last Name",
+	"org": "Organization",
+	"role": "Role",
+	"province": "Province",
+	"allProvinces": "All Provinces",
+	"district": "District",
+	"allDistricts": "All Districts",
+	"subDistrict": "Sub District",
+	"allSubDistricts": "All Sub District",
+	"village": "Village",
+	"areaRai": "Rai",
+	"areaPlot": "LandPlot",
+	"status": "Status",
+	"previous": "Previous",
+	"next": "Next",
+
+	"common": {
+		"uploadImg": "Upload Image",
+		"conditionImg": "File size does not exceed 3 MB (jpg or png)"
+	},
+
+	"resetPassword": "Reset Password",
+	"password": "Password",
+	"passwordNew": "New Password",
+	"passwordConfirm": "Confirm Password",
+
+	"warning": {
+		"inputUserName": "Please enter your username.",
+		"inputEmail": "Please enter your email.",
+		"inputPassword": "Please enter your password.",
+		"inputNewPassword": "Please enter a new password.",
+		"inputConfirmPassword": "Please enter your confirm password.",
+		"inputVerificationCode": "Please enter the verification code.",
+		"invalidPasswordMatch": "Password must be the same.",
+		"invalidEmailFormat": "Invalid email format.",
+		"minPasswordCharacters": "Password must be at least 8 characters.",
+		"minPasswordNumber": "Password must contain at least 1 number.",
+		"minPasswordLowercaseLetter": "Password must contain at least 1 lowercase letter.",
+		"minPasswordUppercaseLetter": "Password must contain at least 1 uppercase letter.",
+		"minPasswordSymbol": "Password must contain at least 1 special symbol.",
+		"inputFirstName": "Please enter your first name.",
+		"inputLastName": "Please enter your last name.",
+		"inputProvince": "Please select your province.",
+		"inputDistrict": "Please select your district.",
+		"inputOrgCode": "Please select your Department",
+		"inputRole": "Please select your Role"
+	},
+
+	"alert": {
+		"confirmEditPassword": "Confirm password change?",
+		"confirmChangePassword": "Do you want change user password?",
+        "inactiveFlagStatus": "Your account is inactive. Please contact the administrator."
+	},
+	"pleaseEnter": "Please enter",
+	"notEnter": "Not enter",
+	"year": "Year",
+	"age": "Age",
+	"area": "Area",
+	"areaUnit": "Area Unit",
+	"durianPlantationData": "Durian Plantation Data",
+	"plantationArea": "Plantation Area",
+
+	"map": {
+		"mapType": "Map Type",
+		"street": "Street",
+		"satellite": "Dard",
+		"hybrid": "Satellite"
+	},
+
+	"error": {
+		"somethingWrong": "Something went wrong. Please check the information again."
+	},
+	"measurement": {
+		"title": "Measurement Tool",
+		"guide": "Use double-click for measure.",
+		"unit": {
+			"squareMeters": "Square Meters",
+			"squareKilometers": "Square Kilometers",
+			"meters": "Meters",
+			"kilometers": "Kilometers",
+			"degree": "Degree"
+		},
+		"measure": {
+			"area": "Area Measurement",
+			"length": "Distance Measurement",
+			"location": "Location Measurement"
+		},
+		"delete": "Delete",
+		"unitlabel": "Unit",
+		"resultLabel": "Measure Result",
+		"latitude": "Latitude",
+		"longitude": "Longitude"
+	}
+}

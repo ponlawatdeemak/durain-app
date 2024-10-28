@@ -1,0 +1,130 @@
+# variables:
+#     DOMAIN_NAME: nsp-app
+#     CONTAINER_NAME: $CI_PROJECT_NAME
+
+# stages:
+#     - build
+#     - deploy
+
+# cache:
+#     key: ${CI_COMMIT_REF_SLUG}
+#     paths:
+#         - node_modules/
+#         - .next/cache/
+
+# #region qa
+
+# qa_build:
+#     stage: build
+#     before_script:
+#         - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+#     script:
+#         - cp $ENV_QA ./.env
+#         - yarn install --frozen-lockfile
+#         - yarn build
+#         - docker build
+#           --memory 2g
+#           --pull
+#           -f Dockerfile
+#           -t "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}" .
+#         - docker push "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}"
+#     # when: manual
+#     tags:
+#         - compile
+#     only:
+#         - qa
+
+# qa_deploy:
+#     stage: deploy
+#     dependencies:
+#         - qa_build
+#     before_script:
+#         - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+#     script:
+#         - docker pull "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}"
+#         - docker rm -f $CONTAINER_NAME || true
+#         - docker run -d
+#           --name $CONTAINER_NAME
+#           --net public
+#           --restart unless-stopped
+#           --env-file ${ENV_QA}
+#           --label traefik.enable=true
+#           --label traefik.port=3000
+#           --label traefik.frontend.rule="Host:${DOMAIN_NAME}.mapboss.co.th"
+#           --label traefik.docker.network=public
+#           "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}"
+
+#     # when: manual
+#     environment:
+#         name: internal
+#         on_stop: qa_stop_deploy
+#     only:
+#         - qa
+#     tags:
+#         - compile
+
+# qa_stop_deploy:
+#     stage: deploy
+#     script: docker rm -f $CONTAINER_NAME || true
+#     when: manual
+#     environment:
+#         name: internal
+#         action: stop
+#     only:
+#         - qa
+#     tags:
+#         - compile
+
+include:
+    - project: 'internal/auto-devops'
+      file: '/templates/auto-devops.gitlab-ci.yml'
+
+variables:
+    COMPILE_IMAGE: node:20-alpine
+    COMPILE_TARGET_DIR: '.next'
+    DEPLOY_AUTO: 'true'
+    DOMAIN: tc-durian.app.mapboss.co.th
+
+cache:
+    paths:
+        - node_modules/
+    key: '${CI_PROJECT_ID}-${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_ID}-${PACKAGE_JSON_HASH}'
+
+compile:
+    before_script:
+        - cp $ENV ./.env
+    script:
+        - yarn install --frozen-lockfile
+        - yarn build
+    after_script:
+        - rm -rf ./.next/cache
+        - ls -a
+        - rm ./.env
+
+    rules:
+        - if: $CI_COMMIT_BRANCH == "qa"
+        - when: never
+    artifacts:
+        paths:
+            - ${COMPILE_TARGET_DIR}
+    cache:
+        key: '${CI_PROJECT_ID}-${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_ID}-${PACKAGE_JSON_HASH}'
+
+build:
+    variables:
+        DOCKERFILE_PATH: Dockerfile
+    rules:
+        - if: $CI_COMMIT_BRANCH == "qa"
+        - when: never
+    cache:
+        key: '${CI_PROJECT_ID}-${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_ID}-${PACKAGE_JSON_HASH}'
+
+deploy:
+    rules:
+        - if: $CI_COMMIT_BRANCH == "qa"
+        - when: never
+
+stop_deploy:
+    rules:
+        - if: $CI_COMMIT_BRANCH == "qa"
+        - when: never

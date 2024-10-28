@@ -1,0 +1,15 @@
+{
+	"year": "ปี",
+	"allProvinces": "ทุกจังหวัด",
+	"overviewOfDurianPlantation": "ภาพรวมการปลูกทุเรียน",
+	"durianPlantationData": "ข้อมูลพื้นที่ปลูกทุเรียน",
+	"rai": "ไร่",
+	"hectare": "เฮกตาร์",
+	"sqkm": "ตร.กม.",
+	"ageRangeOfDurianPlantationAreas": "ช่วงอายุของพื้นที่ปลูกทุเรียน",
+	"area": "พื้นที่",
+	"ageRange": "ช่วงอายุ",
+	"age": "อายุ",
+	"plantationArea": "พื้นที่ปลูก",
+    "ageOfDurianTrees":"ทุเรียนอายุ"
+}

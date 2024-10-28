@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: durian-web
+  namespace: durian
+  labels:
+    app: durian-web
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: durian-web
+  template:
+    metadata:
+      labels:
+        app: durian-web
+    spec:
+      containers:
+      - name: durian-web
+        image: rome.thaicom.io/earthinsight/durian-web-prod:prod
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NEXTAUTH_URL
+          value: "https://durian.earthinsights.net"
+        - name: NEXTAUTH_SECRET
+          value: "5M4BByr5G0w8mEQuPElSHBXFcPlxlYvxAR8HNcoM9TIA"
+        - name: NEXT_PUBLIC_API_HOSTNAME
+          value: "https://durian-api.earthinsights.net"
+        - name: NEXT_PUBLIC_API_KEY
+          value: "m7DLPr1DHklzeiHzNeTFzEaDHQGjZKkV"
+        - name: NEXT_PUBLIC_API_HOSTNAME_DATA
+          value: "https://durian-api-data.earthinsights.net"
+        - name: NEXT_PUBLIC_API_KEY_DATA
+          value: "sO48AEgPp5JWDd36FdU6ZLtFgPe8caY0"
+        - name: NEXT_PUBLIC_API_HOSTNAME_TILE
+          value: "https://durian-tileserver.earthinsights.net"
+        - name: NEXT_PUBLIC_API_KEY_TILE
+          value: "dsfNw8ueP7cO3o7Pk23zd6b8siqsGNve"
+        - name: COGNITO_CLIENT_ID
+          value: "7qvd7mjul8vqkjr5njijqg5ub5"
+        - name: COGNITO_CLIENT_SECRET
+          value: "14c78vhfjfpahmceu4chhqs9epshmhe8an20s1el20kpcdmnkvg3"
+        - name: COGNITO_WELLKNOWN
+          value: "https://sso-dev.thaicom.io/.well-known/openid-configuration"
+        - name: COGNITO_ISSUER
+          value: "https://cognito-idp.ap-southeast-1.amazonaws.com/ap-southeast-1_NAEINCie8"
+      imagePullSecrets:
+      - name: rome
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: durian-web
+  namespace: durian
+spec:
+  #type: NodePort
+  selector:
+    app: durian-web
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000

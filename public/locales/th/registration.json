@@ -1,0 +1,20 @@
+{
+	"farmerRegistration": "การขึ้นทะเบียนเกษตรกร",
+	"durianPlantationRegistration": "การขึ้นทะเบียนพื้นที่ปลูกทุเรียน",
+	"plantationArea": "พื้นที่ปลูก",
+	"area": "พื้นที่",
+	"registered": "ขึ้นทะเบียน",
+	"unregistered": "ไม่ขึ้นทะเบียน",
+	"provincialRegistrationData": "ข้อมูลการขึ้นทะเบียนรายจังหวัด",
+	"registrationData": "ข้อมูลการขึ้นทะเบียน",
+	"allProvinces": "ทุกจังหวัด",
+	"year": "ปี",
+	"rai": "ไร่",
+	"hectare": "เฮกตาร์",
+	"sqkm": "ตร.กม.",
+	"GS02": "ทบก.",
+	"nonGS02": "ไม่มี ทบก.",
+	"registeredArea": "พื้นที่ขึ้นทะเบียน",
+	"unregisteredArea": "พื้นที่ไม่ขึ้นทะเบียน",
+	"tooltip": "ข้อมูลการขึ้นทะเบียนพื้นที่ปลูกทุเรียนจากกรมส่งเสริมการเกษตร"
+}
