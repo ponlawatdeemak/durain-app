@@ -95,57 +95,59 @@ const CompareTable: React.FC<CompareTableProps> = ({ compareOverviewData, popup 
 									<TableCell align='right' className='w-[27%] min-w-[100px] !p-2'>
 										{Number(data?.year1Area?.[areaUnit]?.toFixed(2) || 0)?.toLocaleString()}
 									</TableCell>
-									<TableCell
-										align='right'
-										className='!flex min-w-[220px] grow items-center gap-2 !p-2'
-									>
-										<Box className='flex items-center gap-1'>
-											<Box className='flex flex-col items-center gap-0.5'>
-												<div
-													className={classNames(
-														'h-0 w-0 border-4 border-t-0 border-solid border-transparent border-b-[#DEE2E6]',
-														{
-															'!border-b-[#48B10D]':
-																Math.sign(data?.change?.totalChange?.[areaUnit]) === 1,
-														},
-													)}
-												></div>
-												<div
-													className={classNames(
-														'h-0 w-0 border-4 border-b-0 border-solid border-transparent border-t-[#DEE2E6]',
-														{
-															'!border-t-[#EF5A56]':
-																Math.sign(data?.change?.totalChange?.[areaUnit]) === -1,
-														},
-													)}
-												></div>
-											</Box>
-											<span className='text-sm font-medium text-[#333333]'>
-												{Number(
-													Math.abs(data?.change?.totalChange?.[areaUnit])?.toFixed(2) || 0,
-												)?.toLocaleString()}
-											</span>
-										</Box>
-										<Box className='flex items-center gap-1'>
-											<span className='text-sm font-medium text-[#333333]'>{'('}</span>
+									<TableCell align='right' className='min-w-[220px] !p-2'>
+										<Box className='!flex grow items-center justify-end gap-2'>
 											<Box className='flex items-center gap-1'>
-												<AddCircleOutline className='!h-3 !w-3 text-[#8DB9AA]' />
+												<Box className='flex flex-col items-center gap-0.5'>
+													<div
+														className={classNames(
+															'h-0 w-0 border-4 border-t-0 border-solid border-transparent border-b-[#DEE2E6]',
+															{
+																'!border-b-[#48B10D]':
+																	Math.sign(data?.change?.totalChange?.[areaUnit]) ===
+																	1,
+															},
+														)}
+													></div>
+													<div
+														className={classNames(
+															'h-0 w-0 border-4 border-b-0 border-solid border-transparent border-t-[#DEE2E6]',
+															{
+																'!border-t-[#EF5A56]':
+																	Math.sign(data?.change?.totalChange?.[areaUnit]) ===
+																	-1,
+															},
+														)}
+													></div>
+												</Box>
 												<span className='text-sm font-medium text-[#333333]'>
 													{Number(
-														data?.change?.increase?.[areaUnit]?.toFixed(2) || 0,
+														Math.abs(data?.change?.totalChange?.[areaUnit])?.toFixed(2) ||
+															0,
 													)?.toLocaleString()}
 												</span>
 											</Box>
-											<span className='text-sm font-medium text-[#333333]'>{'/'}</span>
 											<Box className='flex items-center gap-1'>
-												<RemoveCircleOutline className='!h-3 !w-3 text-[#EF5A56]' />
-												<span className='text-sm font-medium text-[#333333]'>
-													{Number(
-														data?.change?.decrease?.[areaUnit]?.toFixed(2) || 0,
-													)?.toLocaleString()}
-												</span>
+												<span className='text-sm font-medium text-[#333333]'>{'('}</span>
+												<Box className='flex items-center gap-1'>
+													<AddCircleOutline className='!h-3 !w-3 text-[#8DB9AA]' />
+													<span className='text-sm font-medium text-[#333333]'>
+														{Number(
+															data?.change?.increase?.[areaUnit]?.toFixed(2) || 0,
+														)?.toLocaleString()}
+													</span>
+												</Box>
+												<span className='text-sm font-medium text-[#333333]'>{'/'}</span>
+												<Box className='flex items-center gap-1'>
+													<RemoveCircleOutline className='!h-3 !w-3 text-[#EF5A56]' />
+													<span className='text-sm font-medium text-[#333333]'>
+														{Number(
+															data?.change?.decrease?.[areaUnit]?.toFixed(2) || 0,
+														)?.toLocaleString()}
+													</span>
+												</Box>
+												<span className='text-sm font-medium text-[#333333]'>{')'}</span>
 											</Box>
-											<span className='text-sm font-medium text-[#333333]'>{')'}</span>
 										</Box>
 									</TableCell>
 								</TableRow>

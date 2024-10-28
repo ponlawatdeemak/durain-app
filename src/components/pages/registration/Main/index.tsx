@@ -76,7 +76,7 @@ const RegistrationMain: React.FC = () => {
 	})
 	const [subDistrictCode, setSubDistrictCode] = useState(0)
 
-	const { getLayer, removeLayer, addLayer, mapLibre } = useMapStore()
+	const { getLayer, removeLayer, addLayer, mapLibre, setLayers, switchState } = useMapStore()
 	const [mapInfoWindow, setMapInfoWindow] = useState<GetRegisteredLocationDtoOut | null>(null)
 	const popupNode = useRef<HTMLDivElement>(null)
 
@@ -100,7 +100,6 @@ const RegistrationMain: React.FC = () => {
 		queryFn: async () => {
 			try {
 				popup.remove()
-				setTableAdmCode(0)
 				const res = await service.registration.overviewRegistered({
 					year: year,
 					admCode: admCode ?? undefined,
@@ -164,6 +163,8 @@ const RegistrationMain: React.FC = () => {
 	const StyledTooltip = styled(
 		({ className, title, children, ...props }: { className?: any; title: any; children: any }) => (
 			<Tooltip
+				leaveTouchDelay={3000}
+				enterTouchDelay={50}
 				placement='top'
 				arrow
 				title={title}
@@ -190,7 +191,11 @@ const RegistrationMain: React.FC = () => {
 
 	const handleRowClick = (rowAdmCode: number, rowAdmName: ResponseLanguage) => {
 		if (String(rowAdmCode).length <= districtCodeLength) {
-			setDistrict(rowAdmName)
+			if (String(rowAdmCode).length < districtCodeLength) {
+				setAdmCode(rowAdmCode)
+			} else {
+				setDistrict(rowAdmName)
+			}
 			setTableAdmCode(rowAdmCode)
 			setShowBack(true)
 		} else {
@@ -204,10 +209,14 @@ const RegistrationMain: React.FC = () => {
 	}
 
 	const handleBackClick = () => {
-		if (String(tableAdmCode).length === districtCodeLength && admCode === allprovinceCode) {
-			setTableAdmCode((tableAdmCode) => Number(String(tableAdmCode).slice(0, 2)))
-		} else {
+		if (tableAdmCode === admCode) {
+			setAdmCode(0)
 			setTableAdmCode(0)
+		} else {
+			if (String(tableAdmCode).length === districtCodeLength) {
+				setTableAdmCode((tableAdmCode) => Number(String(tableAdmCode).slice(0, 2)))
+				setSubDistrictCode(0)
+			}
 		}
 	}
 
@@ -236,60 +245,54 @@ const RegistrationMain: React.FC = () => {
 	}, [popup])
 
 	const onLayerClick = useCallback(
-		async (info: PickingInfo<Feature<Geometry, RegisterData>>, year: number) => {
-			const clickData = info.object
+		async (coordinate: { lng: number; lat: number }, data: GetRegisteredLocationDtoOut) => {
+			if (coordinate) {
+				const provinceCode = +String(data.admCode).substring(0, 2)
+				const districtCode = +String(data.admCode).substring(0, 4)
+				const isAllProvince = admCode === allprovinceCode && tableAdmCode === initialTableAdmCode
+				const isSelectProvince = admCode === provinceCode && tableAdmCode === provinceCode
+				const isTableProvince = tableAdmCode === provinceCode
+				const isTableDistrict = tableAdmCode === districtCode
+				if (isAllProvince || isSelectProvince || isTableProvince || isTableDistrict) {
+					try {
+						const lon = coordinate.lng
+						const lat = coordinate.lat
 
-			if (clickData) {
-				if (info.coordinate) {
-					const provinceCode = +String(clickData.properties.admCode).substring(0, 2)
-					const districtCode = +String(clickData.properties.admCode).substring(0, 4)
-					const isAllProvince = admCode === allprovinceCode && tableAdmCode === initialTableAdmCode
-					const isSelectProvince = admCode === provinceCode
-					const isTableProvince = tableAdmCode === provinceCode
-					const isTableDistrict = tableAdmCode === districtCode
-					if (isAllProvince || isSelectProvince || isTableProvince || isTableDistrict) {
-						try {
-							const lon = info.coordinate![0]
-							const lat = info.coordinate![1]
+						setMapInfoWindow(data)
 
-							const response = await service.registration.getRegisteredLocation({ lat, lon, year })
-							if (!response.data) {
-								throw new Error('Access Position failed!!')
-							}
-							setMapInfoWindow(response?.data)
+						if (!popup || !mapLibre || !popupNode.current) return
 
-							if (!popup || !mapLibre || !popupNode.current) return
+						popup?.setLngLat([lon, lat]).setDOMContent(popupNode.current).addTo(mapLibre)
 
-							popup?.setLngLat([lon, lat]).setDOMContent(popupNode.current).addTo(mapLibre)
-
-							const coordinates: [number, number] = [lon, lat]
-							removeLayer(registerPinLayerId)
-							const iconLayer = new IconLayer({
-								id: registerPinLayerId,
-								data: [{ coordinates }],
-								visible: true,
-								getIcon: () => {
-									return {
-										url: getPin('#F03E3E'),
-										anchorY: 69,
-										width: 58,
-										height: 69,
-										mask: false,
-									}
-								},
-								sizeScale: 1,
-								getPosition: (d: any) => d.coordinates,
-								getSize: 40,
-							})
-							addLayer(iconLayer)
-						} catch (error) {
-							console.log('error: ', error)
-						}
+						const coordinates: [number, number] = [lon, lat]
+						removeLayer(registerPinLayerId)
+						const iconLayer = new IconLayer({
+							id: registerPinLayerId,
+							data: [{ coordinates }],
+							visible: true,
+							getIcon: () => {
+								return {
+									url: getPin('#F03E3E'),
+									anchorY: 69,
+									width: 58,
+									height: 69,
+									mask: false,
+								}
+							},
+							sizeScale: 1,
+							getPosition: (d: any) => d.coordinates,
+							getSize: 40,
+						})
+						addLayer(iconLayer)
+					} catch (error) {
+						console.log('error: ', error)
 					}
+				} else {
+					popup.remove()
 				}
 			}
 		},
-		[admCode, tableAdmCode, addLayer, removeLayer, mapLibre, popup],
+		[admCode, tableAdmCode, addLayer, removeLayer, mapLibre, popup, setMapInfoWindow, popupNode],
 	)
 
 	const getColor = useCallback(
@@ -297,7 +300,7 @@ const RegistrationMain: React.FC = () => {
 			const provinceCode = +String(d.properties.admCode).substring(0, 2)
 			const districtCode = +String(d.properties.admCode).substring(0, 4)
 			const isAllProvince = admCode === allprovinceCode && tableAdmCode === initialTableAdmCode
-			const isSelectProvince = admCode === provinceCode
+			const isSelectProvince = admCode === provinceCode && tableAdmCode === provinceCode
 			const isTableProvince = tableAdmCode === provinceCode
 			const isTableDistrict = tableAdmCode === districtCode
 
@@ -343,9 +346,6 @@ const RegistrationMain: React.FC = () => {
 				pickable: true,
 				getFillColor: (d) => getColor(d, RegisterType.Registered),
 				getLineColor: (d) => getColor(d, RegisterType.Registered),
-				onClick: (info, _event) => {
-					onLayerClick(info, year)
-				},
 				updateTriggers: {
 					getFillColor: [getColor],
 					getLineColor: [getColor],
@@ -375,9 +375,6 @@ const RegistrationMain: React.FC = () => {
 				pickable: true,
 				getFillColor: (d) => getColor(d, RegisterType.NonRegistered),
 				getLineColor: (d) => getColor(d, RegisterType.NonRegistered),
-				onClick: (info, _event) => {
-					onLayerClick(info, year)
-				},
 				updateTriggers: {
 					getFillColor: [getColor],
 					getLineColor: [getColor],
@@ -435,7 +432,7 @@ const RegistrationMain: React.FC = () => {
 			filled: true,
 			lineWidthUnits: 'pixels',
 			pickable: true,
-			getFillColor(d) {
+			getFillColor(d: any) {
 				if (admCode === allprovinceCode && tableAdmCode === initialTableAdmCode) {
 					if (mapBoundaryAdmCodes?.includes(d.properties.provinceCode)) {
 						return [226, 226, 226, 100]
@@ -454,7 +451,7 @@ const RegistrationMain: React.FC = () => {
 					}
 				}
 			},
-			getLineColor(d) {
+			getLineColor(d: any) {
 				if (admCode === allprovinceCode && tableAdmCode === initialTableAdmCode) {
 					if (mapBoundaryAdmCodes?.includes(d.properties.provinceCode)) {
 						return [0, 0, 0, 255]
@@ -495,7 +492,6 @@ const RegistrationMain: React.FC = () => {
 
 	useEffect(() => {
 		if (admCode === tableAdmCode || tableAdmCode === initialTableAdmCode) {
-			setShowBack(false)
 			if (admCode !== allprovinceCode) {
 				service.overview.locationExtent(admCode).then((res) => {
 					if (res.data) {
@@ -503,6 +499,7 @@ const RegistrationMain: React.FC = () => {
 					}
 				})
 			} else {
+				setShowBack(false)
 				mapLibre?.fitBounds(thaiExtent)
 			}
 		} else {
@@ -514,12 +511,25 @@ const RegistrationMain: React.FC = () => {
 		}
 	}, [tableAdmCode, admCode, mapLibre])
 
-	// useEffect(() => {
-	// 	if (layers && registeredData) {
-	// 		const province = initialLayer.find((item) => item.id === 'boundary')!.layer
-	// 		setLayers([province, ...(layers as any[])])
-	// 	}
-	// }, [admCode, initialLayer, getLayer, layers, mapLayers, registeredData, removeLayer, setLayers, year])
+	useEffect(() => {
+		if (layers && registeredData) {
+			const reload = initialLayer.map((item) => item.layer)
+			let tempList = reload.map((mapLayer) => {
+				let tempSplit = mapLayer.id.split('-')
+				tempSplit.pop()
+				const tempId = tempSplit.join('-')
+				const switchItem = switchState?.find((sw) => sw.id === tempId)
+
+				let visible: boolean | undefined = true
+				if (switchItem) {
+					visible = switchItem?.isOn === true ? true : undefined
+				}
+				return mapLayer.clone({ visible })
+			})
+
+			setLayers(tempList)
+		}
+	}, [initialLayer, layers, registeredData, setLayers])
 
 	useEffect(() => {
 		const layer = getLayer('subDistrict')
@@ -548,10 +558,16 @@ const RegistrationMain: React.FC = () => {
 			filled: true,
 			lineWidthUnits: 'pixels',
 			pickable: false,
-			getFillColor: () => defaultColor,
+			getFillColor(d) {
+				if (d.properties.subDistrictCode === subDistrictCode) {
+					return [241, 169, 11, 64]
+				} else {
+					return defaultColor
+				}
+			},
 			getLineColor(d) {
 				if (d.properties.subDistrictCode === subDistrictCode) {
-					return [255, 0, 0, 255]
+					return [241, 169, 11, 255]
 				} else {
 					return defaultColor
 				}
@@ -564,6 +580,39 @@ const RegistrationMain: React.FC = () => {
 		})
 		addLayer(subDistrictLayer)
 	}, [addLayer, getLayer, removeLayer, subDistrictCode, t])
+
+	useEffect(() => {
+		if (mapLibre) {
+			const handleClick = async (evt: any) => {
+				const coordinate = evt.lngLat
+
+				if (coordinate) {
+					try {
+						const response = await service.registration.getRegisteredLocation({
+							lat: coordinate.lat,
+							lon: coordinate.lng,
+							year,
+						})
+
+						if (!response?.data) {
+							throw new Error('Access Position failed!!')
+						}
+
+						onLayerClick(coordinate, response?.data)
+					} catch (error) {
+						console.error('error: ', error)
+						popup.remove()
+					}
+				}
+			}
+
+			mapLibre.on('click', handleClick)
+
+			return () => {
+				mapLibre.off('click', handleClick)
+			}
+		}
+	}, [mapLibre, year, onLayerClick, popup])
 
 	return (
 		<div
@@ -591,7 +640,7 @@ const RegistrationMain: React.FC = () => {
 						<MapView
 							initialLayer={initialLayer}
 							legendSelectorLabel={t('registration:farmerRegistration')}
-							className='h-full w-full [&_.maplibregl-popup-anchor-bottom-left>.maplibregl-popup-tip]:!border-t-green-light [&_.maplibregl-popup-anchor-bottom-right>.maplibregl-popup-tip]:!border-t-green-light [&_.maplibregl-popup-anchor-bottom>.maplibregl-popup-tip]:!border-t-green-light [&_.maplibregl-popup-anchor-left>.maplibregl-popup-tip]:!border-r-green-light [&_.maplibregl-popup-anchor-right>.maplibregl-popup-tip]:!border-l-green-light [&_.maplibregl-popup-anchor-top-left>.maplibregl-popup-tip]:!border-b-green-light [&_.maplibregl-popup-anchor-top-right>.maplibregl-popup-tip]:!border-b-green-light [&_.maplibregl-popup-anchor-top>.maplibregl-popup-tip]:!border-b-green-light'
+							className='h-full w-full [&_.maplibregl-popup-anchor-bottom-left>.maplibregl-popup-tip]:!border-t-green-light [&_.maplibregl-popup-anchor-bottom-right>.maplibregl-popup-tip]:!border-t-green-light [&_.maplibregl-popup-anchor-bottom>.maplibregl-popup-tip]:!border-t-green-light [&_.maplibregl-popup-anchor-left>.maplibregl-popup-tip]:!border-r-green-light [&_.maplibregl-popup-anchor-right>.maplibregl-popup-tip]:!border-l-green-light [&_.maplibregl-popup-anchor-top-left>.maplibregl-popup-tip]:!border-b-green-light [&_.maplibregl-popup-anchor-top-right>.maplibregl-popup-tip]:!border-b-green-light [&_.maplibregl-popup-anchor-top>.maplibregl-popup-tip]:!border-b-green-light [&_.maplibregl-popup.maplibregl-popup-anchor-bottom]:top-[-35px]'
 						>
 							<div className='hidden'>
 								<div ref={popupNode} className='flex h-full w-full flex-col'>
@@ -617,6 +666,7 @@ const RegistrationMain: React.FC = () => {
 								onChange={(e) => {
 									setYear(Number(e.target.value))
 									setAdmCode(0)
+									setTableAdmCode(0)
 								}}
 							>
 								{availabilityData?.map((item: any, index: number) => (
@@ -630,7 +680,11 @@ const RegistrationMain: React.FC = () => {
 								className='w-7/12'
 								value={admCode || ''}
 								disabled={!availableAdm}
-								onChange={(e) => setAdmCode(Number(e.target.value))}
+								onChange={(e) => {
+									setAdmCode(Number(e.target.value))
+									setTableAdmCode(Number(e.target.value))
+									setShowBack(true)
+								}}
 								displayEmpty
 							>
 								<MenuItem value=''>{t('registration:allProvinces')}</MenuItem>
@@ -696,7 +750,7 @@ const RegistrationMain: React.FC = () => {
 									</span>
 								</div>
 							</div>
-							<hr className={classNames('ml-[24px] mr-[16px] h-full border-l-[1px] border-t-0')} />
+							<hr className={classNames('ml-[16px] mr-[16px] h-full border-l-[1px] border-t-0')} />
 							<div className='flex w-1/2 flex-col items-end'>
 								<p className='text-[14px] font-normal'>{t('registration:area')}</p>
 								<div className='flex flex-row items-end gap-[6px]'>
@@ -737,21 +791,17 @@ const RegistrationMain: React.FC = () => {
 							<div className='flex w-full justify-center text-center'>
 								{admCode === allprovinceCode && tableAdmCode === initialTableAdmCode
 									? t('registration:provincialRegistrationData')
-									: tableAdmCode === initialTableAdmCode
+									: tableAdmCode === admCode
 										? language === Languages.TH
 											? `${t('registration:registrationData')} จ.${selectedAdm?.[language] ?? ''}`
 											: `${selectedAdm?.[language] ?? ''} Province ${t('registration:registrationData')}`
-										: admCode === allprovinceCode
-											? String(tableAdmCode).length === districtCodeLength
-												? language === Languages.TH
-													? `${t('registration:registrationData')} อ.${district?.[language] ?? ''}`
-													: `${district?.[language] ?? ''} District ${t('registration:registrationData')}`
-												: language === Languages.TH
-													? `${t('registration:registrationData')} จ.${selectedTableAdmName?.[language] ?? ''}`
-													: `${selectedTableAdmName?.[language] ?? ''} Province ${t('registration:registrationData')}`
+										: String(tableAdmCode).length === districtCodeLength
+											? language === Languages.TH
+												? `${t('registration:registrationData')} อ.${district?.[language] ?? ''}`
+												: `${district?.[language] ?? ''} District ${t('registration:registrationData')}`
 											: language === Languages.TH
-												? `${t('registration:registrationData')} อ.${selectedTableAdmName?.[language] ?? ''}`
-												: `${selectedTableAdmName?.[language] ?? ''} District ${t('registration:registrationData')}`}
+												? `${t('registration:registrationData')} อ.${district?.[language] ?? ''}`
+												: `${district?.[language] ?? ''} District ${t('registration:registrationData')}`}
 							</div>
 						</div>
 						<div

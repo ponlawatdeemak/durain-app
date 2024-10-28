@@ -13,7 +13,7 @@
 
 	"confirm": "ยืนยัน",
 	"cancel": "ยกเลิก",
-    "close": "ปิด",
+	"close": "ปิด",
 	"back": "ย้อนกลับ",
 
 	"unitArea": "หน่วยพื้นที่",
@@ -79,7 +79,7 @@
 	"alert": {
 		"confirmEditPassword": "ยืนยันการแก้รหัสผ่าน",
 		"confirmChangePassword": "ต้องการยืนยันการแก้รหัสผ่านของผู้ใช้งานนี้ใช่หรือไม่",
-        "inactiveFlagStatus": "สถานะของคุณถูกปิดการใช้งานโปรดติดต่อ admin"
+		"inactiveFlagStatus": "สถานะของคุณถูกปิดการใช้งานโปรดติดต่อ admin"
 	},
 	"pleaseEnter": "โปรดระบุ",
 	"notEnter": "ไม่ระบุ",
@@ -102,7 +102,7 @@
 	},
 	"measurement": {
 		"title": "เครื่องมือวัดแผนที่",
-		"guide": "กำหนดตำแหน่งการวัดระยะด้วยการ Double Click",
+		"guide": "คลิกเพื่อวัดระยะทางระหว่างจุด",
 		"unit": {
 			"squareMeters": "ตารางเมตร",
 			"squareKilometers": "ตารางกิโลเมตร",

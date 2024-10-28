@@ -108,7 +108,16 @@ const MapLibre: FC<MapLibreProps> = ({ viewState, mapStyle }) => {
 	}
 
 	return (
-		<Map antialias initialViewState={viewState} mapStyle={mapStyle} onLoad={onLoad} onStyleData={onStyleData}>
+		<Map
+			antialias
+			initialViewState={viewState}
+			mapStyle={mapStyle}
+			onLoad={onLoad}
+			onStyleData={onStyleData}
+			touchZoomRotate={true}
+			touchPitch={false}
+			dragRotate={false}
+		>
 			<DeckGLOverlay />
 		</Map>
 	)

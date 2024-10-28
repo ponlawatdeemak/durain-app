@@ -521,6 +521,19 @@ export const MapPinIcon: React.FC<SVGProps> = ({ width = 40, height = 39 }) => {
 	)
 }
 
+export const MapExtentIcon: React.FC<SVGProps> = ({ width = 40, height = 39 }) => {
+	return (
+		<svg width={width} height={height} viewBox='0 0 40 40' fill='none' xmlns='http://www.w3.org/2000/svg'>
+			<rect x='0.5' y='0.5' width='39' height='39' rx='19.5' fill='#2F7A59' />
+			<rect x='0.5' y='0.5' width='39' height='39' rx='19.5' stroke='#D5E2DC' />
+			<path
+				d='M10.3076 10.3799H17.2307V13.1399H13.0768V17.2799H10.3076V10.3799ZM22.7692 10.3799H29.6922V17.2799H26.923V13.1399H22.7692V10.3799ZM26.923 22.7999H29.6922V29.6999H22.7692V26.9399H26.923V22.7999ZM17.2307 26.9399V29.6999H10.3076V22.7999H13.0768V26.9399H17.2307Z'
+				fill='white'
+			/>
+		</svg>
+	)
+}
+
 export const MapLayerIcon: React.FC<SVGProps> = ({ width = 42, height = 42 }) => {
 	return (
 		<svg width={width} height={height} viewBox='0 0 42 42' fill='none' xmlns='http://www.w3.org/2000/svg'>

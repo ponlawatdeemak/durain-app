@@ -1,11 +1,19 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Box, ToggleButton, ToggleButtonGroup, Typography, IconButton, Popover, styled, Switch } from '@mui/material'
 import { useTranslation } from 'next-i18next'
-import { MapLayerIcon, MapMeasureIcon, MapPinIcon, MapZoomInIcon, MapZoomOutIcon } from '@/components/svg/MenuIcon'
+import {
+	MapExtentIcon,
+	MapLayerIcon,
+	MapMeasureIcon,
+	MapPinIcon,
+	MapZoomInIcon,
+	MapZoomOutIcon,
+} from '@/components/svg/MenuIcon'
 import { BaseMap, BasemapType, MapLayer } from '../interface/map'
 import useMapStore from '../store/map'
 import Measurement from './measurement'
 import classNames from 'classnames'
+import { thaiExtent } from '@/config/app.config'
 
 const basemapList: BaseMap[] = [
 	{ value: BasemapType.CartoLight, image: '/images/map/basemap_street.png', label: 'map.street' },
@@ -29,24 +37,19 @@ const MapTools: React.FC<MapToolsProps> = ({
 	legendSelectorLabel,
 }) => {
 	const { t } = useTranslation()
-	const { layers, setLayers, mapLibre } = useMapStore()
+	const { layers, setLayers, mapLibre, switchState, setSwitchState } = useMapStore()
 
 	const [basemap, setBasemap] = useState<BasemapType | null>(currentBaseMap ?? null)
 	const [anchorBasemap, setAnchorBasemap] = useState<HTMLButtonElement | null>(null)
 	const [anchorLegend, setAnchorLegend] = useState<HTMLButtonElement | null>(null)
 	const [showMeasure, setShowMeasure] = useState(false)
-	const [switchState, setSwichState] = useState(
-		layerList?.map((item) => {
-			return { id: item.id, isOn: true }
-		}),
-	)
 
 	//reload switchState
 	useEffect(() => {
-		setSwichState(layerList?.map((item) => ({ id: item.id, isOn: true })))
-	}, [layerList])
-
-	useEffect(() => {}, [layers])
+		if (mapLibre === null || switchState?.length !== layerList?.length) {
+			setSwitchState(layerList?.map((item) => ({ id: item.id, isOn: true })) ?? null)
+		}
+	}, [layerList, mapLibre, layers])
 
 	const onToggleLayer = useCallback(
 		(layerId: string) => {
@@ -54,7 +57,7 @@ const MapTools: React.FC<MapToolsProps> = ({
 				const state = [...switchState]
 				const objIndex = state.findIndex((item) => item.id === layerId)
 				state[objIndex].isOn = !switchState[objIndex].isOn
-				setSwichState([...state])
+				setSwitchState([...state])
 				let tempList = layers.map((mapLayer) => {
 					let tempSplit = mapLayer.id.split('-')
 					tempSplit.pop()
@@ -84,20 +87,20 @@ const MapTools: React.FC<MapToolsProps> = ({
 		[onBasemapChanged],
 	)
 
-	const handleGetLocation = useCallback(() => {
-		if (navigator.geolocation) {
-			navigator.geolocation.getCurrentPosition(
-				(position) => {
-					onGetLocation?.(position.coords)
-				},
-				(error) => {
-					console.error('Error fetching location:', error)
-				},
-			)
-		} else {
-			console.error('Geolocation is not supported by this browser.')
-		}
-	}, [onGetLocation])
+	// const handleGetLocation = useCallback(() => {
+	// 	if (navigator.geolocation) {
+	// 		navigator.geolocation.getCurrentPosition(
+	// 			(position) => {
+	// 				onGetLocation?.(position.coords)
+	// 			},
+	// 			(error) => {
+	// 				console.error('Error fetching location:', error)
+	// 			},
+	// 		)
+	// 	} else {
+	// 		console.error('Geolocation is not supported by this browser.')
+	// 	}
+	// }, [onGetLocation])
 
 	const ToggleSwitch = styled(Switch)(({ theme }) => ({
 		width: 33,
@@ -171,8 +174,13 @@ const MapTools: React.FC<MapToolsProps> = ({
 				<IconButton className='box-shadow rounded-lg bg-white' onClick={onMeasure}>
 					<MapMeasureIcon />
 				</IconButton>
-				<IconButton className='box-shadow rounded-lg bg-white' onClick={handleGetLocation}>
-					<MapPinIcon />
+				<IconButton
+					className='box-shadow rounded-lg bg-white'
+					onClick={() => {
+						mapLibre?.fitBounds(thaiExtent)
+					}}
+				>
+					<MapExtentIcon />
 				</IconButton>
 			</Box>
 
