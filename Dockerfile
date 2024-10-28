@@ -34,6 +34,9 @@ COPY --chown=node:node --chmod=755 --from=builder /app/.next ./.next
 COPY --chown=node:node --chmod=755 --from=builder /app/node_modules ./node_modules
 COPY --chown=node:node --chmod=755 --from=builder /app/package.json ./package.json
 COPY --chown=node:node --chmod=755 --from=builder /app/next.config.js ./next.config.js
+
+RUN chmod -R 755 /app/next-i18next.config.js  && \
+    chmod -R 755 ./next-i18next.config.js
 COPY --chown=node:node --chmod=755 --from=builder /app/next-i18next.config.js ./next-i18next.config.js
 
 USER node
