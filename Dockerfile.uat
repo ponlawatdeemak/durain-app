@@ -30,6 +30,8 @@ COPY --chown=node:node --chmod=755 --from=builder /app/package.json ./package.js
 COPY --chown=node:node --chmod=755 --from=builder /app/next.config.js ./next.config.js
 COPY --chown=node:node --chmod=755 --from=builder /app/next-i18next.config.js ./next-i18next.config.js
 
+RUN chmod -R g+X /app
+
 USER node
 EXPOSE 3000
 CMD ["yarn", "start"]
