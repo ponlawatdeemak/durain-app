@@ -157,7 +157,7 @@ export const authOptions: NextAuthOptions = {
 		/* The redirect callback is called anytime the user is redirected to a callback URL (e.g. on signin or signout). */
 		async redirect({ url, baseUrl }) {
 			// NOTE: workaround fix, required when use custom signin page
-			var session = null
+			let session = null
 			try {
 				session = await getSession()
 			} catch {}
