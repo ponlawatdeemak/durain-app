@@ -5,11 +5,46 @@ import { GetCompareLocationDtoOut } from '@/api/analyze/dto.out.dto'
 import { DurianChangeAreaColor } from '@/config/color'
 import useAreaUnit from '@/store/area-unit'
 import { AddCircleOutline, RemoveCircleOutline } from '@mui/icons-material'
+import React, { useCallback } from 'react'
 
 const CompareInfoWindow: React.FC<{ data: GetCompareLocationDtoOut | null }> = ({ data }) => {
 	const { areaUnit } = useAreaUnit()
 	const { t, i18n } = useTranslation()
 	const language = i18n.language as keyof ResponseLanguage
+
+	const getColor = useCallback((value: number) => {
+		if (value === 0) return DurianChangeAreaColor.noChanged
+		if (Math.sign(value) === 1) {
+			return DurianChangeAreaColor.increased
+		} else {
+			return DurianChangeAreaColor.decreased
+		}
+	}, [])
+
+	const displayAreaChangeIcon = useCallback((value: number) => {
+		if (value === 0) return <div className='h-0 w-[10px] border-0 border-b-[3px] border-solid border-white'></div>
+		if (Math.sign(value) === 1) {
+			return (
+				<div className='absolute top-[6px] h-0 w-0 border-[6px] border-t-0 border-solid border-transparent border-b-white'></div>
+			)
+		} else {
+			return (
+				<div className='absolute top-[7px] h-0 w-0 border-[6px] border-b-0 border-solid border-transparent border-t-white'></div>
+			)
+		}
+	}, [])
+
+	const displayAreaChangeTitle = useCallback(
+		(value: number) => {
+			if (value === 0) return t('analyze:noChangedArea')
+			if (Math.sign(value) === 1) {
+				return t('analyze:increasedArea')
+			} else {
+				return t('analyze:decreasedArea')
+			}
+		},
+		[t],
+	)
 
 	if (!data) {
 		return null
@@ -34,39 +69,19 @@ const CompareInfoWindow: React.FC<{ data: GetCompareLocationDtoOut | null }> = (
 						<div className='flex items-center gap-2'>
 							<div
 								style={{
-									backgroundColor:
-										data?.change?.totalChange?.[areaUnit] === 0
-											? DurianChangeAreaColor.noChanged
-											: Math.sign(data?.change?.totalChange?.[areaUnit]) === 1
-												? DurianChangeAreaColor.increased
-												: DurianChangeAreaColor.decreased,
+									backgroundColor: getColor(data?.change?.totalChange?.[areaUnit]),
 								}}
 								className='relative flex h-[20px] w-[20px] items-center justify-center rounded-full'
 							>
-								{data?.change?.totalChange?.[areaUnit] === 0 ? (
-									<div className='h-0 w-[10px] border-0 border-b-[3px] border-solid border-white'></div>
-								) : Math.sign(data?.change?.totalChange?.[areaUnit]) === 1 ? (
-									<div className='absolute top-[6px] h-0 w-0 border-[6px] border-t-0 border-solid border-transparent border-b-white'></div>
-								) : (
-									<div className='absolute top-[7px] h-0 w-0 border-[6px] border-b-0 border-solid border-transparent border-t-white'></div>
-								)}
+								{displayAreaChangeIcon(data?.change?.totalChange?.[areaUnit])}
 							</div>
 							<span
 								style={{
-									color:
-										data?.change?.totalChange?.[areaUnit] === 0
-											? DurianChangeAreaColor.noChanged
-											: Math.sign(data?.change?.totalChange?.[areaUnit]) === 1
-												? DurianChangeAreaColor.increased
-												: DurianChangeAreaColor.decreased,
+									color: getColor(data?.change?.totalChange?.[areaUnit]),
 								}}
 								className='text-[18px] font-medium leading-[24px]'
 							>
-								{data?.change?.totalChange?.[areaUnit] === 0
-									? t('analyze:noChangedArea')
-									: Math.sign(data?.change?.totalChange?.[areaUnit]) === 1
-										? t('analyze:increasedArea')
-										: t('analyze:decreasedArea')}
+								{displayAreaChangeTitle(data?.change?.totalChange?.[areaUnit])}
 							</span>
 						</div>
 						{data?.change?.totalChange?.[areaUnit] !== 0 && (

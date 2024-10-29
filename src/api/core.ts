@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosRequestConfig } from 'axios'
 import { APIConfigType, APIService, AppAPI } from './interface'
 import service from '@/api'
+import { defaultText } from '@/utils/text'
 
 const APIConfigs: { [key: string]: APIConfigType } = {
 	[APIService.WebAPI]: {
@@ -79,11 +80,11 @@ axiosInstance.interceptors.response.use(
 					let newAccessToken = ''
 					if (apiAccessType === 'Guest') {
 						const { data } = await service.auth.loginGuest()
-						newAccessToken = data?.tokens?.idToken || ''
+						newAccessToken = defaultText(data?.tokens?.idToken)
 						updateAccessToken({ accessToken: newAccessToken, accessType: 'Guest' })
 					} else {
 						const res = await service.auth.refreshToken({ refreshToken: apiRefreshToken })
-						newAccessToken = res.data?.access_token || ''
+						newAccessToken = defaultText(res.data?.access_token)
 						updateAccessToken({ accessToken: newAccessToken, accessType: 'Login' })
 					}
 					return axiosInstance({

@@ -89,20 +89,24 @@ const MapDetail: React.FC<MapDetailProps> = ({ orderBy, popup }) => {
 	const popupCompareNode = useRef<HTMLDivElement>(null)
 
 	const filterSummaryOverview = useMemo(() => {
+		let admCode: number | undefined = undefined
+
+		if (queryParams.provinceId && queryParams.districtId && queryParams.subDistrictId) {
+			admCode = queryParams.subDistrictId
+		} else if (queryParams.provinceId && queryParams.districtId) {
+			admCode = queryParams.districtId
+		} else if (queryParams.provinceId) {
+			admCode = queryParams.provinceId
+		}
+
 		const filter: GetSummaryOverviewDtoIn = {
-			year: queryParams?.year || new Date().getFullYear(),
-			admCode: !queryParams?.provinceId
-				? undefined
-				: !queryParams?.districtId
-					? queryParams.provinceId
-					: !queryParams?.subDistrictId
-						? queryParams.districtId
-						: queryParams.subDistrictId,
+			year: queryParams?.year ?? new Date().getFullYear(),
+			admCode,
 		}
 		return filter
-	}, [queryParams])
+	}, [queryParams.year, queryParams.provinceId, queryParams.districtId, queryParams.subDistrictId])
 
-	const { data: summaryOverviewData, isLoading: isSummaryOverviewDataLoading } = useQuery({
+	const { data: _summaryOverviewData, isLoading: _isSummaryOverviewDataLoading } = useQuery({
 		queryKey: ['getSummaryOverviewMap', filterSummaryOverview],
 		queryFn: async () => {
 			const response = await service.analyze.getSummaryOverview(filterSummaryOverview)
@@ -113,7 +117,7 @@ const MapDetail: React.FC<MapDetailProps> = ({ orderBy, popup }) => {
 		},
 	})
 
-	const { data: durianAvailabilityData, isLoading: isDurianAvailabilityDataLoading } = useQuery({
+	const { data: durianAvailabilityData, isLoading: _isDurianAvailabilityDataLoading } = useQuery({
 		queryKey: ['getDurianAvailabilityCompareMap'],
 		queryFn: () => service.analyze.getDurianAvailability(),
 	})
@@ -232,35 +236,14 @@ const MapDetail: React.FC<MapDetailProps> = ({ orderBy, popup }) => {
 
 	const onLayerClick = useCallback(
 		(coordinate: { lng: number; lat: number }, data: GetAgeclassLocationDtoOut | GetCompareLocationDtoOut) => {
-			if (!queryParams.provinceId) {
-				if (mapBoundaryAdmCodes?.includes(+String(data?.admCode).substring(0, 2))) {
-					handlePositionClick(coordinate, data)
-				} else {
-					popup.remove()
-				}
-			} else {
-				if (!queryParams.districtId) {
-					if (queryParams.provinceId === +String(data?.admCode).substring(0, 2)) {
-						handlePositionClick(coordinate, data)
-					} else {
-						popup.remove()
-					}
-				} else {
-					if (!queryParams.subDistrictId) {
-						if (queryParams.districtId === +String(data?.admCode).substring(0, 4)) {
-							handlePositionClick(coordinate, data)
-						} else {
-							popup.remove()
-						}
-					} else {
-						if (queryParams.subDistrictId === Number(data?.admCode)) {
-							handlePositionClick(coordinate, data)
-						} else {
-							popup.remove()
-						}
-					}
-				}
-			}
+			if (queryParams.subDistrictId && queryParams.subDistrictId !== Number(data?.admCode)) return popup.remove()
+			if (queryParams.districtId && queryParams.districtId !== +String(data?.admCode).substring(0, 4))
+				return popup.remove()
+			if (queryParams.provinceId && queryParams.provinceId !== +String(data?.admCode).substring(0, 2))
+				return popup.remove()
+			if (!queryParams.provinceId && !mapBoundaryAdmCodes?.includes(+String(data?.admCode).substring(0, 2)))
+				return popup.remove()
+			return handlePositionClick(coordinate, data)
 		},
 		[
 			queryParams.provinceId,
@@ -275,54 +258,24 @@ const MapDetail: React.FC<MapDetailProps> = ({ orderBy, popup }) => {
 	const getSummaryColor = useCallback(
 		(item: AgeClass) => {
 			return (d: Feature<Geometry, DurianLayerType>): any => {
-				if (!queryParams.provinceId) {
-					if (mapBoundaryAdmCodes?.includes(+String(d.properties.admCode).substring(0, 2))) {
-						if (item.id === d.properties.ageClass_id) {
-							const array = hexRgb(item.color, { format: 'array' })
-							array[3] = 255
-							return array
-						} else {
-							return defaultColor
-						}
-					}
+				if (queryParams.subDistrictId && queryParams.subDistrictId !== Number(d.properties.admCode))
 					return defaultColor
+				if (queryParams.districtId && queryParams.districtId !== +String(d.properties.admCode).substring(0, 4))
+					return defaultColor
+				if (queryParams.provinceId && queryParams.provinceId !== +String(d.properties.admCode).substring(0, 2))
+					return defaultColor
+				if (
+					!queryParams.provinceId &&
+					!mapBoundaryAdmCodes?.includes(+String(d.properties.admCode).substring(0, 2))
+				)
+					return defaultColor
+
+				if (item.id === d.properties.ageClass_id) {
+					const array = hexRgb(item.color, { format: 'array' })
+					array[3] = 255
+					return array
 				} else {
-					if (!queryParams.districtId) {
-						if (queryParams.provinceId === +String(d.properties.admCode).substring(0, 2)) {
-							if (item.id === d.properties.ageClass_id) {
-								const array = hexRgb(item.color, { format: 'array' })
-								array[3] = 255
-								return array
-							} else {
-								return defaultColor
-							}
-						}
-						return defaultColor
-					} else {
-						if (!queryParams.subDistrictId) {
-							if (queryParams.districtId === +String(d.properties.admCode).substring(0, 4)) {
-								if (item.id === d.properties.ageClass_id) {
-									const array = hexRgb(item.color, { format: 'array' })
-									array[3] = 255
-									return array
-								} else {
-									return defaultColor
-								}
-							}
-							return defaultColor
-						} else {
-							if (queryParams.subDistrictId === Number(d.properties.admCode)) {
-								if (item.id === d.properties.ageClass_id) {
-									const array = hexRgb(item.color, { format: 'array' })
-									array[3] = 255
-									return array
-								} else {
-									return defaultColor
-								}
-							}
-							return defaultColor
-						}
-					}
+					return defaultColor
 				}
 			}
 		},
@@ -332,39 +285,21 @@ const MapDetail: React.FC<MapDetailProps> = ({ orderBy, popup }) => {
 	const getCompareColor = useCallback(
 		(color: string) => {
 			return (d: Feature<Geometry, CompareLayerType | CompareSameLayerType>): any => {
-				if (!queryParams.provinceId) {
-					if (mapBoundaryAdmCodes?.includes(+String(d.properties.admCode).substring(0, 2))) {
-						const array = hexRgb(color, { format: 'array' })
-						array[3] = 255
-						return array
-					}
+				if (queryParams.subDistrictId && queryParams.subDistrictId !== Number(d.properties.admCode))
 					return defaultColor
-				} else {
-					if (!queryParams.districtId) {
-						if (queryParams.provinceId === +String(d.properties.admCode).substring(0, 2)) {
-							const array = hexRgb(color, { format: 'array' })
-							array[3] = 255
-							return array
-						}
-						return defaultColor
-					} else {
-						if (!queryParams.subDistrictId) {
-							if (queryParams.districtId === +String(d.properties.admCode).substring(0, 4)) {
-								const array = hexRgb(color, { format: 'array' })
-								array[3] = 255
-								return array
-							}
-							return defaultColor
-						} else {
-							if (queryParams.subDistrictId === Number(d.properties.admCode)) {
-								const array = hexRgb(color, { format: 'array' })
-								array[3] = 255
-								return array
-							}
-							return defaultColor
-						}
-					}
-				}
+				if (queryParams.districtId && queryParams.districtId !== +String(d.properties.admCode).substring(0, 4))
+					return defaultColor
+				if (queryParams.provinceId && queryParams.provinceId !== +String(d.properties.admCode).substring(0, 2))
+					return defaultColor
+				if (
+					!queryParams.provinceId &&
+					!mapBoundaryAdmCodes?.includes(+String(d.properties.admCode).substring(0, 2))
+				)
+					return defaultColor
+
+				const array = hexRgb(color, { format: 'array' })
+				array[3] = 255
+				return array
 			}
 		},
 		[queryParams.provinceId, queryParams.districtId, queryParams.subDistrictId, mapBoundaryAdmCodes],
@@ -536,26 +471,58 @@ const MapDetail: React.FC<MapDetailProps> = ({ orderBy, popup }) => {
 		queryParams.yearEnd,
 	])
 
-	const initialLayer = useMemo((): MapLayer[] => {
+	const initialLayerId = useMemo(() => {
+		if (queryParams.subDistrictId) return 'subDistrict'
+		if (queryParams.districtId) return 'district'
+		if (queryParams.provinceId) return 'province'
+
+		return 'country'
+	}, [queryParams.provinceId, queryParams.districtId, queryParams.subDistrictId])
+
+	const initialLayerData = useMemo(() => {
 		const layerProvince = tileLayer.province
 		const layerDistrict = tileLayer.district
 		const layerSubDistrict = tileLayer.subDistrict
 
+		if (queryParams.subDistrictId) return layerSubDistrict
+		if (queryParams.districtId) return layerDistrict
+		if (queryParams.provinceId) return layerProvince
+
+		return layerProvince
+	}, [queryParams.provinceId, queryParams.districtId, queryParams.subDistrictId])
+
+	const getInitialFillColor = useCallback(
+		(d: any): any => {
+			if (queryParams.subDistrictId && queryParams.subDistrictId !== d.properties.subDistrictCode)
+				return defaultColor
+			if (queryParams.districtId && queryParams.districtId !== d.properties.districtCode) return defaultColor
+			if (queryParams.provinceId && queryParams.provinceId !== d.properties.provinceCode) return defaultColor
+			if (!queryParams.provinceId && !mapBoundaryAdmCodes?.includes(d.properties.provinceCode))
+				return defaultColor
+
+			return [226, 226, 226, 100]
+		},
+		[queryParams.provinceId, queryParams.districtId, queryParams.subDistrictId, mapBoundaryAdmCodes],
+	)
+
+	const getInitialLineColor = useCallback(
+		(d: any): any => {
+			if (queryParams.subDistrictId && queryParams.subDistrictId !== d.properties.subDistrictCode)
+				return defaultColor
+			if (queryParams.districtId && queryParams.districtId !== d.properties.districtCode) return defaultColor
+			if (queryParams.provinceId && queryParams.provinceId !== d.properties.provinceCode) return defaultColor
+			if (!queryParams.provinceId && !mapBoundaryAdmCodes?.includes(d.properties.provinceCode))
+				return defaultColor
+
+			return [0, 0, 0, 255]
+		},
+		[queryParams.provinceId, queryParams.districtId, queryParams.subDistrictId, mapBoundaryAdmCodes],
+	)
+
+	const initialLayer = useMemo((): MapLayer[] => {
 		const selectedLayer = new MVTLayer({
-			id: !queryParams.provinceId
-				? 'country'
-				: !queryParams.districtId
-					? 'province'
-					: !queryParams.subDistrictId
-						? 'district'
-						: 'subDistrict',
-			name: !queryParams.provinceId
-				? 'country'
-				: !queryParams.districtId
-					? 'province'
-					: !queryParams.subDistrictId
-						? 'district'
-						: 'subDistrict',
+			id: initialLayerId,
+			name: initialLayerId,
 			loadOptions: {
 				fetch: {
 					headers: {
@@ -564,13 +531,7 @@ const MapDetail: React.FC<MapDetailProps> = ({ orderBy, popup }) => {
 					},
 				},
 			},
-			data: !queryParams.provinceId
-				? layerProvince
-				: !queryParams.districtId
-					? layerProvince
-					: !queryParams.subDistrictId
-						? layerDistrict
-						: layerSubDistrict,
+			data: initialLayerData,
 			onError(error) {
 				if (error.message.startsWith('loading TileJSON')) {
 					setAlertInfo({ open: true, severity: 'error', message: t('error.somethingWrong') })
@@ -578,77 +539,18 @@ const MapDetail: React.FC<MapDetailProps> = ({ orderBy, popup }) => {
 			},
 			filled: true,
 			lineWidthUnits: 'pixels',
-			getFillColor(d: any) {
-				if (!queryParams.provinceId) {
-					if (mapBoundaryAdmCodes?.includes(d.properties.provinceCode)) {
-						return [226, 226, 226, 100]
-					}
-					return defaultColor
-				} else {
-					if (!queryParams.districtId) {
-						if (queryParams.provinceId === d.properties.provinceCode) {
-							return [226, 226, 226, 100]
-						}
-						return defaultColor
-					} else {
-						if (!queryParams.subDistrictId) {
-							if (queryParams.districtId === d.properties.districtCode) {
-								return [226, 226, 226, 100]
-							}
-							return defaultColor
-						} else {
-							if (queryParams.subDistrictId === d.properties.subDistrictCode) {
-								return [226, 226, 226, 100]
-							}
-							return defaultColor
-						}
-					}
-				}
-			},
-			getLineColor(d: any) {
-				if (!queryParams.provinceId) {
-					if (mapBoundaryAdmCodes?.includes(d.properties.provinceCode)) {
-						return [0, 0, 0, 255]
-					}
-					return defaultColor
-				} else {
-					if (!queryParams.districtId) {
-						if (queryParams.provinceId === d.properties.provinceCode) {
-							return [0, 0, 0, 255]
-						}
-						return defaultColor
-					} else {
-						if (!queryParams.subDistrictId) {
-							if (queryParams.districtId === d.properties.districtCode) {
-								return [0, 0, 0, 255]
-							}
-							return defaultColor
-						} else {
-							if (queryParams.subDistrictId === d.properties.subDistrictCode) {
-								return [0, 0, 0, 255]
-							}
-							return defaultColor
-						}
-					}
-				}
-			},
+			getFillColor: getInitialFillColor,
+			getLineColor: getInitialLineColor,
 			pickable: true,
 			updateTriggers: {
-				getFillColor: [queryParams.provinceId, queryParams.districtId, queryParams.subDistrictId],
-				getLineColor: [queryParams.provinceId, queryParams.districtId, queryParams.subDistrictId],
-				getLineWidth: [queryParams.provinceId, queryParams.districtId, queryParams.subDistrictId],
+				getFillColor: [getInitialFillColor],
+				getLineColor: [getInitialLineColor],
 			},
 		})
 
 		return [
 			{
-				id: !queryParams.provinceId
-					? 'country'
-					: !queryParams.districtId
-						? 'province'
-						: !queryParams.subDistrictId
-							? 'district'
-							: 'subDistrict',
+				id: initialLayerId,
 				label: '',
 				color: '#000000',
 				layer: selectedLayer,
@@ -656,7 +558,7 @@ const MapDetail: React.FC<MapDetailProps> = ({ orderBy, popup }) => {
 			},
 			...(mapLayers ?? []),
 		]
-	}, [mapLayers, queryParams.provinceId, queryParams.districtId, queryParams.subDistrictId, t, mapBoundaryAdmCodes])
+	}, [mapLayers, t, initialLayerId, initialLayerData, getInitialFillColor, getInitialLineColor])
 
 	useEffect(() => {
 		if ((summaryLayers || compareLayers) && overviewData) {
@@ -679,30 +581,24 @@ const MapDetail: React.FC<MapDetailProps> = ({ orderBy, popup }) => {
 	}, [initialLayer, summaryLayers, overviewData, setLayers, compareLayers])
 
 	useEffect(() => {
-		if (!queryParams.provinceId) {
+		let admCode: number | null = null
+
+		if (queryParams.provinceId && queryParams.districtId && queryParams.subDistrictId) {
+			admCode = queryParams.subDistrictId
+		} else if (queryParams.provinceId && queryParams.districtId) {
+			admCode = queryParams.districtId
+		} else if (queryParams.provinceId) {
+			admCode = queryParams.provinceId
+		}
+
+		if (admCode === null) {
 			mapLibre?.fitBounds(thaiExtent)
 		} else {
-			if (!queryParams.districtId) {
-				service.overview.locationExtent(queryParams?.provinceId).then((res) => {
-					if (res.data) {
-						mapLibre?.fitBounds(res.data.extent)
-					}
-				})
-			} else {
-				if (!queryParams.subDistrictId) {
-					service.overview.locationExtent(queryParams?.districtId).then((res) => {
-						if (res.data) {
-							mapLibre?.fitBounds(res.data.extent)
-						}
-					})
-				} else {
-					service.overview.locationExtent(queryParams?.subDistrictId).then((res) => {
-						if (res.data) {
-							mapLibre?.fitBounds(res.data.extent)
-						}
-					})
+			service.overview.locationExtent(admCode).then((res) => {
+				if (res.data) {
+					mapLibre?.fitBounds(res.data.extent)
 				}
-			}
+			})
 		}
 	}, [mapLibre, queryParams?.provinceId, queryParams?.districtId, queryParams?.subDistrictId])
 
