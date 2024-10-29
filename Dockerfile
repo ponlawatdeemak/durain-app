@@ -16,12 +16,12 @@ FROM node:20-alpine AS runner
 
 # node image comes with rootless user "node" by default
 WORKDIR /home/node
-COPY --chown=root:node --from=builder /app/public ./public
-COPY --chown=root:node --from=builder /app/.next ./.next
-COPY --chown=root:node --from=builder /app/node_modules ./node_modules
-COPY --chown=root:node --from=builder /app/package.json ./package.json
-COPY --chown=root:node --from=builder /app/next.config.js ./next.config.js
-COPY --chown=root:node --from=builder /app/next-i18next.config.js ./next-i18next.config.js
+COPY --chown=root:node --chmod=755 --from=builder /app/public ./public
+COPY --chown=root:node --chmod=755 --from=builder /app/.next ./.next
+COPY --chown=root:node --chmod=755 --from=builder /app/node_modules ./node_modules
+COPY --chown=root:node --chmod=755 --from=builder /app/package.json ./package.json
+COPY --chown=root:node --chmod=755 --from=builder /app/next.config.js ./next.config.js
+COPY --chown=root:node --chmod=755 --from=builder /app/next-i18next.config.js ./next-i18next.config.js
 
 USER root
 
