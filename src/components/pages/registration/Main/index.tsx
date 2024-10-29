@@ -31,11 +31,11 @@ import { RegisterTypeColor } from '@/config/color'
 import { AlertInfoType } from '@/components/shared/ProfileForm/interface'
 import { IconLayer } from '@deck.gl/layers'
 import { getPin } from '@/utils/pin'
-import { PickingInfo } from '@deck.gl/core'
 import { Geometry, Feature } from 'geojson'
 import MapInfoWindowContent from './MapInfoWindow'
 import { GetRegisteredLocationDtoOut } from '@/api/registration/dto-out.dto'
 import { Popup } from 'maplibre-gl'
+import { defaultText } from '@/utils/text'
 
 interface RegisterData {
 	status: RegisterType
@@ -149,12 +149,12 @@ const RegistrationMain: React.FC = () => {
 		return selectedYearObj?.availableAdm.find((item: any) => item.admCode === admCode)?.admName
 	}, [selectedYearObj?.availableAdm, admCode])
 
-	const selectedTableAdmName = useMemo(() => {
-		if (registeredData) {
-			return registeredData?.adms.find((item: any) => item.admCode === tableAdmCode)?.admName
-		}
-		return selectedYearObj?.availableAdm.find((item: any) => item.admCode === tableAdmCode)?.admName
-	}, [selectedYearObj, tableAdmCode, registeredData])
+	// const selectedTableAdmName = useMemo(() => {
+	// 	if (registeredData) {
+	// 		return registeredData?.adms.find((item: any) => item.admCode === tableAdmCode)?.admName
+	// 	}
+	// 	return selectedYearObj?.availableAdm.find((item: any) => item.admCode === tableAdmCode)?.admName
+	// }, [selectedYearObj, tableAdmCode, registeredData])
 
 	const mapBoundaryAdmCodes = useMemo(() => {
 		return registeredData?.adms.map((item) => item.admCode)
@@ -208,17 +208,16 @@ const RegistrationMain: React.FC = () => {
 		}
 	}
 
-	const handleBackClick = () => {
+	const handleBackClick = useCallback(() => {
 		if (tableAdmCode === admCode) {
 			setAdmCode(0)
 			setTableAdmCode(0)
-		} else {
-			if (String(tableAdmCode).length === districtCodeLength) {
-				setTableAdmCode((tableAdmCode) => Number(String(tableAdmCode).slice(0, 2)))
-				setSubDistrictCode(0)
-			}
 		}
-	}
+		if (String(tableAdmCode).length === districtCodeLength) {
+			setTableAdmCode((tableAdmCode) => Number(String(tableAdmCode).slice(0, 2)))
+			setSubDistrictCode(0)
+		}
+	}, [admCode, tableAdmCode])
 
 	const popup = useMemo(
 		() =>
@@ -401,11 +400,23 @@ const RegistrationMain: React.FC = () => {
 		]
 	}, [layers, t])
 
-	const initialLayer = useMemo((): MapLayer[] => {
+	const initialLayerData = useMemo(() => {
 		const layerProvince = tileLayer.province
 		const layerDistrict = tileLayer.district
 		const layerSubDistrict = tileLayer.subDistrict
 
+		if (admCode !== allprovinceCode || tableAdmCode !== initialTableAdmCode) {
+			if (String(tableAdmCode).length === districtCodeLength) {
+				return layerSubDistrict
+			} else {
+				return layerDistrict
+			}
+		} else {
+			return layerProvince
+		}
+	}, [admCode, tableAdmCode])
+
+	const initialLayer = useMemo((): MapLayer[] => {
 		const provinceLayer = new MVTLayer({
 			id: 'boundary' + `-${new Date().getTime()}`,
 			// id: 'boundary',
@@ -418,12 +429,7 @@ const RegistrationMain: React.FC = () => {
 					},
 				},
 			},
-			data:
-				admCode !== allprovinceCode || tableAdmCode !== initialTableAdmCode
-					? String(tableAdmCode).length === districtCodeLength
-						? layerSubDistrict
-						: layerDistrict
-					: layerProvince,
+			data: initialLayerData,
 			onError(error) {
 				if (error.message.startsWith('loading TileJSON')) {
 					setAlertInfo({ open: true, severity: 'error', message: t('error.somethingWrong') })
@@ -439,16 +445,15 @@ const RegistrationMain: React.FC = () => {
 					} else {
 						return defaultColor
 					}
+				}
+				if (
+					(admCode === d.properties.provinceCode && tableAdmCode === initialTableAdmCode) ||
+					tableAdmCode === d.properties.provinceCode ||
+					tableAdmCode === d.properties.districtCode
+				) {
+					return [226, 226, 226, 100]
 				} else {
-					if (
-						(admCode === d.properties.provinceCode && tableAdmCode === initialTableAdmCode) ||
-						tableAdmCode === d.properties.provinceCode ||
-						tableAdmCode === d.properties.districtCode
-					) {
-						return [226, 226, 226, 100]
-					} else {
-						return defaultColor
-					}
+					return defaultColor
 				}
 			},
 			getLineColor(d: any) {
@@ -458,16 +463,15 @@ const RegistrationMain: React.FC = () => {
 					} else {
 						return defaultColor
 					}
+				}
+				if (
+					(admCode === d.properties.provinceCode && tableAdmCode === initialTableAdmCode) ||
+					tableAdmCode === d.properties.provinceCode ||
+					tableAdmCode === d.properties.districtCode
+				) {
+					return [0, 0, 0, 255]
 				} else {
-					if (
-						(admCode === d.properties.provinceCode && tableAdmCode === initialTableAdmCode) ||
-						tableAdmCode === d.properties.provinceCode ||
-						tableAdmCode === d.properties.districtCode
-					) {
-						return [0, 0, 0, 255]
-					} else {
-						return defaultColor
-					}
+					return defaultColor
 				}
 			},
 			updateTriggers: {
@@ -614,27 +618,53 @@ const RegistrationMain: React.FC = () => {
 		}
 	}, [mapLibre, year, onLayerClick, popup])
 
+	const displayTableTitle = useMemo(() => {
+		if (admCode === allprovinceCode && tableAdmCode === initialTableAdmCode) {
+			return t('registration:provincialRegistrationData')
+		}
+		if (tableAdmCode === admCode) {
+			if (language === Languages.TH) {
+				return `${t('registration:registrationData')} จ.${selectedAdm?.[language] ?? ''}`
+			}
+			return `${selectedAdm?.[language] ?? ''} Province ${t('registration:registrationData')}`
+		}
+		if (String(tableAdmCode).length === districtCodeLength) {
+			if (language === Languages.TH) {
+				return `${t('registration:registrationData')} อ.${district?.[language] ?? ''}`
+			}
+			return `${district?.[language] ?? ''} District ${t('registration:registrationData')}`
+		}
+	}, [admCode, tableAdmCode, language, t, selectedAdm, district])
+
 	return (
 		<div
-			className={classNames(
-				'flex w-full flex-1 flex-col',
-				isDesktop ? 'h-full p-[32px] pt-[24px]' : 'box-border p-4',
-			)}
+			className={classNames('flex w-full flex-1 flex-col', {
+				'h-full p-[32px] pt-[24px]': isDesktop,
+				'box-border p-4': !isDesktop,
+			})}
 		>
 			<div
-				className={classNames(
-					'flex w-full flex-row items-center gap-2',
-					isDesktop ? 'pb-[16px]' : 'justify-center pb-4',
-				)}
+				className={classNames('flex w-full flex-row items-center gap-2', {
+					'pb-[16px]': isDesktop,
+					'justify-center pb-4': !isDesktop,
+				})}
 			>
 				<div className={classNames('[&>svg]:fill-primary')}>
 					<RegistrationIcon />
 				</div>
 				<p className='text-2xl font-medium text-primary'>{t('registration:registrationData')}</p>
 			</div>
-			<div className={classNames('flex h-full w-full gap-[24px]', isDesktop ? 'flex-row' : 'flex-col-reverse')}>
+			<div
+				className={classNames('flex h-full w-full gap-[24px]', {
+					'flex-row': isDesktop,
+					'flex-col-reverse': !isDesktop,
+				})}
+			>
 				<div
-					className={classNames('flex rounded-[8px] bg-white', isDesktop ? 'h-full flex-grow' : 'h-[500px]')}
+					className={classNames('flex rounded-[8px] bg-white', {
+						'h-full flex-grow': isDesktop,
+						'h-[500px]': !isDesktop,
+					})}
 				>
 					{year !== 0 ? (
 						<MapView
@@ -654,7 +684,12 @@ const RegistrationMain: React.FC = () => {
 						</div>
 					)}
 				</div>
-				<div className={classNames('flex flex-col gap-[8px]', isDesktop ? 'h-full w-[350px]' : 'w-full')}>
+				<div
+					className={classNames('flex flex-col gap-[8px]', {
+						'h-full w-[350px]': isDesktop,
+						'w-full': !isDesktop,
+					})}
+				>
 					<div className='flex w-full flex-col items-center justify-center gap-[16px] rounded-[8px] bg-white px-[16px] py-[16px] shadow'>
 						<p className='text-xl font-medium'>{t('registration:farmerRegistration')}</p>
 						<div className='flex w-full flex-row gap-3'>
@@ -669,8 +704,8 @@ const RegistrationMain: React.FC = () => {
 									setTableAdmCode(0)
 								}}
 							>
-								{availabilityData?.map((item: any, index: number) => (
-									<MenuItem key={index} value={item.year} className=''>
+								{availabilityData?.map((item) => (
+									<MenuItem key={item.year} value={item.year} className=''>
 										{`${t('registration:year')} ${item.yearName[language]}`}
 									</MenuItem>
 								))}
@@ -688,8 +723,8 @@ const RegistrationMain: React.FC = () => {
 								displayEmpty
 							>
 								<MenuItem value=''>{t('registration:allProvinces')}</MenuItem>
-								{availableAdm?.map((item: any, index: number) => (
-									<MenuItem key={index} value={item.admCode}>
+								{availableAdm?.map((item) => (
+									<MenuItem key={item.admCode} value={item.admCode}>
 										{`${item.admName[language]}`}
 									</MenuItem>
 								))}
@@ -700,7 +735,7 @@ const RegistrationMain: React.FC = () => {
 						<div className='flex w-full items-center justify-between text-sm font-medium'>
 							<RegisteredIcon />
 							<div className='flex items-center'>
-								{`${t('registration:durianPlantationRegistration')} ${t('registration:year')} ${selectedYearObj?.yearName[language] ?? ''}`}
+								{`${t('registration:durianPlantationRegistration')} ${t('registration:year')} ${defaultText(selectedYearObj?.yearName[language])}`}
 								<StyledTooltip
 									className='ml-1 w-max hover:text-tooltip-hover'
 									title={<p className='text-xs'>{t('registration:tooltip')}</p>}
@@ -711,7 +746,7 @@ const RegistrationMain: React.FC = () => {
 						</div>
 						<p className='py-[8px] text-center text-[18px] font-medium'>
 							{t('registration:plantationArea')}
-							{language === Languages.EN ? ' in ' : admCode === allprovinceCode ? '' : 'จังหวัด'}
+							{language === Languages.EN ? ' in ' : admCode === allprovinceCode || 'จังหวัด'}
 							{selectedAdm?.[language] ?? t('registration:allProvinces')} ({t(`registration:${areaUnit}`)}
 							)
 						</p>
@@ -777,10 +812,10 @@ const RegistrationMain: React.FC = () => {
 						</div>
 					</div>
 					<div
-						className={classNames(
-							'flex w-full flex-col items-center rounded-[8px] bg-white shadow',
-							isDesktop ? 'flex-grow px-[16px] py-[16px]' : 'px-[16px] py-[24px]',
-						)}
+						className={classNames('flex w-full flex-col items-center rounded-[8px] bg-white shadow', {
+							'flex-grow px-[16px] py-[16px]': isDesktop,
+							'px-[16px] py-[24px]': !isDesktop,
+						})}
 					>
 						<div className='flex w-full items-center text-[18px] font-medium'>
 							<div className='flex h-full items-start pt-[3px]'>
@@ -788,27 +823,12 @@ const RegistrationMain: React.FC = () => {
 									{showBack && <RegistrationTableBackIcon width={24} />}
 								</IconButton>
 							</div>
-							<div className='flex w-full justify-center text-center'>
-								{admCode === allprovinceCode && tableAdmCode === initialTableAdmCode
-									? t('registration:provincialRegistrationData')
-									: tableAdmCode === admCode
-										? language === Languages.TH
-											? `${t('registration:registrationData')} จ.${selectedAdm?.[language] ?? ''}`
-											: `${selectedAdm?.[language] ?? ''} Province ${t('registration:registrationData')}`
-										: String(tableAdmCode).length === districtCodeLength
-											? language === Languages.TH
-												? `${t('registration:registrationData')} อ.${district?.[language] ?? ''}`
-												: `${district?.[language] ?? ''} District ${t('registration:registrationData')}`
-											: language === Languages.TH
-												? `${t('registration:registrationData')} อ.${district?.[language] ?? ''}`
-												: `${district?.[language] ?? ''} District ${t('registration:registrationData')}`}
-							</div>
+							<div className='flex w-full justify-center text-center'>{displayTableTitle}</div>
 						</div>
 						<div
-							className={classNames(
-								'my-[16px] box-border flex w-full flex-grow',
-								isDesktop ? 'relative' : '',
-							)}
+							className={classNames('my-[16px] box-border flex w-full flex-grow', {
+								relative: isDesktop,
+							})}
 						>
 							<RegistrationTable
 								data={tableAdmCode ? tableInnerData : registeredData}
