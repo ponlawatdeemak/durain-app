@@ -28,14 +28,14 @@ RUN chmod -R g=u /app/public && \
 
 # node image comes with rootless user "node" by default
 WORKDIR /home/node
-COPY --chown=node:node --chmod=755 --from=builder /app/public ./public
-COPY --chown=node:node --chmod=755 --from=builder /app/.next ./.next
-COPY --chown=node:node --chmod=755 --from=builder /app/node_modules ./node_modules
-COPY --chown=node:node --chmod=755 --from=builder /app/package.json ./package.json
-COPY --chown=node:node --chmod=755 --from=builder /app/next.config.js ./next.config.js
-COPY --chown=node:node --chmod=755 --from=builder /app/next-i18next.config.js ./next-i18next.config.js
+COPY --chown=root:node --chmod=755 --from=builder /app/public ./public
+COPY --chown=root:node --chmod=755 --from=builder /app/.next ./.next
+COPY --chown=root:node --chmod=755 --from=builder /app/node_modules ./node_modules
+COPY --chown=root:node --chmod=755 --from=builder /app/package.json ./package.json
+COPY --chown=root:node --chmod=755 --from=builder /app/next.config.js ./next.config.js
+COPY --chown=root:node --chmod=755 --from=builder /app/next-i18next.config.js ./next-i18next.config.js
 
-RUN chmod -R g+X /app
+USER root
 
 USER node
 EXPOSE 3000
