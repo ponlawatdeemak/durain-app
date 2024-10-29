@@ -1,5 +1,5 @@
 import { useTranslation } from 'next-i18next'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import service from '@/api/index'
 import { OverviewIcon, OverviewYearDataIcon, OverviewTooltipIcon } from '@/components/svg/MenuIcon'
 import { Box, CircularProgress, MenuItem, Select } from '@mui/material'
@@ -20,7 +20,6 @@ import { MapLayer } from '@/components/common/map/interface/map.jsx'
 import useMapStore from '@/components/common/map/store/map'
 import { apiAccessToken } from '@/api/core'
 import hexRgb from 'hex-rgb'
-import clsx from 'clsx'
 
 const OverviewMain: React.FC = () => {
 	const { t, i18n } = useTranslation()
@@ -105,18 +104,18 @@ const OverviewMain: React.FC = () => {
 						} else {
 							return [0, 0, 0, 0]
 						}
-					} else {
-						if (String(admCode) === String(d.properties.admCode).substring(0, 2)) {
-							if (item.id === d.properties.ageClass_id) {
-								const array = hexRgb(item.color, { format: 'array' })
-								array[3] = 255
-								return array
-							} else {
-								return [0, 0, 0, 0]
-							}
+					}
+
+					if (String(admCode) === String(d.properties.admCode).substring(0, 2)) {
+						if (item.id === d.properties.ageClass_id) {
+							const array = hexRgb(item.color, { format: 'array' })
+							array[3] = 255
+							return array
 						} else {
 							return [0, 0, 0, 0]
 						}
+					} else {
+						return [0, 0, 0, 0]
 					}
 				},
 				getLineColor(d) {
@@ -188,12 +187,12 @@ const OverviewMain: React.FC = () => {
 					} else {
 						return [0, 0, 0, 0]
 					}
+				}
+
+				if (admCode === d.properties.provinceCode) {
+					return [226, 226, 226, 100]
 				} else {
-					if (admCode === d.properties.provinceCode) {
-						return [226, 226, 226, 100]
-					} else {
-						return [0, 0, 0, 0]
-					}
+					return [0, 0, 0, 0]
 				}
 			},
 			getLineColor(d: any) {
@@ -203,12 +202,12 @@ const OverviewMain: React.FC = () => {
 					} else {
 						return [0, 0, 0, 0]
 					}
+				}
+
+				if (admCode === d.properties.provinceCode) {
+					return [0, 0, 0, 255]
 				} else {
-					if (admCode === d.properties.provinceCode) {
-						return [0, 0, 0, 255]
-					} else {
-						return [0, 0, 0, 0]
-					}
+					return [0, 0, 0, 0]
 				}
 			},
 			updateTriggers: {
@@ -283,25 +282,33 @@ const OverviewMain: React.FC = () => {
 
 	return (
 		<div
-			className={classNames(
-				'flex w-full flex-1 flex-col',
-				isDesktop ? 'h-full p-[32px] pt-[24px]' : 'box-border p-4',
-			)}
+			className={classNames('flex w-full flex-1 flex-col', {
+				'h-full p-[32px] pt-[24px]': isDesktop,
+				'box-border p-4': !isDesktop,
+			})}
 		>
 			<div
-				className={classNames(
-					'flex w-full flex-row items-center gap-2',
-					isDesktop ? 'pb-[16px]' : 'justify-center pb-4',
-				)}
+				className={classNames('flex w-full flex-row items-center gap-2', {
+					'pb-[16px]': isDesktop,
+					'justify-center pb-4': !isDesktop,
+				})}
 			>
 				<div className={classNames('[&>svg]:fill-primary')}>
 					<OverviewIcon />
 				</div>
 				<p className='text-2xl font-semibold text-primary'>{t('overview:overviewOfDurianPlantation')}</p>
 			</div>
-			<div className={classNames('flex h-full w-full gap-[24px]', isDesktop ? 'flex-row' : 'flex-col-reverse')}>
+			<div
+				className={classNames('flex h-full w-full gap-[24px]', {
+					'flex-row': isDesktop,
+					'flex-col-reverse': !isDesktop,
+				})}
+			>
 				<div
-					className={classNames('flex rounded-[8px] bg-white', isDesktop ? 'h-full flex-grow' : 'h-[500px]')}
+					className={classNames('flex rounded-[8px] bg-white', {
+						'h-full flex-grow': isDesktop,
+						'h-[500px]': !isDesktop,
+					})}
 				>
 					{mapLayers && year !== 0 ? (
 						<MapView
@@ -314,7 +321,12 @@ const OverviewMain: React.FC = () => {
 						</div>
 					)}
 				</div>
-				<div className={classNames('flex flex-col gap-[24px]', isDesktop ? 'h-full w-[350px]' : 'w-full')}>
+				<div
+					className={classNames('flex flex-col gap-[24px]', {
+						'h-full w-[350px]': isDesktop,
+						'w-full': !isDesktop,
+					})}
+				>
 					<div className='flex w-full flex-col items-center justify-center gap-[16px] rounded-[8px] bg-white p-[24px] shadow'>
 						<p className='text-xl font-semibold'>{t('overview:durianPlantationData')}</p>
 						<div className='flex w-full flex-row gap-3'>
@@ -329,8 +341,8 @@ const OverviewMain: React.FC = () => {
 									setAdmCode(0)
 								}}
 							>
-								{availabilityData?.map((item: any, index) => (
-									<MenuItem key={index} value={item.year} className=''>
+								{availabilityData?.map((item) => (
+									<MenuItem key={item.year} value={item.year} className=''>
 										{`${t('overview:year')} ${item.yearName[language]}`}
 									</MenuItem>
 								))}
@@ -344,8 +356,8 @@ const OverviewMain: React.FC = () => {
 								displayEmpty
 							>
 								<MenuItem value=''>{t('overview:allProvinces')}</MenuItem>
-								{availableAdm?.map((item: any, index: number) => (
-									<MenuItem key={index} value={item.admCode}>
+								{availableAdm?.map((item) => (
+									<MenuItem key={item.admCode} value={item.admCode}>
 										{`${item.admName[language]}`}
 									</MenuItem>
 								))}
@@ -395,10 +407,10 @@ const OverviewMain: React.FC = () => {
 						</div>
 					</div>
 					<div
-						className={classNames(
-							'flex w-full flex-col items-center rounded-[8px] bg-white shadow',
-							isDesktop ? 'flex-grow p-[24px]' : 'p-0 py-4',
-						)}
+						className={classNames('flex w-full flex-col items-center rounded-[8px] bg-white shadow', {
+							'flex-grow p-[24px]': isDesktop,
+							'p-0 py-4': !isDesktop,
+						})}
 					>
 						<p className='text-center text-lg font-semibold'>
 							{t('overview:ageRangeOfDurianPlantationAreas')}
@@ -406,23 +418,22 @@ const OverviewMain: React.FC = () => {
 						<p className='text-center text-lg font-semibold'>
 							{selectedAdm?.[language] ?? t('overview:allProvinces')}
 						</p>
-						{!!overviewData?.adms.length ? (
+						{overviewData?.adms.length ? (
 							<div
-								className={classNames(
-									'box-border w-full',
-									isDesktop
-										? 'overflow-y-auto overflow-x-hidden [&&::-webkit-scrollbar-thumb]:rounded [&&::-webkit-scrollbar-thumb]:bg-green-light [&::-webkit-scrollbar-track]:rounded [&::-webkit-scrollbar-track]:bg-green-dark3 [&::-webkit-scrollbar]:w-[5px]' +
-												(language === Languages.TH
-													? ' max-h-[calc(100vh-650px)]'
-													: ' max-h-[calc(100vh-680px)]')
-										: '',
-								)}
+								className={classNames('box-border w-full', {
+									'overflow-y-auto overflow-x-hidden [&&::-webkit-scrollbar-thumb]:rounded [&&::-webkit-scrollbar-thumb]:bg-green-light [&::-webkit-scrollbar-track]:rounded [&::-webkit-scrollbar-track]:bg-green-dark3 [&::-webkit-scrollbar]:w-[5px]':
+										isDesktop,
+									'max-h-[calc(100vh-650px)]': isDesktop && language === Languages.TH,
+									'max-h-[calc(100vh-680px)]': isDesktop && language === Languages.EN,
+								})}
 							>
 								<div
-									className={classNames('relative flex min-h-[250px]', isDesktop ? 'flex-grow' : '')}
+									className={classNames('relative flex min-h-[250px]', {
+										'flex-grow': isDesktop,
+									})}
 								>
 									<span
-										className={clsx('absolute bottom-[10px] text-[10px] font-normal', {
+										className={classNames('absolute bottom-[10px] text-[10px] font-normal', {
 											'left-[15px]': language === Languages.TH,
 											'left-[10px]': !isDesktop && language === Languages.EN,
 											'left-[5.5%]': !isDesktop && language === Languages.TH,
@@ -431,7 +442,7 @@ const OverviewMain: React.FC = () => {
 										{t('overview:ageRange')}
 									</span>
 									<span
-										className={clsx('absolute top-[2px] text-[10px] font-normal', {
+										className={classNames('absolute top-[2px] text-[10px] font-normal', {
 											'left-[4px]': language === Languages.TH,
 											'left-[10px]': !isDesktop && language === Languages.EN,
 											'left-[3%]': !isDesktop && language === Languages.TH,
@@ -441,13 +452,17 @@ const OverviewMain: React.FC = () => {
 									</span>
 									<Chart data={overviewData}></Chart>
 								</div>
-								<hr className={classNames('w-full', isDesktop ? 'mb-4' : 'my-4')} />
+								<hr
+									className={classNames('w-full', {
+										'mb-4': isDesktop,
+										'my-4': !isDesktop,
+									})}
+								/>
 								<div className='mb-2 flex w-full text-sm font-medium text-gray-light1'>
 									<div
-										className={classNames(
-											'flex w-1/2 flex-row items-center',
-											isDesktop ? '' : 'ml-5',
-										)}
+										className={classNames('flex w-1/2 flex-row items-center', {
+											'ml-5': !isDesktop,
+										})}
 									>
 										<Box marginRight={1} width='10px' />
 										{t('overview:age')}
@@ -457,7 +472,7 @@ const OverviewMain: React.FC = () => {
 									</div>
 								</div>
 								{overviewData?.overall?.ageClass?.map((item, index, array) => (
-									<React.Fragment key={index}>
+									<React.Fragment key={item.id}>
 										<div className='flex w-full text-sm font-medium'>
 											<div
 												className={classNames(
