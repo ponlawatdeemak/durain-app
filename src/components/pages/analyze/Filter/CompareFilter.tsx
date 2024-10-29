@@ -9,8 +9,7 @@ import {
 	SelectChangeEvent,
 	Typography,
 } from '@mui/material'
-import classNames from 'classnames'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import useSearchAnalyze from '../Main/context'
 import { useTranslation } from 'next-i18next'
 import { ResponseLanguage } from '@/api/interface'
@@ -34,7 +33,7 @@ const CompareFilter: React.FC<CompareFilterProps> = ({ popup }) => {
 	const [yearStart, setYearStart] = useState<number>(new Date().getFullYear())
 	const [yearEnd, setYearEnd] = useState<number>(new Date().getFullYear())
 
-	const { data: durianAvailabilityData, isLoading: isDurianAvailabilityDataLoading } = useQuery({
+	const { data: durianAvailabilityData, isLoading: _isDurianAvailabilityDataLoading } = useQuery({
 		queryKey: ['getDurianAvailabilityCompare'],
 		queryFn: () => service.analyze.getDurianAvailability(),
 	})
@@ -43,8 +42,8 @@ const CompareFilter: React.FC<CompareFilterProps> = ({ popup }) => {
 		queryKey: ['getCompareProvince', queryParams?.yearStart, queryParams?.yearEnd],
 		queryFn: () =>
 			service.analyze.getCompareOverview({
-				year1: queryParams?.yearStart || yearStart,
-				year2: queryParams?.yearEnd || yearEnd,
+				year1: queryParams?.yearStart ?? yearStart,
+				year2: queryParams?.yearEnd ?? yearEnd,
 			}),
 		enabled: !!queryParams?.yearStart && !!queryParams?.yearEnd,
 	})
@@ -54,15 +53,15 @@ const CompareFilter: React.FC<CompareFilterProps> = ({ popup }) => {
 		queryFn: async () => {
 			const provinceId = (
 				await service.analyze.getCompareOverview({
-					year1: queryParams?.yearStart || yearStart,
-					year2: queryParams?.yearEnd || yearEnd,
+					year1: queryParams?.yearStart ?? yearStart,
+					year2: queryParams?.yearEnd ?? yearEnd,
 				})
 			)?.data?.adms?.[0]?.admCode
 
 			return await service.analyze.getCompareOverview({
-				year1: queryParams?.yearStart || yearStart,
-				year2: queryParams?.yearEnd || yearEnd,
-				admCode: queryParams?.provinceId || provinceId,
+				year1: queryParams?.yearStart ?? yearStart,
+				year2: queryParams?.yearEnd ?? yearEnd,
+				admCode: queryParams?.provinceId ?? provinceId,
 			})
 		},
 		enabled: !!queryParams?.yearStart && !!queryParams?.yearEnd,
@@ -79,23 +78,23 @@ const CompareFilter: React.FC<CompareFilterProps> = ({ popup }) => {
 		queryFn: async () => {
 			const provinceId = (
 				await service.analyze.getCompareOverview({
-					year1: queryParams?.yearStart || yearStart,
-					year2: queryParams?.yearEnd || yearEnd,
+					year1: queryParams?.yearStart ?? yearStart,
+					year2: queryParams?.yearEnd ?? yearEnd,
 				})
 			)?.data?.adms?.[0]?.admCode
 
 			const districtId = (
 				await service.analyze.getCompareOverview({
-					year1: queryParams?.yearStart || yearStart,
-					year2: queryParams?.yearEnd || yearEnd,
-					admCode: queryParams?.provinceId || provinceId,
+					year1: queryParams?.yearStart ?? yearStart,
+					year2: queryParams?.yearEnd ?? yearEnd,
+					admCode: queryParams?.provinceId ?? provinceId,
 				})
 			)?.data?.adms?.[0]?.admCode
 
 			return await service.analyze.getCompareOverview({
-				year1: queryParams?.yearStart || yearStart,
-				year2: queryParams?.yearEnd || yearEnd,
-				admCode: queryParams?.districtId || districtId,
+				year1: queryParams?.yearStart ?? yearStart,
+				year2: queryParams?.yearEnd ?? yearEnd,
+				admCode: queryParams?.districtId ?? districtId,
 			})
 		},
 		enabled: !!queryParams?.yearStart && !!queryParams?.yearEnd,
@@ -130,6 +129,38 @@ const CompareFilter: React.FC<CompareFilterProps> = ({ popup }) => {
 			popup.remove()
 		}
 	}
+
+	const displayProvinceTitle = useMemo(() => {
+		if (!queryParams?.provinceId) {
+			if (language === 'en') {
+				return `${t('analyze:changesIn')} ${t('durianPlantationData')} ${compareProvinceData?.data?.adms?.[0]?.admName?.[language]} ${t('province')}`
+			} else {
+				return `${t('durianPlantationData')}${t('province')}${compareProvinceData?.data?.adms?.[0]?.admName?.[language]}${t('analyze:changesIn')}`
+			}
+		}
+
+		if (language === 'en') {
+			return `${t('analyze:changesIn')} ${t('durianPlantationData')} ${compareProvinceData?.data?.adms?.find((province) => Number(province.admCode) === queryParams?.provinceId)?.admName?.[language]} ${t('province')}`
+		} else {
+			return `${t('durianPlantationData')}${t('province')}${compareProvinceData?.data?.adms?.find((province) => Number(province.admCode) === queryParams?.provinceId)?.admName?.[language]}${t('analyze:changesIn')}`
+		}
+	}, [queryParams.provinceId, language, t, compareProvinceData])
+
+	const displayDistrictTitle = useMemo(() => {
+		if (!queryParams?.districtId) {
+			if (language === 'en') {
+				return `${t('analyze:changesIn')} ${t('durianPlantationData')} ${compareDistrictData?.data?.adms?.[0]?.admName?.[language]} ${t('district')}`
+			} else {
+				return `${t('durianPlantationData')}${t('district')}${compareDistrictData?.data?.adms?.[0]?.admName?.[language]}${t('analyze:changesIn')}`
+			}
+		}
+
+		if (language === 'en') {
+			return `${t('analyze:changesIn')} ${t('durianPlantationData')} ${compareDistrictData?.data?.adms?.find((district) => Number(district.admCode) === queryParams?.districtId)?.admName?.[language]} ${t('district')}`
+		} else {
+			return `${t('durianPlantationData')}${t('district')}${compareDistrictData?.data?.adms?.find((district) => Number(district.admCode) === queryParams?.districtId)?.admName?.[language]}${t('analyze:changesIn')}`
+		}
+	}, [queryParams.districtId, language, t, compareDistrictData])
 
 	return (
 		<Paper className='flex flex-col items-center gap-4 !rounded-lg !bg-[#D5E2DC] p-4'>
@@ -220,13 +251,7 @@ const CompareFilter: React.FC<CompareFilterProps> = ({ popup }) => {
 						<>
 							<Box className='box-border flex h-full flex-col justify-between'>
 								<Typography className='!mb-4 !text-lg !font-medium !text-[#333333]'>
-									{queryParams?.provinceId
-										? language === 'en'
-											? `${t('analyze:changesIn')} ${t('durianPlantationData')} ${compareProvinceData?.data?.adms?.find((province) => Number(province.admCode) === queryParams?.provinceId)?.admName?.[language]} ${t('province')}`
-											: `${t('durianPlantationData')}${t('province')}${compareProvinceData?.data?.adms?.find((province) => Number(province.admCode) === queryParams?.provinceId)?.admName?.[language]}${t('analyze:changesIn')}`
-										: language === 'en'
-											? `${t('analyze:changesIn')} ${t('durianPlantationData')} ${compareProvinceData?.data?.adms?.[0]?.admName?.[language]} ${t('province')}`
-											: `${t('durianPlantationData')}${t('province')}${compareProvinceData?.data?.adms?.[0]?.admName?.[language]}${t('analyze:changesIn')}`}
+									{displayProvinceTitle}
 								</Typography>
 								<CompareTable compareOverviewData={compareDistrictData?.data} popup={popup} />
 							</Box>
@@ -243,13 +268,7 @@ const CompareFilter: React.FC<CompareFilterProps> = ({ popup }) => {
 						<>
 							<Box className='box-border flex h-full flex-col justify-between'>
 								<Typography className='!mb-4 !text-lg !font-medium !text-[#333333]'>
-									{queryParams?.districtId
-										? language === 'en'
-											? `${t('analyze:changesIn')} ${t('durianPlantationData')} ${compareDistrictData?.data?.adms?.find((district) => Number(district.admCode) === queryParams?.districtId)?.admName?.[language]} ${t('district')}`
-											: `${t('durianPlantationData')}${t('district')}${compareDistrictData?.data?.adms?.find((district) => Number(district.admCode) === queryParams?.districtId)?.admName?.[language]}${t('analyze:changesIn')}`
-										: language === 'en'
-											? `${t('analyze:changesIn')} ${t('durianPlantationData')} ${compareDistrictData?.data?.adms?.[0]?.admName?.[language]} ${t('district')}`
-											: `${t('durianPlantationData')}${t('district')}${compareDistrictData?.data?.adms?.[0]?.admName?.[language]}${t('analyze:changesIn')}`}
+									{displayDistrictTitle}
 								</Typography>
 								<CompareTable compareOverviewData={compareSubDistrictData?.data} popup={popup} />
 							</Box>
