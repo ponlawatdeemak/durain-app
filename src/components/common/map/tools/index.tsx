@@ -180,7 +180,7 @@ const MapTools: React.FC<MapToolsProps> = ({
 						mapLibre?.fitBounds(thaiExtent)
 					}}
 				>
-					<MapExtentIcon />
+					<MapPinIcon />
 				</IconButton>
 			</Box>
 
