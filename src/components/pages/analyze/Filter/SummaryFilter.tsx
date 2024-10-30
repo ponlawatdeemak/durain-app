@@ -3,9 +3,8 @@ import { ResponseLanguage } from '@/api/interface'
 import useAreaUnit from '@/store/area-unit'
 import { Box, CircularProgress, Paper, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
-import classNames from 'classnames'
 import { useTranslation } from 'next-i18next'
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import useSearchAnalyze from '../Main/context'
 import SummaryTable from '../Table/SummaryTable'
 import { AreaUnitText } from '@/enum'
@@ -27,7 +26,7 @@ const SummaryFilter: React.FC<SummaryFilterProps> = ({ popup }) => {
 
 	const { data: summaryProvinceData, isLoading: isSummaryProvinceDataLoading } = useQuery({
 		queryKey: ['getSummaryProvince', queryParams?.year],
-		queryFn: () => service.analyze.getSummaryOverview({ year: queryParams?.year || new Date().getFullYear() }),
+		queryFn: () => service.analyze.getSummaryOverview({ year: queryParams?.year ?? new Date().getFullYear() }),
 	})
 
 	const { data: summaryDistrictData, isLoading: isSummaryDistrictDataLoading } = useQuery({
@@ -35,13 +34,13 @@ const SummaryFilter: React.FC<SummaryFilterProps> = ({ popup }) => {
 		queryFn: async () => {
 			const provinceId = (
 				await service.analyze.getSummaryOverview({
-					year: queryParams?.year || new Date().getFullYear(),
+					year: queryParams?.year ?? new Date().getFullYear(),
 				})
 			)?.data?.adms?.[0]?.admCode
 
 			return await service.analyze.getSummaryOverview({
-				year: queryParams?.year || new Date().getFullYear(),
-				admCode: queryParams?.provinceId || provinceId,
+				year: queryParams?.year ?? new Date().getFullYear(),
+				admCode: queryParams?.provinceId ?? provinceId,
 			})
 		},
 	})
@@ -51,23 +50,55 @@ const SummaryFilter: React.FC<SummaryFilterProps> = ({ popup }) => {
 		queryFn: async () => {
 			const provinceId = (
 				await service.analyze.getSummaryOverview({
-					year: queryParams?.year || new Date().getFullYear(),
+					year: queryParams?.year ?? new Date().getFullYear(),
 				})
 			)?.data?.adms?.[0]?.admCode
 
 			const districtId = (
 				await service.analyze.getSummaryOverview({
-					year: queryParams?.year || new Date().getFullYear(),
-					admCode: queryParams?.provinceId || provinceId,
+					year: queryParams?.year ?? new Date().getFullYear(),
+					admCode: queryParams?.provinceId ?? provinceId,
 				})
 			)?.data?.adms?.[0]?.admCode
 
 			return await service.analyze.getSummaryOverview({
-				year: queryParams?.year || new Date().getFullYear(),
-				admCode: queryParams?.districtId || districtId,
+				year: queryParams?.year ?? new Date().getFullYear(),
+				admCode: queryParams?.districtId ?? districtId,
 			})
 		},
 	})
+
+	const displayProvinceTitle = useMemo(() => {
+		if (!queryParams?.provinceId) {
+			if (language === 'en') {
+				return `${t('durianPlantationData')} ${summaryProvinceData?.data?.adms?.[0]?.admName?.[language]} ${t('province')}`
+			} else {
+				return `${t('durianPlantationData')}${t('province')}${summaryProvinceData?.data?.adms?.[0]?.admName?.[language]}`
+			}
+		}
+
+		if (language === 'en') {
+			return `${t('durianPlantationData')} ${summaryProvinceData?.data?.adms?.find((province) => Number(province.admCode) === queryParams?.provinceId)?.admName?.[language]} ${t('province')}`
+		} else {
+			return `${t('durianPlantationData')}${t('province')}${summaryProvinceData?.data?.adms?.find((province) => Number(province.admCode) === queryParams?.provinceId)?.admName?.[language]}`
+		}
+	}, [queryParams.provinceId, language, t, summaryProvinceData])
+
+	const displayDistrictTitle = useMemo(() => {
+		if (!queryParams?.districtId) {
+			if (language === 'en') {
+				return `${t('durianPlantationData')} ${summaryDistrictData?.data?.adms?.[0]?.admName?.[language]} ${t('district')}`
+			} else {
+				return `${t('durianPlantationData')}${t('district')}${summaryDistrictData?.data?.adms?.[0]?.admName?.[language]}`
+			}
+		}
+
+		if (language === 'en') {
+			return `${t('durianPlantationData')} ${summaryDistrictData?.data?.adms?.find((district) => Number(district.admCode) === queryParams?.districtId)?.admName[language]} ${t('district')}`
+		} else {
+			return `${t('durianPlantationData')}${t('district')}${summaryDistrictData?.data?.adms?.find((district) => Number(district.admCode) === queryParams?.districtId)?.admName[language]}`
+		}
+	}, [queryParams.districtId, language, t, summaryDistrictData])
 
 	return (
 		<Paper className='flex gap-4 !rounded-lg !bg-[#D5E2DC] p-4 max-xl:flex-col'>
@@ -97,13 +128,7 @@ const SummaryFilter: React.FC<SummaryFilterProps> = ({ popup }) => {
 					<>
 						<Box className='box-border flex h-full flex-col justify-between'>
 							<Typography className='!mb-4 !text-lg !font-medium !text-[#333333]'>
-								{queryParams?.provinceId
-									? language === 'en'
-										? `${t('durianPlantationData')} ${summaryProvinceData?.data?.adms?.find((province) => Number(province.admCode) === queryParams?.provinceId)?.admName?.[language]} ${t('province')}`
-										: `${t('durianPlantationData')}${t('province')}${summaryProvinceData?.data?.adms?.find((province) => Number(province.admCode) === queryParams?.provinceId)?.admName?.[language]}`
-									: language === 'en'
-										? `${t('durianPlantationData')} ${summaryProvinceData?.data?.adms?.[0]?.admName?.[language]} ${t('province')}`
-										: `${t('durianPlantationData')}${t('province')}${summaryProvinceData?.data?.adms?.[0]?.admName?.[language]}`}
+								{displayProvinceTitle}
 							</Typography>
 							<SummaryTable summaryOverviewData={summaryDistrictData?.data} popup={popup} />
 						</Box>
@@ -120,13 +145,7 @@ const SummaryFilter: React.FC<SummaryFilterProps> = ({ popup }) => {
 					<>
 						<Box className='box-border flex h-full flex-col justify-between'>
 							<Typography className='!mb-4 !text-lg !font-medium !text-[#333333]'>
-								{queryParams?.districtId
-									? language === 'en'
-										? `${t('durianPlantationData')} ${summaryDistrictData?.data?.adms?.find((district) => Number(district.admCode) === queryParams?.districtId)?.admName[language]} ${t('district')}`
-										: `${t('durianPlantationData')}${t('district')}${summaryDistrictData?.data?.adms?.find((district) => Number(district.admCode) === queryParams?.districtId)?.admName[language]}`
-									: language === 'en'
-										? `${t('durianPlantationData')} ${summaryDistrictData?.data?.adms?.[0]?.admName?.[language]} ${t('district')}`
-										: `${t('durianPlantationData')}${t('district')}${summaryDistrictData?.data?.adms?.[0]?.admName?.[language]}`}
+								{displayDistrictTitle}
 							</Typography>
 							<SummaryTable summaryOverviewData={summarySubDistrictData?.data} popup={popup} />
 						</Box>
