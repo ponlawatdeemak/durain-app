@@ -1,6 +1,5 @@
 import {
 	Alert,
-	Box,
 	Button,
 	Dialog,
 	DialogActions,
@@ -10,7 +9,7 @@ import {
 	FormControlLabel,
 	CircularProgress,
 } from '@mui/material'
-import React, { FormEvent, useState, useCallback, useEffect } from 'react'
+import React, { FormEvent, useState, useCallback, useEffect, useMemo } from 'react'
 import IOSSwitch from '@/components/common/switch/IOSSwitch'
 import ProfileForm from '@/components/shared/ProfileForm'
 import { AlertInfoType, FormValues } from '@/components/shared/ProfileForm/interface'
@@ -32,19 +31,16 @@ import {
 } from '@/api/um/dto-in.dto'
 import um from '@/api/um'
 import Icon from '@mdi/react'
-import { mdiTrashCanOutline } from '@mdi/js'
+import { mdiTrashCanOutline, mdiArrowLeft } from '@mdi/js'
 import useResponsive from '@/hook/responsive'
 import classNames from 'classnames'
 import { UserDialogMode } from '@/components/shared/UserDialog'
 // import LoadingButton from '@mui/lab/LoadingButton'
 import clsx from 'clsx'
 import ResetPasswordForm from '@/components/shared/ResetPasswordForm'
-import { mdiArrowLeft } from '@mdi/js'
-import { ResponseDto } from '@/api/interface'
 import { ChangePasswordDtoIn } from '@/api/auth/dto-in.dto'
 import { GetProfileDtoOut } from '@/api/um/dto-out.dto'
 import PasswordResetContent from './PasswordResetContent'
-import LoadingButton from '@mui/lab/LoadingButton'
 
 export interface UserManagementProps {
 	open: boolean
@@ -87,7 +83,7 @@ const defaultPasswordValues: PasswordFormValues = {
 }
 
 export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
-	const { t, i18n } = useTranslation(['common', 'um'])
+	const { t } = useTranslation(['common', 'um'])
 	const { open, onClose, userId, isEdit, setOpen, setIsSearch, userDialogMode } = props
 	// const { i18n: i18nWithCookie } = useSwitchLanguage(i18n.language as Language, 'appbar')
 	const [isConfirmAddOpen, setIsConfirmAddOpen] = useState<boolean>(false)
@@ -135,10 +131,10 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 			.string()
 			.required(t('warning.inputNewPassword'))
 			.min(8, t('warning.minPasswordCharacters'))
-			.matches(/^(?=.*[0-9])/, t('warning.minPasswordNumber'))
+			.matches(/^(?=.*\d)/, t('warning.minPasswordNumber'))
 			.matches(/^(?=.*[a-z])/, t('warning.minPasswordLowercaseLetter'))
 			.matches(/^(?=.*[A-Z])/, t('warning.minPasswordUppercaseLetter'))
-			.matches(/^(?=.*[!@#$%^&*()_+\-=\[\]{};:\\|,.<>~\/?])/, t('warning.minPasswordSymbol')),
+			.matches(/^(?=.*[!@#$%^&*()_+\-=[\]{};:\\|,.<>~/?])/, t('warning.minPasswordSymbol')),
 		confirmPassword: yup
 			.string()
 			.required(t('warning.inputConfirmPassword'))
@@ -148,7 +144,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 	const {
 		data: userData,
 		isLoading: isUserDataLoading,
-		error: getUMError,
+		error: _getUMError,
 	} = useQuery({
 		queryKey: ['getUM', userId],
 		queryFn: async () => {
@@ -173,8 +169,8 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 	})
 
 	const {
-		data: putProfileUMData,
-		error: putProfileUMError,
+		data: _putProfileUMData,
+		error: _putProfileUMError,
 		mutateAsync: mutatePutProfileUM,
 		isPending: isPutProfileUMPending,
 	} = useMutation({
@@ -186,8 +182,8 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 	})
 
 	const {
-		data: postProfileUMData,
-		error: postProfileUMError,
+		data: _postProfileUMData,
+		error: _postProfileUMError,
 		mutateAsync: mutatePostProfileUM,
 		isPending: isPostProfileUMPending,
 	} = useMutation({
@@ -197,8 +193,8 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 	})
 
 	const {
-		data,
-		error,
+		data: _updateProfileData,
+		error: _updateProfileError,
 		mutateAsync: mutateUpdateProfile,
 		isPending: isPutProfilePending,
 	} = useMutation({
@@ -216,7 +212,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 					return
 				}
 				const payload: DeleteProfileDtoIn = { id: userId }
-				const res = await um.deleteProfile(payload)
+				await um.deleteProfile(payload)
 				setIsSearch(true)
 				setAlertInfo({ open: true, severity: 'success', message: t('profileDeleteSuccess', { ns: 'um' }) })
 				setOpen(false)
@@ -233,6 +229,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 
 	const onSubmit = useCallback(
 		async (values: UMFormValues) => {
+			let errorMessage = t('error.somethingWrong')
 			try {
 				// images is newly added
 				if (values.image instanceof File) {
@@ -241,96 +238,74 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 						file: values.image,
 					}
 					const res = await um.postUploadFiles(imagePayload)
-					values.image = res.data?.download_file_url || ''
+					values.image = res.data?.download_file_url ?? ''
 					// response does not have image signature
 				}
 				if (userDialogMode === UserDialogMode.UserEdit) {
 					// put method edit existing user
-					try {
-						const payload: PutProfileUMDtoIn = {
-							id: values.id,
-							username: values.username,
-							firstName: values.firstName,
-							lastName: values.lastName,
-							email: values.email,
-							image: values.image,
-							orgCode: values.orgCode,
-							role: values.role,
-							responsibleProvinceCode: values.responsibleProvinceCode,
-							responsibleDistrictCode: values.responsibleDistrictCode,
-							flagStatus: values.flagStatus,
-						}
-						const res = await mutatePutProfileUM(payload)
-						// update session on userId
-						if (session?.user.id === values.id) {
-							let userImage
-							try {
-								userImage = (await service.um.getProfile()).data?.image
-							} catch (error) {
-								throw new Error('Access Profile failed')
-							}
-							// ใช้ update ค่า data จาก useSession
-							try {
-								await update({
-									firstName: payload.firstName,
-									lastName: payload.lastName,
-									email: payload.email,
-									image: userImage,
-									responsibleProvinceCode: payload.responsibleProvinceCode,
-									responsibleDistrictCode: payload.responsibleDistrictCode,
-								})
-							} catch (error) {
-								throw new Error('Failed to update session')
-							}
-						}
-						setAlertInfo({
-							open: true,
-							severity: 'success',
-							message: t('profileUpdateSuccess', { ns: 'um' }),
-						})
-						setIsSearch(true)
-						setOpen(false)
-						formik.resetForm()
-					} catch (error: any) {
-						console.error(error)
-						setAlertInfo({
-							open: true,
-							severity: 'error',
-							message: error?.title ? error.title : t('profileUpdateFail', { ns: 'um' }),
+					errorMessage = t('profileUpdateFail', { ns: 'um' })
+					const payload: PutProfileUMDtoIn = {
+						id: values.id,
+						username: values.username,
+						firstName: values.firstName,
+						lastName: values.lastName,
+						email: values.email,
+						image: values.image,
+						orgCode: values.orgCode,
+						role: values.role,
+						responsibleProvinceCode: values.responsibleProvinceCode,
+						responsibleDistrictCode: values.responsibleDistrictCode,
+						flagStatus: values.flagStatus,
+					}
+					await mutatePutProfileUM(payload)
+
+					// update session on userId
+					if (session?.user.id === values.id) {
+						let userImage
+						userImage = (await service.um.getProfile()).data?.image
+
+						// ใช้ update ค่า data จาก useSession
+						await update({
+							firstName: payload.firstName,
+							lastName: payload.lastName,
+							email: payload.email,
+							image: userImage,
+							responsibleProvinceCode: payload.responsibleProvinceCode,
+							responsibleDistrictCode: payload.responsibleDistrictCode,
 						})
 					}
+					setAlertInfo({
+						open: true,
+						severity: 'success',
+						message: t('profileUpdateSuccess', { ns: 'um' }),
+					})
+					setIsSearch(true)
+					setOpen(false)
+					formik.resetForm()
 				} else if (userDialogMode === UserDialogMode.UserAdd) {
 					// post method add new user
-					try {
-						const payload: PostProfileUMDtoIn = {
-							username: values.username,
-							firstName: values.firstName,
-							lastName: values.lastName,
-							email: values.email,
-							image: values.image,
-							orgCode: values.orgCode,
-							role: values.role,
-							responsibleProvinceCode: values.responsibleProvinceCode,
-							responsibleDistrictCode: values.responsibleDistrictCode,
-							flagStatus: values.flagStatus,
-						}
-						const res = await mutatePostProfileUM(payload)
-						setAlertInfo({
-							open: true,
-							severity: 'success',
-							message: t('profileAddSuccess', { ns: 'um' }),
-						})
-						setIsSearch(true)
-						setOpen(false)
-						formik.resetForm()
-					} catch (error: any) {
-						console.error(error)
-						setAlertInfo({
-							open: true,
-							severity: 'error',
-							message: error?.title ? error.title : t('profileAddFail', { ns: 'um' }),
-						})
+					errorMessage = t('profileAddFail', { ns: 'um' })
+					const payload: PostProfileUMDtoIn = {
+						username: values.username,
+						firstName: values.firstName,
+						lastName: values.lastName,
+						email: values.email,
+						image: values.image,
+						orgCode: values.orgCode,
+						role: values.role,
+						responsibleProvinceCode: values.responsibleProvinceCode,
+						responsibleDistrictCode: values.responsibleDistrictCode,
+						flagStatus: values.flagStatus,
 					}
+					await mutatePostProfileUM(payload)
+					setAlertInfo({
+						open: true,
+						severity: 'success',
+						message: t('profileAddSuccess', { ns: 'um' }),
+					})
+					setIsSearch(true)
+					setOpen(false)
+					formik.resetForm()
 				} else if (userDialogMode === UserDialogMode.UserProfile) {
 					// user Profile
 					const profileData: PutProfileDtoIn = {
@@ -360,25 +335,17 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 					}
 
 					let userImage
-					try {
-						userImage = (await service.um.getProfile()).data?.image
-					} catch (error) {
-						throw new Error('Access Profile failed')
-					}
+					userImage = (await service.um.getProfile()).data?.image
 
 					// ใช้ update ค่า data จาก useSession
-					try {
-						await update({
-							firstName: profileData.firstName,
-							lastName: profileData.lastName,
-							email: profileData.email,
-							image: userImage,
-							responsibleProvinceCode: profileData.responsibleProvinceCode,
-							responsibleDistrictCode: profileData.responsibleDistrictCode,
-						})
-					} catch (error) {
-						throw new Error('Failed to update session')
-					}
+					await update({
+						firstName: profileData.firstName,
+						lastName: profileData.lastName,
+						email: profileData.email,
+						image: userImage,
+						responsibleProvinceCode: profileData.responsibleProvinceCode,
+						responsibleDistrictCode: profileData.responsibleDistrictCode,
+					})
 				} else {
 					console.error('Unknown component mode :: ', userDialogMode)
 				}
@@ -387,7 +354,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 				setAlertInfo({
 					open: true,
 					severity: 'error',
-					message: error?.title ? error.title : t('error.somethingWrong'),
+					message: error?.title || errorMessage,
 				})
 			}
 		},
@@ -431,12 +398,12 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 		async (passwordFormValues: PasswordFormValues, userProfileData: GetProfileDtoOut | undefined) => {
 			// try resetting password
 			const payload = {
-				userId: userProfileData?.id || '',
+				userId: userProfileData?.id ?? '',
 				password: passwordFormValues.currentPassword,
 				newPassword: passwordFormValues.confirmPassword,
 			}
 			try {
-				const res = await mutateChangePassword(payload)
+				await mutateChangePassword(payload)
 
 				setResetPasswordStatus(true)
 				// on success
@@ -453,7 +420,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 
 	const {
 		isPending: isChangePasswordPending,
-		error: passwordError,
+		error: _passwordError,
 		mutateAsync: mutateChangePassword,
 	} = useMutation({
 		mutationFn: async (payload: ChangePasswordDtoIn) => {
@@ -520,6 +487,13 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 		isPutProfilePending,
 		isChangePasswordPending,
 	])
+
+	const displayDialogTitle = useMemo(() => {
+		if (userDialogMode === UserDialogMode.UserProfile) return t('profileManagement', { ns: 'um' })
+		if (userDialogMode === UserDialogMode.UserEdit) return t('editUserAccount', { ns: 'um' })
+		return t('addUser', { ns: 'um' })
+	}, [userDialogMode, t])
+
 	return (
 		<div className='flex flex-col'>
 			<Dialog
@@ -542,11 +516,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 						'!pl-[32px]': isDesktop,
 					})}
 				>
-					{userDialogMode === UserDialogMode.UserProfile
-						? t('profileManagement', { ns: 'um' })
-						: userDialogMode === UserDialogMode.UserEdit
-							? t('editUserAccount', { ns: 'um' })
-							: t('addUser', { ns: 'um' })}
+					{displayDialogTitle}
 				</DialogTitle>
 				<DialogContent
 					dividers={true}
@@ -554,64 +524,61 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 						'!pl-[32px]': isDesktop,
 					})}
 				>
-					{isResetPasswordOpen && resetPasswordStatus === null ? (
-						<div className='flex h-full flex-col gap-[16px] lg:gap-[18px] lg:px-[16px] lg:py-[10px]'>
-							<div>
-								<Button
-									className='flex !w-[106px] gap-[4px] !rounded-xl !border-gray bg-white py-[4px] pl-[6px] pr-[8px] text-sm !font-medium !text-black [&_.MuiButton-startIcon]:m-0'
-									onClick={handleBackResetPassword}
-									variant='outlined'
-									disabled={isBusy}
-									startIcon={<Icon path={mdiArrowLeft} size={'18px'} className='text-black' />}
-								>
-									{t('back')}
-								</Button>
-							</div>
-							<form
-								onSubmit={formik.handleSubmit}
-								noValidate
-								className='flex h-full flex-col gap-[28px] max-lg:justify-between lg:w-[306px]'
-							>
-								<ResetPasswordForm
-									className='flex flex-col gap-[16px] lg:gap-[18px]'
-									formik={passwordFormik}
-									changePassword={true}
-									loading={isBusy}
-								/>
-								<div className='flex max-lg:justify-center'>
+					{isResetPasswordOpen &&
+						(resetPasswordStatus === null ? (
+							<div className='flex h-full flex-col gap-[16px] lg:gap-[18px] lg:px-[16px] lg:py-[10px]'>
+								<div>
 									<Button
-										className='h-[40px] !w-[106px] px-[16px] py-[8px] text-base font-semibold'
-										variant='contained'
-										onClick={() => {
-											handleValidatePassword()
-										}}
-										color='primary'
+										className='flex !w-[106px] gap-[4px] !rounded-xl !border-gray bg-white py-[4px] pl-[6px] pr-[8px] text-sm !font-medium !text-black [&_.MuiButton-startIcon]:m-0'
+										onClick={handleBackResetPassword}
+										variant='outlined'
 										disabled={isBusy}
-										startIcon={
-											isBusy ? (
-												<CircularProgress
-													className='[&_.MuiCircularProgress-circle]:text-[#00000042]'
-													size={16}
-												/>
-											) : null
-										}
+										startIcon={<Icon path={mdiArrowLeft} size={'18px'} className='text-black' />}
 									>
-										{t('confirm')}
+										{t('back')}
 									</Button>
 								</div>
-							</form>
-						</div>
-					) : isResetPasswordOpen && resetPasswordStatus ? (
-						<PasswordResetContent
-							isSuccess={resetPasswordStatus}
-							handleClickReturnProfile={handleClickReturnProfile}
-						/>
-					) : isResetPasswordOpen && !resetPasswordStatus ? (
-						<PasswordResetContent
-							isSuccess={resetPasswordStatus}
-							handleClickReturnProfile={handleClickReturnProfile}
-						/>
-					) : (
+								<form
+									onSubmit={formik.handleSubmit}
+									noValidate
+									className='flex h-full flex-col gap-[28px] max-lg:justify-between lg:w-[306px]'
+								>
+									<ResetPasswordForm
+										className='flex flex-col gap-[16px] lg:gap-[18px]'
+										formik={passwordFormik}
+										changePassword={true}
+										loading={isBusy}
+									/>
+									<div className='flex max-lg:justify-center'>
+										<Button
+											className='h-[40px] !w-[106px] px-[16px] py-[8px] text-base font-semibold'
+											variant='contained'
+											onClick={() => {
+												handleValidatePassword()
+											}}
+											color='primary'
+											disabled={isBusy}
+											startIcon={
+												isBusy ? (
+													<CircularProgress
+														className='[&_.MuiCircularProgress-circle]:text-[#00000042]'
+														size={16}
+													/>
+												) : null
+											}
+										>
+											{t('confirm')}
+										</Button>
+									</div>
+								</form>
+							</div>
+						) : (
+							<PasswordResetContent
+								isSuccess={resetPasswordStatus}
+								handleClickReturnProfile={handleClickReturnProfile}
+							/>
+						))}
+					{!isResetPasswordOpen && (
 						<>
 							<div className='flex grow !flex-row-reverse items-center justify-between max-lg:block lg:flex-row lg:gap-[32px] xl:gap-[48px] 2xl:gap-[64px]'>
 								<ProfileForm
@@ -646,7 +613,7 @@ export const FormMain: React.FC<UserManagementProps> = ({ ...props }) => {
 										<div className='pointer-events-auto'>
 											<IOSSwitch
 												className='m-0 mr-2 [&_.Mui-checked+.MuiSwitch-track]:!bg-green-light'
-												checked={formik.values.flagStatus === 'A' ? true : false}
+												checked={formik.values.flagStatus === 'A' || false}
 												onChange={(event) => {
 													formik.setFieldValue('flagStatus', event.target.checked ? 'A' : 'C')
 												}}

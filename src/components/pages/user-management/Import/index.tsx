@@ -11,7 +11,6 @@ import {
 	DialogContent,
 	DialogTitle,
 	IconButton,
-	Input,
 	Snackbar,
 	Typography,
 } from '@mui/material'
@@ -20,21 +19,15 @@ import { useTranslation } from 'next-i18next'
 import ClearIcon from '@mui/icons-material/Clear'
 import { PostImportXLSXUMDtoIn } from '@/api/um/dto-in.dto'
 import Icon from '@mdi/react'
-import { mdiTrayArrowDown } from '@mdi/js'
-import { mdiTrayArrowUp } from '@mdi/js'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { mdiTrayArrowDown, mdiTrayArrowUp, mdiCloseCircleOutline } from '@mdi/js'
+import { useQueryClient } from '@tanstack/react-query'
 // import LoadingButton from '@mui/lab/LoadingButton'
 import { AlertInfoType } from '@/components/shared/ProfileForm/interface'
-import {
-	PostImportCSVErrorDtoOut,
-	PostImportCSVUMDtoOut,
-	PostImportErrorDtoOut,
-	PostImportXLSXErrorDtoOut,
-} from '@/api/um/dto-out.dto'
+import { PostImportCSVErrorDtoOut, PostImportXLSXErrorDtoOut } from '@/api/um/dto-out.dto'
 import AlertConfirm from '@/components/common/dialog/AlertConfirm'
 import CloseIcon from '@mui/icons-material/Close'
-import { mdiCloseCircleOutline } from '@mdi/js'
 import LoadingButton from '@mui/lab/LoadingButton'
+import classNames from 'classnames'
 
 const maxFileSize = 1.5e7
 export interface FormImportProps {
@@ -45,10 +38,10 @@ export interface FormImportProps {
 }
 
 export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
-	const { t, i18n } = useTranslation(['common', 'um'])
+	const { t } = useTranslation(['common', 'um'])
 	// const { i18n: i18nWithCookie } = useSwitchLanguage(i18n.language as Language, 'appbar')
 	const [importFile, setImportFile] = React.useState<File>()
-	const { open, onClose, setOpen, setIsSearch } = props
+	const { open, onClose, setIsSearch } = props
 	const [isLoading, setIsLoading] = React.useState<boolean>(false)
 	const [isOpenConfirmModal, setIsOpenConfirmModal] = React.useState<boolean>(false)
 	const [alertInfo, setAlertInfo] = React.useState<AlertInfoType>({
@@ -72,23 +65,23 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 
 			if (validFileTypes.includes(fileType) && fileSize <= maxFileSize) {
 				setImportFile(importFile)
+			}
+
+			// handle wrong type + emax size exceed
+			// notification lower left side error
+			if (!validFileTypes.includes(fileType)) {
+				// invalid file type
+				setAlertInfo({ open: true, severity: 'error', message: t('error.invalidFileType', { ns: 'um' }) })
+			} else if (fileSize > maxFileSize) {
+				// limit exceed
+				setAlertInfo({
+					open: true,
+					severity: 'error',
+					message: t('error.fileSizeLimitExceed', { ns: 'um' }),
+				})
 			} else {
-				// handle wrong type + emax size exceed
-				// notification lower left side error
-				if (!validFileTypes.includes(fileType)) {
-					// invalid file type
-					setAlertInfo({ open: true, severity: 'error', message: t('error.invalidFileType', { ns: 'um' }) })
-				} else if (fileSize > maxFileSize) {
-					// limit exceed
-					setAlertInfo({
-						open: true,
-						severity: 'error',
-						message: t('error.fileSizeLimitExceed', { ns: 'um' }),
-					})
-				} else {
-					// something wrong
-					setAlertInfo({ open: true, severity: 'error', message: t('error.somethingWrong') })
-				}
+				// something wrong
+				setAlertInfo({ open: true, severity: 'error', message: t('error.somethingWrong') })
 			}
 		} else {
 			// no file
@@ -107,75 +100,55 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 			if (importFile) {
 				if (importFile?.type === 'text/csv') {
 					// case csv
-					try {
-						const formData = new FormData()
-						formData.append('users_data_csv', importFile)
-						const payload: PostImportXLSXUMDtoIn = {
-							data: formData,
-						}
-						const res = await um.postImportCSVUM(payload)
-
-						setAlertInfo({
-							open: true,
-							severity: 'success',
-							message: t('successImport', { ns: 'um' }),
-						})
-						setIsSearch(true)
-						queryClient.invalidateQueries({ queryKey: ['getSearchUM'] })
-						handleCloseImport(null, 'importFinish')
-					} catch (error: any) {
-						// post service error show in local modal component rows errors
-						console.error('csv error :: ', error)
-						if (error.data) {
-							const data: PostImportCSVErrorDtoOut[] = error.data
-							setImportFile(undefined)
-
-							setImportError(data)
-						} else {
-							setAlertInfo({
-								open: true,
-								severity: 'error',
-								message: error.title,
-							})
-						}
+					const formData = new FormData()
+					formData.append('users_data_csv', importFile)
+					const payload: PostImportXLSXUMDtoIn = {
+						data: formData,
 					}
+					await um.postImportCSVUM(payload)
+
+					setAlertInfo({
+						open: true,
+						severity: 'success',
+						message: t('successImport', { ns: 'um' }),
+					})
+					setIsSearch(true)
+					queryClient.invalidateQueries({ queryKey: ['getSearchUM'] })
+					handleCloseImport(null, 'importFinish')
 				} else {
 					// case xlsx
-					try {
-						const formData = new FormData()
-						formData.append('users_data_excel', importFile)
-						const payload: PostImportXLSXUMDtoIn = {
-							data: formData,
-						}
-						const res = await um.postImportXLSXUM(payload)
-
-						setAlertInfo({
-							open: true,
-							severity: 'success',
-							message: t('successImport', { ns: 'um' }),
-						})
-						setIsSearch(true)
-						queryClient.invalidateQueries({ queryKey: ['getSearchUM'] })
-						handleCloseImport(null, 'importFinish')
-					} catch (error: any) {
-						// post service error show in local modal component rows errors
-						console.error(error)
-						if (error.data) {
-							const data: PostImportXLSXErrorDtoOut[] = error.data
-							setImportFile(undefined)
-							setImportError(data)
-						} else {
-							setAlertInfo({
-								open: true,
-								severity: 'error',
-								message: error.title,
-							})
-						}
+					const formData = new FormData()
+					formData.append('users_data_excel', importFile)
+					const payload: PostImportXLSXUMDtoIn = {
+						data: formData,
 					}
+					await um.postImportXLSXUM(payload)
+
+					setAlertInfo({
+						open: true,
+						severity: 'success',
+						message: t('successImport', { ns: 'um' }),
+					})
+					setIsSearch(true)
+					queryClient.invalidateQueries({ queryKey: ['getSearchUM'] })
+					handleCloseImport(null, 'importFinish')
 				}
 			}
-		} catch (error) {
+		} catch (error: any) {
+			// post service error show in local modal component rows errors
 			console.error(error)
+			if (error.data) {
+				const data: PostImportCSVErrorDtoOut[] | PostImportXLSXErrorDtoOut[] = error.data
+				setImportFile(undefined)
+
+				setImportError(data)
+			} else {
+				setAlertInfo({
+					open: true,
+					severity: 'error',
+					message: error.title,
+				})
+			}
 		} finally {
 			setIsSearch(true)
 			queryClient.invalidateQueries({ queryKey: ['getSearchUM'] })
@@ -261,7 +234,9 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 					className='flex h-full flex-col items-center justify-between overflow-x-hidden max-lg:gap-3'
 				>
 					<Box
-						className={`ml-[24px] mr-[24px] flex w-full flex-col items-center !bg-[#F2F2F2] ${!(importError?.length > 0) && 'h-full'} ${importFile && 'h-full'}`}
+						className={classNames('ml-[24px] mr-[24px] flex w-full flex-col items-center !bg-[#F2F2F2]', {
+							'h-full': importFile || importError?.length <= 0,
+						})}
 					>
 						<Box className='flex min-h-[200px] flex-col items-center justify-center gap-2 p-4'>
 							<Typography className='!text-sm !font-medium'>{t('importUser', { ns: 'um' })}</Typography>
