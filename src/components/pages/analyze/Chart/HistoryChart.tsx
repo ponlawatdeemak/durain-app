@@ -3,7 +3,6 @@ import BillboardJS, { IChart } from '@billboard.js/react'
 import bb, { bar } from 'billboard.js'
 import { GetHistoryOverviewDtoOut } from '@/api/analyze/dto.out.dto'
 import useAreaUnit from '@/store/area-unit'
-import useSearchAnalyze from '../Main/context'
 import { useTranslation } from 'next-i18next'
 import { ResponseLanguage } from '@/api/interface'
 
@@ -24,7 +23,6 @@ interface HistoryChartProps {
 
 const HistoryChart: React.FC<HistoryChartProps> = ({ historyOverviewData }) => {
 	const { areaUnit } = useAreaUnit()
-	const { queryParams, setQueryParams } = useSearchAnalyze()
 	const { t, i18n } = useTranslation(['common'])
 	const language = i18n.language as keyof ResponseLanguage
 	const historyBarChart = useRef<IChart>(null)
@@ -145,12 +143,13 @@ const HistoryChart: React.FC<HistoryChartProps> = ({ historyOverviewData }) => {
 			},
 			tooltip: {
 				contents: function (d: any, defaultTitleFormat: any, defaultValueFormat: any, color: any) {
+					const separatedLine = `<div class='h-[30px] border-0 border-l border-solid border-[#E5E8EB]'></div>`
 					let tooltipHistory = `<div style='box-shadow:0px 5px 11px 0px #AFAFAF80' class='rounded border border-solid border-[#E9ECEE] bg-white px-4 py-2'>
                                             <div class='flex flex-col items-center gap-1'>
                                                 <span class='text-[10px] leading-[14px] font-medium text-[#F1A90B]'>${t('analyze:historicalDurianPlantation')}</span>
                                                 <div class='flex flex-row items-center gap-[10px]'>`
 					d.forEach((item: any, index: number) => {
-						tooltipHistory += `${index !== 0 ? `<div class='h-[30px] border-0 border-l border-solid border-[#E5E8EB]'></div>` : ''}
+						tooltipHistory += `${index !== 0 ? separatedLine : ''}
                                         <div class='flex flex-col items-center'>
                                             <span style='color:${color(item.id)}' class='text-[10px] leading-[14px] font-medium'>${item.name}</span>
                                             <span class='text-xs font-medium text-[#5C5C5C]'>${Math.round(item.ratio * 100)} %</span>
@@ -182,14 +181,14 @@ const HistoryChart: React.FC<HistoryChartProps> = ({ historyOverviewData }) => {
 
 	return (
 		<>
-			<div className='flex flex-col gap-2.5'>
+			<div className='flex w-full flex-col gap-2.5'>
 				<span className='text-[10px] font-medium text-[#333333]'>{'%'}</span>
 				<BillboardJS
 					bb={bb}
 					options={barOption}
 					ref={historyBarChart}
 					className={
-						'h-[220px] [&_.bb-axis-x]:text-sm [&_.bb-axis-x]:font-medium [&_.bb-axis-x]:text-[#333333] [&_.bb-axis-y]:text-[10px] [&_.bb-axis-y]:font-medium [&_.bb-axis-y]:text-[#A1A1A1] [&_.bb-ygrid-line]:stroke-[#DEE2E6] [&_.bb-ygrid-line]:[stroke-dasharray:6,2] [&_.domain]:hidden'
+						'h-[220px] [&_.bb-axis-x]:text-sm [&_.bb-axis-x]:font-medium [&_.bb-axis-x]:text-[#333333] [&_.bb-axis-y]:text-[10px] [&_.bb-axis-y]:font-medium [&_.bb-axis-y]:text-[#A1A1A1] [&_.bb-ygrid-line]:stroke-[#DEE2E6] [&_.bb-ygrid-line]:[stroke-dasharray:6,2] [&_.domain]:hidden [&_svg]:absolute'
 					}
 				/>
 			</div>
