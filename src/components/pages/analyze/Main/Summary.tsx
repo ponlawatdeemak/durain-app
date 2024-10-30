@@ -39,7 +39,7 @@ const AnalyzeSummary: React.FC<AnalyzeSummaryProps> = ({ popup }) => {
 		setYear(new Date().getFullYear())
 	}, [])
 
-	const { data: durianAvailabilityData, isLoading: isDurianAvailabilityDataLoading } = useQuery({
+	const { data: durianAvailabilityData, isLoading: _isDurianAvailabilityDataLoading } = useQuery({
 		queryKey: ['getDurianAvailability'],
 		queryFn: () => service.analyze.getDurianAvailability(),
 	})
@@ -128,8 +128,8 @@ const AnalyzeSummary: React.FC<AnalyzeSummaryProps> = ({ popup }) => {
 										/>
 									</Box>
 									<Box className='flex w-full shrink-0 flex-col items-center gap-4 lg:w-[360px]'>
-										<span className='text-lg font-medium text-[#333333]'>{`${t('analyze:durianPlantationArea')} ${t('year')} ${durianAvailabilityData?.data?.find((data) => data?.year === year)?.yearName?.[language] || ''}`}</span>
-										<span className='text-3xl font-medium text-[#333333]'>{`${Number(summaryOverviewData?.data?.overall?.area?.[areaUnit]?.toFixed(2) || 0)?.toLocaleString() || '-'} ${t(AreaUnitText[areaUnit])}`}</span>
+										<span className='text-lg font-medium text-[#333333]'>{`${t('analyze:durianPlantationArea')} ${t('year')} ${durianAvailabilityData?.data?.find((data) => data?.year === year)?.yearName?.[language] ?? ''}`}</span>
+										<span className='text-3xl font-medium text-[#333333]'>{`${Number(summaryOverviewData?.data?.overall?.area?.[areaUnit]?.toFixed(2) ?? 0)?.toLocaleString() || '-'} ${t(AreaUnitText[areaUnit])}`}</span>
 										<Box className='flex w-full items-center text-sm font-medium text-[#5C5C5C]'>
 											<span className='w-[30%] pl-4'>{t('age')}</span>
 											<span className='w-[30%] text-center'>{`${t('analyze:amount')}%`}</span>
@@ -138,7 +138,7 @@ const AnalyzeSummary: React.FC<AnalyzeSummaryProps> = ({ popup }) => {
 										<Box className='flex w-full flex-col gap-1'>
 											{summaryOverviewData?.data?.overall?.ageClass?.map((item, index) => {
 												return (
-													<div className='flex w-full flex-col gap-1' key={index}>
+													<div className='flex w-full flex-col gap-1' key={item.id}>
 														{index > 0 && (
 															<Divider className='!border !border-dashed !border-[#DEE2E6]' />
 														)}

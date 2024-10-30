@@ -1,8 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react'
-import BillboardJS, { IChart } from '@billboard.js/react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 import bb, { donut } from 'billboard.js'
 import useAreaUnit from '@/store/area-unit'
-import useSearchAnalyze from '../Main/context'
 import { useTranslation } from 'next-i18next'
 import { ResponseLanguage } from '@/api/interface'
 import { OverviewIcon } from '@/components/svg/MenuIcon'
@@ -69,7 +67,7 @@ const SummaryChart: React.FC<SummaryChartProps> = ({ summaryOverviewData, year }
 		(index: number, name: string, value: number, color: string) => {
 			return `<div style='box-shadow:0px 5px 11px 0px #AFAFAF80' class='rounded border border-solid border-[#EDEDED] bg-white px-2.5 py-1.5'>
                 <div class='flex flex-col items-center gap-1'>
-                    <span class='text-[10px] font-medium text-[#F1A90B]'>${t('year')} ${year || ''}</span>
+                    <span class='text-[10px] font-medium text-[#F1A90B]'>${t('year')} ${year ?? ''}</span>
                     <span style='color:${color}' class='text-sm text-center font-medium'>${t('analyze:ageOfDurianTrees')} ${name}</span>
                     <span class='text-sm text-center font-medium text-[#5C5C5C]'>${Number(value?.toFixed(2) || 0).toLocaleString()} ${t(AreaUnitText[areaUnit])}</span>
                 </div>
@@ -119,8 +117,8 @@ const SummaryChart: React.FC<SummaryChartProps> = ({ summaryOverviewData, year }
 		<>
 			<div className='absolute flex w-[204px] flex-col items-center gap-2 [&_svg]:!h-[42px] [&_svg]:!w-[48px] [&_svg]:fill-[#F1A90B]'>
 				<OverviewIcon />
-				<span className='text-center text-xl font-medium text-[#0C5D52]'>{`${t('analyze:durianPlantationArea')} ${t('year')} ${year || ''}`}</span>
-				<span className='text-center text-2xl font-medium text-[#333333]'>{`${Number(summaryOverviewData?.overall?.area?.[areaUnit]?.toFixed(2) || 0)?.toLocaleString() || ''} ${t(AreaUnitText[areaUnit])}`}</span>
+				<span className='text-center text-xl font-medium text-[#0C5D52]'>{`${t('analyze:durianPlantationArea')} ${t('year')} ${year ?? ''}`}</span>
+				<span className='text-center text-2xl font-medium text-[#333333]'>{`${Number(summaryOverviewData?.overall?.area?.[areaUnit]?.toFixed(2) ?? 0)?.toLocaleString() || ''} ${t(AreaUnitText[areaUnit])}`}</span>
 			</div>
 			<div id='chart' className={'z-10 h-[275px] w-[275px]'}></div>
 		</>
