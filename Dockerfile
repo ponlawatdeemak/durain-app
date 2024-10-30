@@ -7,7 +7,20 @@ COPY package.json .
 COPY yarn.lock .
 RUN yarn install --frozen-lockfile
 
-COPY . .
+# COPY . .
+COPY ./src ./src
+COPY ./public ./public
+COPY next.config.js .
+COPY next-i18next.config.js .
+COPY yarn.lock .
+COPY package.json .
+COPY postcss.config.mjs .
+COPY tailwind.config.js .
+COPY tsconfig.json .
+COPY .env.production .
+
+
+
 ENV NODE_ENV=production
 RUN yarn build
 
