@@ -5,7 +5,7 @@ WORKDIR /app
 # COPY package*.json .
 COPY package.json .
 COPY yarn.lock .
-RUN yarn install --frozen-lockfile --ignore-scripts
+RUN yarn install --ignore-scripts --frozen-lockfile 
 
 # COPY . .
 COPY ./src ./src
