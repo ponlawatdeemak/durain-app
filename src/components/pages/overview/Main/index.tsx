@@ -18,7 +18,7 @@ import { MVTLayer } from '@deck.gl/geo-layers'
 import { thaiExtent, tileLayer } from '@/config/app.config'
 import { MapLayer } from '@/components/common/map/interface/map.jsx'
 import useMapStore from '@/components/common/map/store/map'
-import { apiAccessToken } from '@/api/core'
+import { getApiAccessToken } from '@/api/core'
 import hexRgb from 'hex-rgb'
 
 const OverviewMain: React.FC = () => {
@@ -31,6 +31,7 @@ const OverviewMain: React.FC = () => {
 	const [availabilityData, setAvailabilityData] = useState<availabilityDurianDtoOut[]>()
 	const [overviewData, setOverviewData] = useState<OverviewSummaryDtoOut>()
 	const { setLayers, mapLibre, switchState } = useMapStore()
+	const apiAccessToken = getApiAccessToken()
 
 	const availableAdm = useMemo(() => {
 		return availabilityData?.find((item: availabilityDurianDtoOut) => item.year === year)?.availableAdm

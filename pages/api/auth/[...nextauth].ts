@@ -1,5 +1,5 @@
 import service from '@/api'
-import { apiAccessToken, updateAccessToken } from '@/api/core'
+import { getApiAccessToken, updateAccessToken } from '@/api/core'
 import type { NextAuthOptions } from 'next-auth'
 import NextAuth from 'next-auth'
 import { JWT } from 'next-auth/jwt'
@@ -114,7 +114,7 @@ export const authOptions: NextAuthOptions = {
 			// Send properties to the client, like an access_token from a provider.
 
 			let profile
-			if (!apiAccessToken || apiAccessToken !== token.access_token) {
+			if (!getApiAccessToken() || getApiAccessToken() !== token.access_token) {
 				updateAccessToken({
 					accessToken: token.access_token ?? undefined,
 					refreshToken: token.refresh_token ?? undefined,

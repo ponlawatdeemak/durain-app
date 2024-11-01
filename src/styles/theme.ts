@@ -80,7 +80,7 @@ declare module '@mui/material/Typography' {
 //   },
 
 // TODO - NEW, must check
-let theme = createTheme({
+let _theme = createTheme({
 	palette: {
 		primary: {
 			main: '#307a59',
@@ -193,6 +193,8 @@ let theme = createTheme({
 	},
 })
 
-theme = responsiveFontSizes(theme)
+_theme = responsiveFontSizes(_theme)
 
-export default theme
+export default function getTheme() {
+	return _theme
+}

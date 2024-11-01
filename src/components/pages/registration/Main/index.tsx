@@ -26,7 +26,7 @@ import { thaiExtent, tileLayer } from '@/config/app.config'
 import { MapLayer } from '@/components/common/map/interface/map.jsx'
 import MapView from '@/components/common/map/MapView'
 import hexRgb from 'hex-rgb'
-import { apiAccessToken } from '@/api/core'
+import { getApiAccessToken } from '@/api/core'
 import { RegisterTypeColor } from '@/config/color'
 import { AlertInfoType } from '@/components/shared/ProfileForm/interface'
 import { IconLayer } from '@deck.gl/layers'
@@ -63,6 +63,7 @@ const RegistrationMain: React.FC = () => {
 	const language = i18n.language as keyof ResponseLanguage
 	const { isDesktop } = useResponsive()
 	const { areaUnit } = useAreaUnit()
+	const apiAccessToken = getApiAccessToken()
 
 	const [year, setYear] = useState(0)
 	const [admCode, setAdmCode] = useState(0)

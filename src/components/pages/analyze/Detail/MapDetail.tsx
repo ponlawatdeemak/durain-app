@@ -5,7 +5,7 @@ import { useTranslation } from 'next-i18next'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import useSearchAnalyze from '../Main/context'
 import { thaiExtent, tileLayer } from '@/config/app.config'
-import { apiAccessToken } from '@/api/core'
+import { getApiAccessToken } from '@/api/core'
 import { MapLayer } from '@/components/common/map/interface/map'
 import { MVTLayer } from '@deck.gl/geo-layers'
 import { useQuery } from '@tanstack/react-query'
@@ -84,6 +84,7 @@ const MapDetail: React.FC<MapDetailProps> = ({ orderBy, popup }) => {
 		severity: 'success',
 		message: '',
 	})
+	const apiAccessToken = getApiAccessToken()
 
 	const popupSummaryNode = useRef<HTMLDivElement>(null)
 	const popupCompareNode = useRef<HTMLDivElement>(null)
