@@ -65,12 +65,9 @@ export const FormImport: React.FC<FormImportProps> = ({ ...props }) => {
 
 			if (validFileTypes.includes(fileType) && fileSize <= maxFileSize) {
 				setImportFile(importFile)
-			}
-
-			// handle wrong type + emax size exceed
-			// notification lower left side error
-			if (!validFileTypes.includes(fileType)) {
+			} else if (!validFileTypes.includes(fileType)) {
 				// invalid file type
+				// notification lower left side error
 				setAlertInfo({ open: true, severity: 'error', message: t('error.invalidFileType', { ns: 'um' }) })
 			} else if (fileSize > maxFileSize) {
 				// limit exceed
