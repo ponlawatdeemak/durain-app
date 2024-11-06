@@ -4,7 +4,6 @@ import FormInput from '@/components/common/input/FormInput'
 import UploadImage from '@/components/common/upload/UploadImage'
 import { Box, Button, Divider, Typography } from '@mui/material'
 import { FormikProps } from 'formik'
-import { useEffect } from 'react'
 import service from '@/api'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'next-i18next'
@@ -15,7 +14,6 @@ import { UserDialogMode } from '../UserDialog'
 import useResponsive from '@/hook/responsive'
 import { ContactIcon, EmailIcon, LockIcon } from '@/components/svg/MenuIcon'
 import { GetProfileDtoOut, GetUmDtoOut } from '@/api/um/dto-out.dto'
-import { Language } from '@mui/icons-material'
 import { ResponseLanguage } from '@/api/interface'
 // import { Languages } from '@/config/app.config'
 import clsx from 'clsx'
@@ -60,12 +58,12 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 		enabled: !!formik.values.responsibleProvinceCode,
 	})
 
-	const { data: organizationLookupData, isLoading: isOrganizationDataLoading } = useQuery({
+	const { data: organizationLookupData, isLoading: _isOrganizationDataLoading } = useQuery({
 		queryKey: ['getOrganization'],
 		queryFn: () => service.lookup.get('organizations'),
 	})
 
-	const { data: roleLookupData, isLoading: isRoleDataLoading } = useQuery({
+	const { data: roleLookupData, isLoading: _isRoleDataLoading } = useQuery({
 		queryKey: ['getRole'],
 		queryFn: () => service.lookup.get('roles'),
 	})
@@ -245,18 +243,11 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 							name='orgCode'
 							label={t('org')}
 							formik={formik}
-							disabled={
-								isDisabledProfile ||
-								loading ||
-								userDialogmode === UserDialogMode.UserProfile ||
-								userDialogmode === UserDialogMode.UserEdit
-							}
+							disabled={isDisabledProfile || loading || userDialogmode === UserDialogMode.UserProfile}
 							required={
 								userDialogmode === UserDialogMode.UserAdd ||
 								userDialogmode === UserDialogMode.UserEdit ||
 								userDialogmode === UserDialogMode.UserProfile
-									? true
-									: false
 							}
 							placeholder={userDialogmode === UserDialogMode.UserAdd ? t('pleaseEnter') : t('notEnter')}
 							title=''
@@ -273,18 +264,11 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 							name='role'
 							label={t('role')}
 							formik={formik}
-							disabled={
-								isDisabledProfile ||
-								loading ||
-								userDialogmode === UserDialogMode.UserProfile ||
-								userDialogmode === UserDialogMode.UserEdit
-							}
+							disabled={isDisabledProfile || loading || userDialogmode === UserDialogMode.UserProfile}
 							required={
 								userDialogmode === UserDialogMode.UserAdd ||
 								userDialogmode === UserDialogMode.UserEdit ||
 								userDialogmode === UserDialogMode.UserProfile
-									? true
-									: false
 							}
 							placeholder={userDialogmode === UserDialogMode.UserAdd ? t('pleaseEnter') : t('notEnter')}
 							title=''
