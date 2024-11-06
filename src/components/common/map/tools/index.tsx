@@ -46,7 +46,7 @@ const MapTools: React.FC<MapToolsProps> = ({
 
 	//reload switchState
 	useEffect(() => {
-		if (mapLibre === null || switchState?.length !== layerList?.length) {
+		if (mapLibre === null) {
 			setSwitchState(layerList?.map((item) => ({ id: item.id, isOn: true })) ?? null)
 		}
 	}, [layerList, mapLibre, layers])
