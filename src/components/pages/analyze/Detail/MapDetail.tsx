@@ -77,7 +77,7 @@ const MapDetail: React.FC<MapDetailProps> = ({ orderBy, popup }) => {
 	const { queryParams, setQueryParams } = useSearchAnalyze()
 	const [summaryInfoWindow, setSummaryInfoWindow] = useState<GetAgeclassLocationDtoOut | null>(null)
 	const [compareInfoWindow, setCompareInfoWindow] = useState<GetCompareLocationDtoOut | null>(null)
-	const { mapLibre, setLayers, removeLayer, addLayer, switchState } = useMapStore()
+	const { mapLibre, setLayers, removeLayer, addLayer, switchState, setSwitchState } = useMapStore()
 	const [overviewData, setOverviewData] = useState<GetSummaryOverviewDtoOut>()
 	const [alertInfo, setAlertInfo] = React.useState<AlertInfoType>({
 		open: false,
@@ -580,6 +580,13 @@ const MapDetail: React.FC<MapDetailProps> = ({ orderBy, popup }) => {
 			setLayers(tempList)
 		}
 	}, [initialLayer, summaryLayers, overviewData, setLayers, compareLayers])
+
+	//reload switchState
+	useEffect(() => {
+		if (mapLibre) {
+			setSwitchState(initialLayer?.map((item) => ({ id: item.id, isOn: true })) ?? null)
+		}
+	}, [orderBy, mapLibre])
 
 	useEffect(() => {
 		let admCode: number | null = null
